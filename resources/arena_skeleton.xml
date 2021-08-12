@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://ProjectMalmo.microsoft.com file:///C:\MalmoPlatform\Schemas\mission.xsd">
+    <About>
+        <Summary>Test scenario</Summary>
+    </About>
+
+    <ModSettings>
+        <MsPerTick>20</MsPerTick>
+        <PrioritiseOffscreenRendering>false</PrioritiseOffscreenRendering>
+    </ModSettings>
+
+    <ServerSection>
+        <ServerInitialConditions>
+            <Time>
+                <StartTime>22000</StartTime>
+                <AllowPassageOfTime>false</AllowPassageOfTime>
+            </Time>
+        </ServerInitialConditions>
+        <ServerHandlers>
+            <FlatWorldGenerator forceReset="true"/>
+            <DrawingDecorator>
+                <DrawCuboid type="grass" x1="78" y1="4" z1="63" x2="152" y2="4" z2="162"/>
+                <DrawCuboid type="grass" x1="79" y1="5" z1="64" x2="151" y2="5" z2="161"/>
+                <DrawCuboid type="grass" x1="80" y1="4" z1="65" x2="150" y2="6" z2="160"/>
+                <DrawCuboid type="air" x1="85" y1="4" z1="105" x2="145" y2="6" z2="158"/>
+                <DrawCuboid type="air" x1="95" y1="4" z1="95" x2="105" y2="5" z2="98"/>
+                <DrawCuboid type="air" x1="94" y1="5" z1="94" x2="106" y2="5" z2="99"/>
+                <DrawCuboid type="air" x1="93" y1="6" z1="93" x2="107" y2="6" z2="100"/>
+
+                <DrawSphere type="stone" x="90" y="3" z="115" radius="1"/>
+                <DrawSphere type="stone" x="99" y="3" z="113" radius="1"/>
+                <DrawSphere type="stone" x="97" y="3" z="118" radius="2"/>
+                <DrawSphere type="stone" x="115" y="3" z="110" radius="1"/>
+                <DrawSphere type="stone" x="125" y="3" z="115" radius="1"/>
+                <DrawSphere type="stone" x="135" y="3" z="111" radius="1"/>
+                <DrawSphere type="stone" x="90" y="3" z="135" radius="1"/>
+                <DrawSphere type="stone" x="97" y="3" z="138" radius="1"/>
+                <DrawSphere type="stone" x="115" y="3" z="130" radius="2"/>
+                <DrawSphere type="stone" x="125" y="3" z="135" radius="1"/>
+                <DrawSphere type="stone" x="135" y="3" z="131" radius="1"/>
+
+                <DrawEntity x="100" y="6" z="110" yaw="-90" type="Skeleton"/>
+            </DrawingDecorator>
+        </ServerHandlers>
+    </ServerSection>
+
+    <AgentSection mode="Survival">
+        <Name>Rover</Name>
+        <AgentStart>
+            <Placement x="103" y="7" z="120" yaw="45"/>
+            <Inventory>
+                <InventoryItem type="diamond_pickaxe" slot="1"/>
+            </Inventory>
+        </AgentStart>
+        <AgentHandlers>
+            <ObservationFromNearbyEntities>
+                <Range name="Entities" xrange="40" yrange="30" zrange="40"/>
+            </ObservationFromNearbyEntities>
+            <ObservationFromRay/>
+            <!--ObservationFromGrid>
+                <Grid name="Next_to">
+                    <min x="-1" y="-1" z="-1"/>
+                    <max x="1" y="2" z="1"/>
+                </Grid>
+            </ObservationFromGrid-->
+            <ObservationFromFullStats/>
+            <ObservationFromFullInventory flat="false"/>
+            <SimpleCraftCommands/>
+            <InventoryCommands/>
+            <ObservationFromHotBar/>
+            <ContinuousMovementCommands/>
+            <AbsoluteMovementCommands/>
+            <ChatCommands/>
+            <MissionQuitCommands quitDescription="give_up"/>
+            <RewardForDamagingEntity>
+                <Mob type="Skeleton" reward="20"/>
+            </RewardForDamagingEntity>
+            <RewardForTimeTaken initialReward="0" delta="-0.1" density="PER_TICK"/>
+        </AgentHandlers>
+    </AgentSection>
+
+</Mission>

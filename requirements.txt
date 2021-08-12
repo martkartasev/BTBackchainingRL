@@ -1,0 +1,5 @@
+malmo~=0.37.0.0
+py-trees
+numpy~=1.21.1
+stable-baselines3
+gym~=0.18.3

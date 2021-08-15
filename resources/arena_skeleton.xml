@@ -58,12 +58,12 @@
                 <Range name="Entities" xrange="40" yrange="30" zrange="40"/>
             </ObservationFromNearbyEntities>
             <ObservationFromRay/>
-            <!--ObservationFromGrid>
-                <Grid name="Next_to">
-                    <min x="-1" y="-1" z="-1"/>
-                    <max x="1" y="2" z="1"/>
+            <ObservationFromGrid>
+                <Grid name="Surroundings">
+                    <min x="-1" y="0" z="-1"/>
+                    <max x="1" y="1" z="1"/>
                 </Grid>
-            </ObservationFromGrid-->
+            </ObservationFromGrid>
             <ObservationFromFullStats/>
             <ObservationFromFullInventory flat="false"/>
             <SimpleCraftCommands/>

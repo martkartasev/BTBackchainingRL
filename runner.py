@@ -2,6 +2,7 @@ import time
 
 from bt import conditions
 from bt.back_chain_tree import BackChainTree
+from observation import Observation
 from world import World
 
 MAX_DELAY = 60
@@ -31,8 +32,8 @@ class Runner:
             self.agent.activate_night_vision()
 
         while world_state is not None and world_state.is_mission_running:
-            #observation = Observation(self.agent.get_next_world_state().observations, self.world.mission_data)
-            #self.agent.set_observation(observation)
+            observation = Observation(self.agent.get_next_world_state().observations)
+            self.agent.set_observation(observation)
 
             self.tree.root.tick_once()
 

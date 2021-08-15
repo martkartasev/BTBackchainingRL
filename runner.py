@@ -1,5 +1,7 @@
 import time
 
+from bt import conditions
+from bt.back_chain_tree import BackChainTree
 from world import World
 
 MAX_DELAY = 60
@@ -16,7 +18,7 @@ class Runner:
 
         self.last_delta = time.time()
 
-        self.tree = None
+        self.tree = BackChainTree(agent, conditions.IsNotInFire(agent))
 
         self.world.start_world()
 
@@ -32,7 +34,7 @@ class Runner:
             #observation = Observation(self.agent.get_next_world_state().observations, self.world.mission_data)
             #self.agent.set_observation(observation)
 
-            #self.tree.root.tick_once()
+            self.tree.root.tick_once()
 
             self.check_timeout(self.world, world_state)
 

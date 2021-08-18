@@ -4,7 +4,8 @@ import time
 from malmo import malmoutils
 from MalmoPython import MissionSpec, ClientInfo, ClientPool
 
-TIME_LIMIT_IN_SECONDS = 30
+TIME_LIMIT_IN_SECONDS = 100
+
 VIDEO_SIZE = (800, 600)
 
 RECORDING_NAME = "saved_data"
@@ -45,7 +46,7 @@ def read_mission(filename):
         data = file.read().replace('\n', '')
     return data
 
-
+#TODO: Delete
 class World:
 
     def __init__(self, agent):
@@ -65,7 +66,7 @@ class World:
     def start_world(self):
         for retry in range(MAX_RETRIES):
             try:
-                self.agent.start_mission(self.mission, self.pool, self.mission_record, self.experiment_id)
+                self.agent.start_mission_with_pool(self.mission, self.pool, self.mission_record, self.experiment_id)
                 break
             except RuntimeError as e:
                 if retry == MAX_RETRIES - 1:

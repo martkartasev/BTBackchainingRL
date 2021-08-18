@@ -1,6 +1,7 @@
 import json
 
 import numpy as np
+from gym.spaces import Box
 
 CIRCLE_DEGREES = 360
 
@@ -8,6 +9,7 @@ RELATIVE_DISTANCE_AXIS_MAX = 1000
 
 # TODO: This shouldn't be hard-coded
 GRID_SIZE = 3 * 3 * 2
+GRID_SIZE_AXIS = [3, 2, 3]
 
 # Always append at the end of this list
 game_objects = ["dirt", "grass", "stone", "fire", "air"]
@@ -87,12 +89,14 @@ class Observation:
 
         skeleton_info = get_skeleton_info(info)
 
-        skeleton_position_list = [skeleton_info.get("x"), skeleton_info.get("y"), skeleton_info.get("z")]
-        skeleton_position = np.array(skeleton_position_list) if all(skeleton_position_list) is not None else None
+        if skeleton_info is not None:
+            skeleton_position_list = [skeleton_info.get("x"), skeleton_info.get("y"), skeleton_info.get("z")]
+        else:
+            skeleton_position_list = [None, None, None]
 
+        skeleton_position = None if None in skeleton_position_list else np.array(skeleton_position_list)
         player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
-        player_position = np.array(skeleton_position_list) if all(player_position_list) is not None else None
-
+        player_position = None if None in player_position_list else np.array(player_position_list)
         if player_position is not None and skeleton_position is not None:
             relative_position = skeleton_position - player_position
             relative_position = np.clip(relative_position, 0, RELATIVE_DISTANCE_AXIS_MAX)
@@ -106,6 +110,9 @@ class Observation:
 
         surroundings_list = info.get("Surroundings")
 
+        # Only for debugging
+        self.surroundings_list = surroundings_list
+
         if surroundings_list is not None:
             surroundings = get_grid_obs_vector(surroundings_list)
         else:
@@ -115,6 +122,31 @@ class Observation:
             relative_position,
             direction_vector,
             player_life,
-            skeleton_life,
             surroundings
         ))
+
+    @staticmethod
+    def get_observation_space():
+        low_position = np.zeros(3)
+        low_direction = np.zeros(3)
+        low_player_life = 0
+        low_surroundings = -1 * np.ones(GRID_SIZE)
+        low = np.hstack((
+            low_position,
+            low_direction,
+            low_player_life,
+            low_surroundings
+        ))
+
+        high_position = RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
+        high_direction = np.ones(3)
+        high_player_life = 100
+        high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
+        high = np.hstack((
+            high_position,
+            high_direction,
+            high_player_life,
+            high_surroundings
+        ))
+
+        return Box(low, high)

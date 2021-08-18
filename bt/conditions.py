@@ -1,6 +1,8 @@
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
+from observation import game_objects
+
 
 class Condition(Behaviour):
     def __init__(self, name):
@@ -13,5 +15,8 @@ class IsNotInFire(Condition):
         self.agent = agent
 
     def update(self):
-        # TODO: Implement this
-        return Status.SUCCESS
+        grid_list = self.agent.observation.vector[8:]
+
+        print(grid_list[0] == game_objects.index("fire"))
+
+        return Status.FAILURE if grid_list[0] == game_objects.index("fire") else Status.SUCCESS

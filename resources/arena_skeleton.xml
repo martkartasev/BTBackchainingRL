@@ -23,6 +23,10 @@
                 <DrawCuboid type="grass" x1="78" y1="4" z1="63" x2="152" y2="4" z2="162"/>
                 <DrawCuboid type="grass" x1="79" y1="5" z1="64" x2="151" y2="5" z2="161"/>
                 <DrawCuboid type="grass" x1="80" y1="4" z1="65" x2="150" y2="6" z2="160"/>
+
+                <DrawCuboid type="netherrack" x1="85" y1="3" z1="105" x2="145" y2="3" z2="158"/>
+
+
                 <DrawCuboid type="air" x1="85" y1="4" z1="105" x2="145" y2="6" z2="158"/>
                 <DrawCuboid type="air" x1="95" y1="4" z1="95" x2="105" y2="5" z2="98"/>
                 <DrawCuboid type="air" x1="94" y1="5" z1="94" x2="106" y2="5" z2="99"/>
@@ -40,7 +44,9 @@
                 <DrawSphere type="stone" x="125" y="3" z="135" radius="1"/>
                 <DrawSphere type="stone" x="135" y="3" z="131" radius="1"/>
 
-                <DrawEntity x="100" y="6" z="110" yaw="-90" type="Skeleton"/>
+                <DrawCuboid type="fire" x1="90" y1="4" z1="105" x2="110" y2="4" z2="108"/>
+
+
             </DrawingDecorator>
         </ServerHandlers>
     </ServerSection>
@@ -61,7 +67,8 @@
             <ObservationFromGrid>
                 <Grid name="Surroundings">
                     <min x="-1" y="0" z="-1"/>
-                    <max x="1" y="1" z="1"/>
+                    <max x="1" y="1
+" z="1"/>
                 </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats/>

@@ -22,7 +22,7 @@ class NormalMission(AbstractMission):
             for error in world_state.errors:
                 print("Error:", error.text)
             if self.agent.is_mission_over():
-                self.agent.sendCommand("quit")
+                self.agent.quit()
                 break
 
             self.agent.control_loop()

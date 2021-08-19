@@ -77,6 +77,9 @@ class MalmoAgent(BaseAgent):
             self.agent_host.sendCommand("use 0")
             time.sleep(0.5)  # Stupid but necessary
 
+    def quit(self):
+        self.agent_host.sendCommand("quit")
+
     def reset_agent(self):
         raise NotImplementedError()
 

@@ -21,7 +21,7 @@ class MultiThreadedMission(AbstractMission):
                 print("Error:", error.text)
 
             if self.agentExited:
-                self.agent.sendCommand("quit")
+                self.agent.quit()
                 break
 
             self.agent.store_observations(observations)

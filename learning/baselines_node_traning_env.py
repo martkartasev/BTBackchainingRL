@@ -27,11 +27,11 @@ class BaselinesNodeTrainingEnv(gym.Env):
         return ob, reward, done, {}
 
     def close(self):
-        self.agent.sendCommand("quit")
+        self.agent.quit()
 
     def reset(self):
         if self.agent.get_world_state().is_mission_running:
-            self.agent.sendCommand("quit")
+            self.agent.quit()
 
         self.mission.mission_initialization()
         self.mission.run_mission()

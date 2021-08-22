@@ -46,6 +46,8 @@
 
                 <DrawCuboid type="fire" x1="90" y1="4" z1="105" x2="110" y2="4" z2="108"/>
 
+                <DrawEntity x="100" y="6" z="110" yaw="-90" type="Skeleton"/>
+
 
             </DrawingDecorator>
         </ServerHandlers>
@@ -67,8 +69,7 @@
             <ObservationFromGrid>
                 <Grid name="Surroundings">
                     <min x="-1" y="0" z="-1"/>
-                    <max x="1" y="1
-" z="1"/>
+                    <max x="1" y="1" z="1"/>
                 </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats/>
@@ -80,9 +81,6 @@
             <AbsoluteMovementCommands/>
             <ChatCommands/>
             <MissionQuitCommands quitDescription="give_up"/>
-            <RewardForDamagingEntity>
-                <Mob type="Skeleton" reward="20"/>
-            </RewardForDamagingEntity>
             <RewardForTimeTaken initialReward="0" delta="-0.1" density="PER_TICK"/>
         </AgentHandlers>
     </AgentSection>

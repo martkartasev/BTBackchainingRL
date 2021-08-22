@@ -22,6 +22,3 @@ class BasicFighterNodeTrainingAgent(BaselinesNodeTrainingAgent):
 
     def is_mission_over(self):
         return not self.is_agent_alive()
-
-
-

@@ -23,8 +23,8 @@ def get_skeleton_info(info):
 
 
 def get_yaw(info):
-    if "yaw" in info:
-        yaw = info["yaw"]
+    if "Yaw" in info:
+        yaw = info["Yaw"]
         if yaw <= 0:
             yaw += CIRCLE_DEGREES
         return yaw
@@ -32,7 +32,7 @@ def get_yaw(info):
 
 
 def get_pitch(info):
-    return info.get("pitch")
+    return info.get("Pitch")
 
 
 def get_direction_vector(info):

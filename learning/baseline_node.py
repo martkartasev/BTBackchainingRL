@@ -2,6 +2,8 @@ import numpy as np
 from gym import spaces
 from py_trees.common import Status
 
+from bt.accs import find_accs
+from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack
 from bt.sequence import Sequence
 from observation import Observation
 
@@ -80,10 +82,12 @@ class BaselinesNode(Sequence):
         raise NotImplementedError()
 
 
-class BasicFighterTrainingNode(BaselinesNode):
+class DynamicBaselinesNode(BaselinesNode):
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
-        super(BasicFighterTrainingNode, self).__init__(agent, name=name, children=children, model=model)
+        super(DynamicBaselinesNode, self).__init__(agent, name=name, children=children, model=model)
+        self.accs = []
+        self.post_conditions = []
 
     def get_observation_space(self):
         return Observation.get_observation_space()
@@ -92,4 +96,30 @@ class BasicFighterTrainingNode(BaselinesNode):
         return self.agent.observation.vector
 
     def calculate_rewards(self):
-        return 0
+        rewards = 0
+        for acc in self.accs:
+            res = acc.tick_once()
+            if res == Status.FAILURE:
+                rewards -= 1000
+        for post_condition in self.post_conditions:
+            res = post_condition.tick_once()
+            if res == Status.SUCCESS:
+                rewards += 1000
+        return rewards
+
+    # Note this should only be called after the node is inside a tree with setup children
+    def calculate_accs(self):
+        self.accs = find_accs(self)
+
+
+class DefeatSkeleton(DynamicBaselinesNode):
+
+    def __init__(self, agent, model=None):
+        children = [
+            TurnLeft(agent),
+            TurnRight(agent),
+            MoveForward(agent),
+            MoveBackward(agent),
+            Attack(agent)
+        ]
+        super().__init__(agent, "KillSkeleton", children, model)

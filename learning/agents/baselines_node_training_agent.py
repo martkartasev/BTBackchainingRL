@@ -3,6 +3,12 @@ from agent import ObservationAgent
 
 class BaselinesNodeTrainingAgent(ObservationAgent):
 
+    def reset_agent(self):
+        return NotImplementedError()
+
+    def is_mission_over(self):
+        return NotImplementedError()
+
     def __init__(self, name="execution/manual_skeleton"):
         super().__init__()
         self.name = name
@@ -18,7 +24,7 @@ class BasicFighterNodeTrainingAgent(BaselinesNodeTrainingAgent):
         self.name = name
 
     def reset_agent(self):
-        pass
+        return NotImplementedError()
 
     def is_mission_over(self):
         return not self.is_agent_alive()

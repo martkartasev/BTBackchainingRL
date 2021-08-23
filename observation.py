@@ -101,7 +101,7 @@ class Observation:
             relative_position = skeleton_position - player_position
             relative_position = np.clip(relative_position, 0, RELATIVE_DISTANCE_AXIS_MAX)
         else:
-            relative_position = RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
+            relative_position = np.zeros(3)
 
         direction_vector = get_direction_vector(info)
 

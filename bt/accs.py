@@ -5,7 +5,7 @@ from bt.conditions import Condition
 from bt.sequence import Sequence
 
 
-def find_acc(node):
+def find_accs(node):
     current = node
     path = []
     while current is not None:
@@ -112,7 +112,7 @@ def test_acc():
     main_sequence.setup_with_descendants()
 
     # Act:
-    accs = find_acc(move_to_goal_action)
+    accs = find_accs(move_to_goal_action)
 
     # Assert:
     assert in_safe_area_condition in accs

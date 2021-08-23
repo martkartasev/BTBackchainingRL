@@ -4,7 +4,7 @@ from stable_baselines3 import A2C
 from agent import ObservationAgent
 from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack
 from bt.sequence import Sequence
-from learning.baseline_node import BasicFighterTrainingNode
+from learning.baseline_node import DynamicBaselinesNode
 
 
 class TrainedSkeletonFightingAgent(ObservationAgent):
@@ -26,11 +26,11 @@ class TrainedSkeletonFightingAgent(ObservationAgent):
     def define_behavior(self):
         fighter_model = A2C.load("../../results/basicfighter2/finalbasicfighter.mdl")
         root = Sequence("Root", children=[
-            BasicFighterTrainingNode(self, model=fighter_model, children=[TurnLeft(self),
-                                                                          TurnRight(self),
-                                                                          MoveForward(self),
-                                                                          MoveBackward(self),
-                                                                          Attack(self)])
+            DynamicBaselinesNode(self, model=fighter_model, children=[TurnLeft(self),
+                                                                      TurnRight(self),
+                                                                      MoveForward(self),
+                                                                      MoveBackward(self),
+                                                                      Attack(self)])
         ])
 
         return root

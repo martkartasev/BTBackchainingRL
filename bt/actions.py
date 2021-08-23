@@ -6,12 +6,11 @@ from observation import GRID_SIZE_AXIS, game_objects
 
 
 class Action(Behaviour):
-    def __init__(self, name, agent):
+    def __init__(self, name, agent=None):
         super(Action, self).__init__(name)
         self.agent = agent
 
 
-#TODO: THIS NEEDS TO BE FIXED
 class AvoidFire(Action):
     def __init__(self, agent, name="Avoid Fire"):
         super().__init__(name, agent)
@@ -35,22 +34,17 @@ class AvoidFire(Action):
             return Status.SUCCESS
 
         min_distance_vector = distances_vector[min_dist_arg]
-        distance_vector_direction = min_distance_vector/ np.linalg.norm(min_distance_vector)
+        distance_vector_direction = min_distance_vector / np.linalg.norm(min_distance_vector)
         direction_vector = self.agent.observation.vector[3:6]
         flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
         flat_direction_vector /= np.linalg.norm(flat_direction_vector)
 
         angle = np.arccos(np.dot(distance_vector_direction, flat_direction_vector))
 
-
-        print(angle / np.pi * 180)
-        self.agent.continuous_strafe("")
-
         self.agent.continuous_move(np.cos(angle))
         self.agent.continuous_strafe(-np.sin(angle))
 
-
-        return Status.SUCCESS
+        return Status.SUCCESS if grid[0, 0] == game_objects.index("air") else Status.FAILURE
 
     def grid_observation_from_list(self):
         grid_observation_list = self.agent.observation.vector[7:]
@@ -62,6 +56,7 @@ class AvoidFire(Action):
     def terminate(self, new_status):
         self.agent.continuous_move(0)
         self.agent.continuous_strafe(0)
+
 
 class MoveForward(Action):
     def __init__(self, agent, name="Move Forward"):
@@ -216,4 +211,3 @@ class Use(Action):
     def update(self):
         self.agent.use()
         return Status.RUNNING
-

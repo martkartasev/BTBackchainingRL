@@ -2,22 +2,7 @@ from py_trees.composites import Selector
 
 from bt import conditions, actions
 from bt.sequence import Sequence
-
-
-def back_chain_recursive(agent, condition):
-    ppa = condition_to_ppa_tree(agent, condition)
-    if ppa is not None:
-        for i, pre_condition in enumerate(ppa.pre_conditions):
-            ppa_condition_tree = back_chain_recursive(agent, ppa.pre_conditions[i])
-            if ppa_condition_tree is not None:
-                ppa.pre_conditions[i] = ppa_condition_tree
-        return ppa.as_tree()
-    return None
-
-
-def condition_to_ppa_tree(agent, condition):
-    if isinstance(condition, conditions.IsNotInFire):
-        return AvoidFirePPA(agent)
+from learning.baseline_node import DefeatSkeleton
 
 
 class PPA:
@@ -59,3 +44,12 @@ class AvoidFirePPA(PPA):
         self.post_condition = conditions.IsNotInFire(agent)
         self.pre_conditions = []
         self.action = actions.AvoidFire(agent)
+
+
+class DefeatSkeletonPPA(PPA):
+    def __init__(self, agent):
+        super(DefeatSkeletonPPA, self).__init__()
+        self.name = f"Avoid Fire"
+        self.post_condition = conditions.IsSkeletonDefeated(agent)
+        self.pre_conditions = [conditions.IsNotInFire(agent)]
+        self.action = DefeatSkeleton(agent)

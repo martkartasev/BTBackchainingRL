@@ -1,7 +1,8 @@
 import os
+
 from malmo import malmoutils
 
-from agent import BaseAgent
+from agent import MalmoAgent
 from runner import Runner
 
 
@@ -11,7 +12,7 @@ def run():
         return
     malmoutils.fix_print()
 
-    agent = BaseAgent()
+    agent = MalmoAgent()
     runner = Runner(agent)
     runner.run_mission()
 

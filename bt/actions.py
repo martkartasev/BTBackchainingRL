@@ -1,5 +1,8 @@
+import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
+
+from observation import GRID_SIZE_AXIS, game_objects
 
 
 class Action(Behaviour):
@@ -8,13 +11,51 @@ class Action(Behaviour):
         self.agent = agent
 
 
+#TODO: THIS NEEDS TO BE FIXED
 class AvoidFire(Action):
     def __init__(self, agent, name="Avoid Fire"):
         super().__init__(name, agent)
+        self.position_in_grid = np.array([int(axis / 2) for axis in GRID_SIZE_AXIS])
 
     def update(self):
-        # TODO: Implement this
+        # Find closest not fire
+        grid = self.grid_observation_from_list()
+        grid = grid[:, 0, :]
+
+        is_air = (grid == game_objects.index("air"))
+        positions = np.argwhere(is_air)
+        if len(positions) == 0:
+            return Status.FAILURE
+        distances_vector = positions - np.array([self.position_in_grid[0], self.position_in_grid[2]])
+        distances = np.linalg.norm(distances_vector, axis=1)
+        min_dist_arg = np.argmin(distances)
+
+        if distances[min_dist_arg] == 0:
+            return Status.SUCCESS
+
+        min_distance_vector = distances_vector[min_dist_arg]
+        distance_vector_direction = min_distance_vector/ np.linalg.norm(min_distance_vector)
+        direction_vector = self.agent.observation.vector[3:6]
+        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
+        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
+
+        angle = np.arccos(np.dot(distance_vector_direction, flat_direction_vector))
+
+
+        print(angle / np.pi * 180)
+        self.agent.set_yaw(angle / np.pi * 180)
+        self.agent.continuous_move(1)
+
+
         return Status.SUCCESS
+
+    def grid_observation_from_list(self):
+        grid_observation_list = self.agent.observation.vector[7:]
+
+        grid = np.array(grid_observation_list).reshape((GRID_SIZE_AXIS[1], GRID_SIZE_AXIS[2], GRID_SIZE_AXIS[0]))
+        grid = np.transpose(grid, (2, 0, 1))
+        return grid
+
 
 
 class MoveForward(Action):

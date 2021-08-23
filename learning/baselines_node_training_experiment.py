@@ -4,14 +4,12 @@ from stable_baselines3 import A2C
 from stable_baselines3.common.monitor import Monitor
 
 from bt import conditions
-from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack
 from bt.back_chain_tree import BackChainTree
 from learning.agents.baselines_node_training_agent import BasicFighterNodeTrainingAgent
 from learning.agents.trained_skeleton_fighting_agent import TrainedSkeletonFightingAgent
 from learning.baselines_node_training_env import BaselinesNodeTrainingEnv
-from mission_runner.baselines_node_training_mission import BaselinesNodeTrainingMission
-from learning.baseline_node import DynamicBaselinesNode
 from learning.save_best_model_callback import SaveOnBestTrainingRewardCallback
+from mission_runner.baselines_node_training_mission import BaselinesNodeTrainingMission
 from mission_runner.normal_mission import NormalMission
 from utils.file import get_absolute_path
 from utils.visualisation import save_tree_to_log
@@ -23,10 +21,10 @@ def train_node():
     log_dir = get_absolute_path("results/basicfighter3")
 
     agent = BasicFighterNodeTrainingAgent()
+    tree = BackChainTree(agent, conditions.IsSkeletonDefeated(agent))
+
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
 
-    tree = BackChainTree(agent, conditions.IsSkeletonDefeated(agent))
-    print(tree.root)
     save_tree_to_log(tree.root, "skeleton_tree.txt")
 
     node = tree.baseline_nodes[0]

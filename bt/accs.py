@@ -14,7 +14,7 @@ def find_accs(node):
     path = path[::-1]
     n0s = []
     for pnode in path:
-        if pnode != node.parent:
+        if not isinstance(current, Action) or pnode != node.parent:
             if isinstance(pnode, Sequence):
                 n0s.append(pnode)
     n1 = []

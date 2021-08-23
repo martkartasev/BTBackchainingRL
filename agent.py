@@ -9,6 +9,7 @@ class BaseAgent:
     def __init__(self):
         self.agent_host = AgentHost()
         self.observation = None
+        self.rewards = None
 
     def start_mission(self, mission, mission_record):
         self.agent_host.startMission(mission, mission_record)
@@ -21,6 +22,9 @@ class BaseAgent:
 
     def set_observation(self, observation):
         self.observation = observation
+
+    def set_rewards(self, rewards):
+        self.rewards = rewards
 
     def get_next_world_state(self):
         observations = None

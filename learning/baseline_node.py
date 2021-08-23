@@ -98,18 +98,18 @@ class DynamicBaselinesNode(BaselinesNode):
     def calculate_rewards(self):
         rewards = 0
         for acc in self.accs:
-            res = acc.tick_once()
+            acc.tick_once()
+            res = acc.status
             if res == Status.FAILURE:
                 rewards -= 100000
         for post_condition in self.post_conditions:
-            res = post_condition.tick_once()
+            post_condition.tick_once()
+            res = post_condition.status
             if res == Status.SUCCESS:
                 rewards += 100000
+        print(rewards)
         return rewards
 
-    # Note this should only be called after the node is inside a tree with setup children
-    def calculate_accs(self):
-        self.accs = find_accs(self)
 
     def is_acc_violated(self):
         for acc in self.accs:
@@ -129,4 +129,4 @@ class DefeatSkeleton(DynamicBaselinesNode):
             MoveBackward(agent),
             Attack(agent)
         ]
-        super().__init__(agent, "KillSkeleton", children, model)
+        super().__init__(agent, "DefeatSkeleton", children, model)

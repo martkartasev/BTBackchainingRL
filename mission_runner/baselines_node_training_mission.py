@@ -10,7 +10,9 @@ class BaselinesNodeTrainingMission(AbstractMission):
     def run_mission(self):
         world_state = self.agent.get_next_world_state()
         observation = Observation(world_state.observations)
+        rewards = world_state.rewards
         self.agent.set_observation(observation)
+        self.agent.set_rewards(rewards)
 
         for error in world_state.errors:
             print("Error:", error.text)

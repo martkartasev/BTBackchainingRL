@@ -13,7 +13,7 @@ class Condition(Behaviour):
 
 class IsNotInFire(Condition):
     def __init__(self, agent):
-        super(IsNotInFire, self).__init__(f"Is not in fire")
+        super(IsNotInFire, self).__init__(f"Is not in fire", agent)
 
     def update(self):
         grid_list = self.agent.observation.vector[7:]
@@ -22,8 +22,7 @@ class IsNotInFire(Condition):
 
 class IsSkeletonDefeated(Condition):
     def __init__(self, agent):
-        super(IsSkeletonDefeated, self).__init__(f"Is skeleton dead")
-        self.agent = agent
+        super(IsSkeletonDefeated, self).__init__(f"Is skeleton dead", agent)
 
     def update(self):
         relative_distance = self.agent.observation.vector[0:3]

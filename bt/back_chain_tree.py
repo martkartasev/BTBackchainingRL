@@ -15,10 +15,9 @@ class BackChainTree:
         goal_ppa_tree = self.back_chain_recursive(self.agent, goal)
         if goal_ppa_tree is None:
             return None
-
         goal_ppa_tree.setup_with_descendants()
         for baseline_node in self.baseline_nodes:
-            baseline_node.calculate_accs()
+            baseline_node.accs = find_accs(baseline_node)
         return goal_ppa_tree
 
     def back_chain_recursive(self, agent, condition):

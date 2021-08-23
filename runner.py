@@ -39,8 +39,6 @@ class Runner:
 
             self.tree.root.tick_once()
 
-            print(tree_to_string(self.tree.root))
-
             self.check_timeout(self.world, world_state)
 
     def check_timeout(self, world, world_state):

@@ -97,9 +97,11 @@ class Observation:
         skeleton_position = None if None in skeleton_position_list else np.array(skeleton_position_list)
         player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
         player_position = None if None in player_position_list else np.array(player_position_list)
+
+
         if player_position is not None and skeleton_position is not None:
             relative_position = skeleton_position - player_position
-            relative_position = np.clip(relative_position, 0, RELATIVE_DISTANCE_AXIS_MAX)
+            relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
         else:
             relative_position = np.zeros(3)
 
@@ -127,7 +129,7 @@ class Observation:
 
     @staticmethod
     def get_observation_space():
-        low_position = np.zeros(3)
+        low_position = -RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
         low_direction = np.zeros(3)
         low_player_life = 0
         low_surroundings = -1 * np.ones(GRID_SIZE)

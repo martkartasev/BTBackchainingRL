@@ -26,5 +26,6 @@ class IsSkeletonDefeated(Condition):
 
     def update(self):
         relative_distance = self.agent.observation.vector[0:3]
+        print(relative_distance)
         return Status.SUCCESS if np.all(relative_distance == np.zeros(3)) else Status.FAILURE
 

@@ -107,9 +107,7 @@ class DynamicBaselinesNode(BaselinesNode):
             res = post_condition.status
             if res == Status.SUCCESS:
                 rewards += 100000
-        print(rewards)
         return rewards
-
 
     def is_acc_violated(self):
         for acc in self.accs:
@@ -117,6 +115,13 @@ class DynamicBaselinesNode(BaselinesNode):
             if res == Status.FAILURE:
                 return True
         return False
+
+    def is_post_conditions_fulfilled(self):
+        for post_condition in self.post_conditions:
+            res = post_condition.tick_once()
+            if res == Status.FAILURE:
+                return False
+        return True
 
 
 class DefeatSkeleton(DynamicBaselinesNode):

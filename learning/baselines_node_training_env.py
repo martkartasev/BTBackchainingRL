@@ -23,7 +23,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
 
         reward = self.node.calculate_rewards()
         ob = self.node.get_observation_array()
-        done = self.agent.is_mission_over()
+        done = self.agent.is_mission_over() or self.node.is_acc_violated()
         return ob, reward, done, {}
 
     def close(self):

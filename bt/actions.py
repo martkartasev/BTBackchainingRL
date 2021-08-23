@@ -24,6 +24,7 @@ class AvoidFire(Action):
 
         is_air = (grid == game_objects.index("air"))
         positions = np.argwhere(is_air)
+
         if len(positions) == 0:
             return Status.FAILURE
         distances_vector = positions - np.array([self.position_in_grid[0], self.position_in_grid[2]])
@@ -43,8 +44,10 @@ class AvoidFire(Action):
 
 
         print(angle / np.pi * 180)
-        self.agent.set_yaw(angle / np.pi * 180)
-        self.agent.continuous_move(1)
+        self.agent.continuous_strafe("")
+
+        self.agent.continuous_move(np.cos(angle))
+        self.agent.continuous_strafe(-np.sin(angle))
 
 
         return Status.SUCCESS
@@ -56,7 +59,9 @@ class AvoidFire(Action):
         grid = np.transpose(grid, (2, 0, 1))
         return grid
 
-
+    def terminate(self, new_status):
+        self.agent.continuous_move(0)
+        self.agent.continuous_strafe(0)
 
 class MoveForward(Action):
     def __init__(self, agent, name="Move Forward"):

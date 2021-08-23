@@ -17,4 +17,5 @@ class IsNotInFire(Condition):
     def update(self):
         grid_list = self.agent.observation.vector[7:]
 
-        return Status.FAILURE if grid_list[0] == game_objects.index("fire") else Status.SUCCESS
+        return Status.FAILURE
+#        return Status.FAILURE if grid_list[0] == game_objects.index("fire") else Status.SUCCESS

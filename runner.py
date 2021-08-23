@@ -3,6 +3,7 @@ import time
 from bt import conditions
 from bt.back_chain_tree import BackChainTree
 from observation import Observation
+from utils.strings import tree_to_string
 from world import World
 
 MAX_DELAY = 60
@@ -37,6 +38,8 @@ class Runner:
             self.agent.set_observation(observation)
 
             self.tree.root.tick_once()
+
+            print(tree_to_string(self.tree.root))
 
             self.check_timeout(self.world, world_state)
 

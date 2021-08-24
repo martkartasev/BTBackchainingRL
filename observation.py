@@ -108,12 +108,8 @@ class Observation:
         direction_vector = get_direction_vector(info)
 
         player_life = info.get("Life", 0)
-        skeleton_life = skeleton_info.get("life", 0) if skeleton_info else 0
 
         surroundings_list = info.get("Surroundings")
-
-        # Only for debugging
-        self.surroundings_list = surroundings_list
 
         if surroundings_list is not None:
             surroundings = get_grid_obs_vector(surroundings_list)

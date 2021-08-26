@@ -9,6 +9,10 @@ from observation import Observation
 
 
 class BaselinesNode(Sequence):
+
+    ACC_VIOLATED_REWARD = -10
+    POST_CONDITION_FULFILLED_REWARD = 10
+
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
         self.agent = agent
         self.model = model
@@ -96,12 +100,13 @@ class DynamicBaselinesNode(BaselinesNode):
         return self.agent.observation.vector
 
     def calculate_rewards(self):
-        rewards = 0
+        malmo_reward = sum(reward.getValue() for reward in self.agent.rewards)
+        bt_reward = 0
         if self.is_acc_violated():
-            rewards -= 100000
+            bt_reward += BaselinesNode.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():
-            rewards += 100000
-        return rewards
+            bt_reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
+        return bt_reward + malmo_reward
 
     def is_acc_violated(self):
         for acc in self.accs:

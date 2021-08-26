@@ -7,9 +7,6 @@ from runner import Runner
 
 
 def run():
-    if "MALMO_XSD_PATH" not in os.environ:
-        print("Please set the MALMO_XSD_PATH environment variable.")
-        return
     malmoutils.fix_print()
 
     agent = MalmoAgent()

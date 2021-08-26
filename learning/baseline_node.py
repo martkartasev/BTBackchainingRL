@@ -97,28 +97,24 @@ class DynamicBaselinesNode(BaselinesNode):
 
     def calculate_rewards(self):
         rewards = 0
-        for acc in self.accs:
-            acc.tick_once()
-            res = acc.status
-            if res == Status.FAILURE:
-                rewards -= 100000
-        for post_condition in self.post_conditions:
-            post_condition.tick_once()
-            res = post_condition.status
-            if res == Status.SUCCESS:
-                rewards += 100000
+        if self.is_acc_violated():
+            rewards -= 100000
+        if self.is_post_conditions_fulfilled():
+            rewards += 100000
         return rewards
 
     def is_acc_violated(self):
         for acc in self.accs:
-            res = acc.tick_once()
+            acc.tick_once()
+            res = acc.status
             if res == Status.FAILURE:
                 return True
         return False
 
     def is_post_conditions_fulfilled(self):
         for post_condition in self.post_conditions:
-            res = post_condition.tick_once()
+            post_condition.tick_once()
+            res = post_condition.value
             if res == Status.FAILURE:
                 return False
         return True

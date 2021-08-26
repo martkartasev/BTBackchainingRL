@@ -3,7 +3,7 @@ import sys
 import time
 from builtins import range
 
-import MalmoPython
+from malmo import MalmoPython
 
 if sys.version_info[0] == 2:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately

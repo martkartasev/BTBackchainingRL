@@ -1,6 +1,6 @@
 import time
 
-from MalmoPython import AgentHost
+from malmo.MalmoPython import AgentHost
 
 from observation import Observation
 

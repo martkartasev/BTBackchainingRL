@@ -14,9 +14,9 @@ from mission_runner.normal_mission import NormalMission
 from utils.file import get_absolute_path
 from utils.visualisation import save_tree_to_log
 
+TOTAL_TIMESTEPS = 200000
 
 def train_node():
-    total_timesteps = 200000
     mission_xml_path = get_absolute_path("resources/arena_skeleton.xml")
     log_dir = get_absolute_path("results/basicfighter3")
 
@@ -33,8 +33,8 @@ def train_node():
     env = BaselinesNodeTrainingEnv(node, mission)
     env = Monitor(env, log_dir)
 
-    model = A2C('MlpPolicy', env, verbose=1, tensorboard_log="./../../tensorboard/")
-    model.learn(total_timesteps=total_timesteps, callback=SaveOnBestTrainingRewardCallback(5000, log_dir=log_dir))
+    model = A2C('MlpPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"))
+    model.learn(total_timesteps=TOTAL_TIMESTEPS, callback=SaveOnBestTrainingRewardCallback(5000, log_dir=log_dir))
     model.save(log_dir + "/finalbasicfighter.mdl")
 
 

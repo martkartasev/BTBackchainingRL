@@ -2,8 +2,6 @@ import time
 
 from malmo.MalmoPython import AgentHost
 
-from observation import Observation
-
 
 class BaseAgent:
     def __init__(self):
@@ -36,7 +34,6 @@ class BaseAgent:
 
     def activate_night_vision(self):
         self.agent_host.sendCommand(f"chat /effect @p night_vision 99999 255")
-
 
 
 class MalmoAgent(BaseAgent):
@@ -101,11 +98,9 @@ class ObservationAgent(MalmoAgent):
 
     def __init__(self):
         super(ObservationAgent, self).__init__()
-        self.rewards = None
         self.tree = None
         self.latestObservations = None
         self.previousObservations = None
-        self.observations = None
         self.index = 0
 
     def store_observations(self, observation, rewards=None):
@@ -120,17 +115,17 @@ class ObservationAgent(MalmoAgent):
         if self.latestObservations is None:
             return False
 
-        if self.latestObservations is not None and self.observations is None:
-            self.previousObservations = self.observations
-            self.observations = self.latestObservations
+        if self.latestObservations is not None and self.observation is None:
+            self.previousObservations = self.observation
+            self.observation = self.latestObservations
             return True
 
-        while self.observations.index >= self.latestObservations.index:
+        while self.observation.index >= self.latestObservations.index:
             pass
 
-        self.previousObservations = self.observations
-        self.observations = self.latestObservations
+        self.previousObservations = self.observation
+        self.observation = self.latestObservations
         return True
 
     def is_agent_alive(self):
-        return self.observations.vector[6] > 0
+        return self.observation.vector[6] > 0

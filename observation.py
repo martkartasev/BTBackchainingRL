@@ -7,6 +7,8 @@ CIRCLE_DEGREES = 360
 
 RELATIVE_DISTANCE_AXIS_MAX = 1000
 
+ENEMY_TYPE = "VindicationIllager"
+
 # TODO: This shouldn't be hard-coded
 GRID_SIZE = 3 * 3 * 2
 GRID_SIZE_AXIS = [3, 2, 3]
@@ -18,7 +20,7 @@ game_objects = ["dirt", "grass", "stone", "fire", "air"]
 def get_skeleton_info(info):
     if "Entities" in info:
         for entity in info["Entities"]:
-            if entity.get("name") == "Skeleton":
+            if entity.get("name") == ENEMY_TYPE:
                 return entity
 
 

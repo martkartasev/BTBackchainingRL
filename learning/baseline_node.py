@@ -3,7 +3,7 @@ from gym import spaces
 from py_trees.common import Status
 
 from bt.accs import find_accs
-from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack
+from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving
 from bt.sequence import Sequence
 from observation import Observation
 
@@ -100,13 +100,12 @@ class DynamicBaselinesNode(BaselinesNode):
         return self.agent.observation.vector
 
     def calculate_rewards(self):
-        malmo_reward = sum(reward.getValue() for reward in self.agent.rewards)
-        bt_reward = 0
+        reward = 0.1
         if self.is_acc_violated():
-            bt_reward += BaselinesNode.ACC_VIOLATED_REWARD
+            reward += BaselinesNode.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():
-            bt_reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
-        return bt_reward + malmo_reward
+            reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
+        return reward
 
     def is_acc_violated(self):
         for acc in self.accs:
@@ -133,6 +132,7 @@ class DefeatSkeleton(DynamicBaselinesNode):
             TurnRight(agent),
             MoveForward(agent),
             MoveBackward(agent),
+            StopMoving(agent),
             Attack(agent)
         ]
         super().__init__(agent, "DefeatSkeleton", children, model)

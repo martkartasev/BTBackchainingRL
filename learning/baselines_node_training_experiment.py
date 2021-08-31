@@ -18,7 +18,7 @@ TOTAL_TIMESTEPS = 200000
 
 def train_node():
     mission_xml_path = get_absolute_path("resources/arena_skeleton.xml")
-    log_dir = get_absolute_path("results/basicfighter3")
+    log_dir = get_absolute_path("results/basicfighter3_only_little_fire")
 
     agent = BasicFighterNodeTrainingAgent()
     tree = BackChainTree(agent, conditions.IsSkeletonDefeated(agent))
@@ -40,11 +40,11 @@ def train_node():
 
 def test_node():
     agent = TrainedSkeletonFightingAgent()
-    mission_xml_path = "../../resources/arena_skeleton.xml"
+    mission_xml_path = get_absolute_path("resources/arena_skeleton.xml")
     mission = NormalMission(agent, mission_xml_path)
     while True:
         mission.run()
 
 
 if __name__ == '__main__':
-    train_node()
+    test_node()

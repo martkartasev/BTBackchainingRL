@@ -49,7 +49,6 @@
 
                 <DrawEntity x="100" y="6" z="125" yaw="-90" type="VindicationIllager"/>
 
-
             </DrawingDecorator>
         </ServerHandlers>
     </ServerSection>
@@ -64,7 +63,6 @@
                 <InventoryItem type="diamond_leggings" slot="37"/>
                 <InventoryItem type="diamond_chestplate" slot="38"/>
                 <InventoryItem type="diamond_helmet" slot="39"/>
-
             </Inventory>
         </AgentStart>
         <AgentHandlers>

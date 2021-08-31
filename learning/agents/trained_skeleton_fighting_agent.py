@@ -2,9 +2,12 @@ import numpy as np
 from stable_baselines3 import A2C
 
 from agent import ObservationAgent
+from bt import conditions
 from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack
+from bt.back_chain_tree import BackChainTree
 from bt.sequence import Sequence
 from learning.baseline_node import DynamicBaselinesNode
+from utils.file import get_project_root
 
 
 class TrainedSkeletonFightingAgent(ObservationAgent):
@@ -15,25 +18,19 @@ class TrainedSkeletonFightingAgent(ObservationAgent):
         self.tree = self.define_behavior()
 
     def reset_agent(self):
-        self.observations = None
+        self.observation = None
 
     def is_mission_over(self):
-        return not (self.is_enemy_close() and self.is_agent_alive())
+        return not self.is_agent_alive()
 
     def control_loop(self):
         self.tree.tick_once()
 
     def define_behavior(self):
-        fighter_model = A2C.load("../../results/basicfighter2/finalbasicfighter.mdl")
-        root = Sequence("Root", children=[
-            DynamicBaselinesNode(self, model=fighter_model, children=[TurnLeft(self),
-                                                                      TurnRight(self),
-                                                                      MoveForward(self),
-                                                                      MoveBackward(self),
-                                                                      Attack(self)])
-        ])
+        tree = BackChainTree(self, conditions.IsSkeletonDefeated(self))
+        node = tree.baseline_nodes[0]
 
-        return root
+        fighter_model = A2C.load(get_project_root() / "results/basicfighter3_only_little_fire/best_model_1")
+        node.set_model(fighter_model)
 
-    def is_enemy_close(self):
-        return self.observation.lookToPosition is not None
+        return tree.root

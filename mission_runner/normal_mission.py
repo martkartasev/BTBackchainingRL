@@ -3,21 +3,19 @@ import time
 from collections import namedtuple
 
 from mission_runner.abstract_mission import AbstractMission
+from observation import Observation
 
 
 class NormalMission(AbstractMission):
 
     def run_mission(self):
-        world_state = self.agent.getWorldState()
+        world_state = self.agent.get_world_state()
         while world_state.is_mission_running:
-            observations = None
-            while world_state.is_mission_running and observations is None:
-                if len(world_state.observations) is not 0:
-                    observations = json.loads(world_state.observations[0].text, object_hook=lambda d: namedtuple('Observations', d.keys())(*d.values()))
-                world_state = self.agent.getWorldState()
+            world_state = self.agent.get_next_world_state()
+            observation = Observation(world_state.observations)
 
-            self.agent.store_observations(observations, world_state.rewards)
-            self.agent.next_observations()
+            self.agent.set_observation(observation)
+            self.agent.set_rewards(world_state.rewards)
 
             for error in world_state.errors:
                 print("Error:", error.text)

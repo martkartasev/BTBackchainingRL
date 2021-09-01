@@ -10,8 +10,8 @@ from observation import Observation
 
 class BaselinesNode(Sequence):
 
-    ACC_VIOLATED_REWARD = -10000
-    POST_CONDITION_FULFILLED_REWARD = 10000
+    ACC_VIOLATED_REWARD = -1000
+    POST_CONDITION_FULFILLED_REWARD = 1000
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
         self.agent = agent

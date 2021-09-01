@@ -30,7 +30,7 @@ class TrainedSkeletonFightingAgent(ObservationAgent):
         tree = BackChainTree(self, conditions.IsSkeletonDefeated(self))
         node = tree.baseline_nodes[0]
 
-        fighter_model = A2C.load(get_project_root() / "results/basicfighter3_only_little_fire/best_model_1")
+        fighter_model = A2C.load(get_project_root() / "results/basicfighter3/best_model_6")
         node.set_model(fighter_model)
 
         return tree.root

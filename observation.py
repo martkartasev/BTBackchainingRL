@@ -128,7 +128,7 @@ class Observation:
     @staticmethod
     def get_observation_space():
         low_position = -RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
-        low_direction = np.zeros(3)
+        low_direction = -1 * np.ones(3)
         low_player_life = 0
         low_surroundings = -1 * np.ones(GRID_SIZE)
         low = np.hstack((

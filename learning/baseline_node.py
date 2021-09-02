@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from gym import spaces
 from py_trees.common import Status
@@ -98,6 +100,7 @@ class DynamicBaselinesNode(BaselinesNode):
         super(DynamicBaselinesNode, self).__init__(agent, name=name, children=children, model=model)
         self.accs = []
         self.post_conditions = []
+        self.total_reward = 0
 
     def get_observation_space(self):
         return Observation.get_observation_space()
@@ -108,11 +111,12 @@ class DynamicBaselinesNode(BaselinesNode):
         return None if observation is None else observation.vector
 
     def calculate_rewards(self):
-        reward = 0.1
+        reward = -0.1
         if self.is_acc_violated():
             reward += BaselinesNode.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():
             reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
+        self.total_reward += reward
         return reward
 
     def is_acc_violated(self):
@@ -130,6 +134,11 @@ class DynamicBaselinesNode(BaselinesNode):
             if res == Status.FAILURE:
                 return False
         return True
+
+    def reset_node(self):
+        print("Total Reward of Episode", self.total_reward)
+        self.total_reward = 0
+
 
 
 class DefeatSkeleton(DynamicBaselinesNode):

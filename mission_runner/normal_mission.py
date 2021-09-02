@@ -11,14 +11,12 @@ class NormalMission(AbstractMission):
     def run_mission(self):
         world_state = self.agent.get_world_state()
         while world_state.is_mission_running:
-            world_state = self.agent.get_next_world_state()
-            observation = Observation(world_state.observations)
+            observations, rewards = self.agent.get_next_observations_and_reward()
+            observation = Observation(observations)
 
             self.agent.set_observation(observation)
-            self.agent.set_rewards(world_state.rewards)
+            self.agent.set_rewards(rewards)
 
-            for error in world_state.errors:
-                print("Error:", error.text)
             if self.agent.is_mission_over():
                 self.agent.quit()
                 break

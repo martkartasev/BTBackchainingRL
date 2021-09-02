@@ -2,6 +2,7 @@ import os
 
 from stable_baselines3 import A2C
 from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.env_checker import check_env
 
 from bt import conditions
 from bt.back_chain_tree import BackChainTree
@@ -14,11 +15,12 @@ from mission_runner.normal_mission import NormalMission
 from utils.file import get_absolute_path
 from utils.visualisation import save_tree_to_log
 
-TOTAL_TIMESTEPS = 200000
+TOTAL_TIMESTEPS = 10000000
+
 
 def train_node():
     mission_xml_path = get_absolute_path("resources/arena_skeleton.xml")
-    log_dir = get_absolute_path("results/basicfighter3_only_little_fire")
+    log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
     tree = BackChainTree(agent, conditions.IsSkeletonDefeated(agent))
@@ -47,4 +49,4 @@ def test_node():
 
 
 if __name__ == '__main__':
-    test_node()
+    train_node()

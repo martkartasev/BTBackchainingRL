@@ -93,7 +93,9 @@ def get_relative_position(skeleton_info, info):
     else:
         relative_position = np.zeros(3)
 
-    return relative_position
+    standardized_relative_position = 2 * relative_position / RELATIVE_DISTANCE_AXIS_MAX - 1
+
+    return standardized_relative_position
 
 
 class Observation:
@@ -149,7 +151,7 @@ class Observation:
 
     @staticmethod
     def get_observation_space():
-        low_position = -RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
+        low_position = -1 * np.ones(3)
         low_direction = -1 * np.ones(3)
         low_player_life = 0
         low_skeleton_life = 0
@@ -162,7 +164,7 @@ class Observation:
             low_surroundings
         ))
 
-        high_position = RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
+        high_position = np.ones(3)
         high_direction = np.ones(3)
         high_player_life = 100
         high_skeleton_life = ENEMY_MAX_LIFE

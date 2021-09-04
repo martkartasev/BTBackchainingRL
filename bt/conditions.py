@@ -1,4 +1,3 @@
-import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
@@ -6,7 +5,7 @@ from observation import game_objects
 
 
 class Condition(Behaviour):
-    def __init__(self, name, agent = None):
+    def __init__(self, name, agent=None):
         super(Condition, self).__init__(name)
         self.agent = agent
 
@@ -27,4 +26,3 @@ class IsSkeletonDefeated(Condition):
     def update(self):
         skeleton_life = self.agent.observation.vector[self.agent.observation.skeleton_life_index]
         return Status.SUCCESS if skeleton_life == 0 else Status.FAILURE
-

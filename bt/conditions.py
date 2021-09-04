@@ -16,7 +16,7 @@ class IsNotInFire(Condition):
         super(IsNotInFire, self).__init__(f"Is not in fire", agent)
 
     def update(self):
-        grid_list = self.agent.observation.vector[7:]
+        grid_list = self.agent.observation.vector[self.agent.observation.surroundings_list_index:]
         return Status.SUCCESS if grid_list[0] != game_objects.index("fire") else Status.FAILURE
 
 
@@ -25,6 +25,6 @@ class IsSkeletonDefeated(Condition):
         super(IsSkeletonDefeated, self).__init__(f"Is skeleton dead", agent)
 
     def update(self):
-        relative_distance = self.agent.observation.vector[0:3]
-        return Status.SUCCESS if np.all(relative_distance == np.zeros(3)) else Status.FAILURE
+        skeleton_life = self.agent.observation.vector[self.agent.observation.skeleton_life_index]
+        return Status.SUCCESS if skeleton_life == 0 else Status.FAILURE
 

@@ -8,6 +8,7 @@ CIRCLE_DEGREES = 360
 RELATIVE_DISTANCE_AXIS_MAX = 1000
 
 ENEMY_TYPE = "VindicationIllager"
+ENEMY_MAX_LIFE = 24
 
 # TODO: This shouldn't be hard-coded
 GRID_SIZE = 3 * 3 * 2
@@ -75,6 +76,26 @@ def get_game_object_ordinal(game_object):
         return game_objects.index(game_object)
 
 
+def get_relative_position(skeleton_info, info):
+    if skeleton_info is not None:
+        skeleton_position_list = [skeleton_info.get("x"), skeleton_info.get("y"), skeleton_info.get("z")]
+    else:
+        skeleton_position_list = [None, None, None]
+
+    skeleton_position = None if None in skeleton_position_list else np.array(skeleton_position_list)
+
+    player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
+    player_position = None if None in player_position_list else np.array(player_position_list)
+
+    if player_position is not None and skeleton_position is not None:
+        relative_position = skeleton_position - player_position
+        relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
+    else:
+        relative_position = np.zeros(3)
+
+    return relative_position
+
+
 class Observation:
 
     def __init__(self, observations):
@@ -89,29 +110,29 @@ class Observation:
 
         info = json.loads(info_json)
 
+        current_index = 0
+
         skeleton_info = get_skeleton_info(info)
 
-        if skeleton_info is not None:
-            skeleton_position_list = [skeleton_info.get("x"), skeleton_info.get("y"), skeleton_info.get("z")]
-        else:
-            skeleton_position_list = [None, None, None]
+        self.relative_position_start_index = current_index
+        relative_position = get_relative_position(skeleton_info, info)
+        current_index += 3
 
-        skeleton_position = None if None in skeleton_position_list else np.array(skeleton_position_list)
-        player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
-        player_position = None if None in player_position_list else np.array(player_position_list)
-
-
-        if player_position is not None and skeleton_position is not None:
-            relative_position = skeleton_position - player_position
-            relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
-        else:
-            relative_position = np.zeros(3)
-
+        self.direction_vector_start_index = current_index
         direction_vector = get_direction_vector(info)
+        current_index += 3
 
+        self.player_life_index = current_index
         player_life = info.get("Life", 0)
+        current_index += 1
 
+        self.skeleton_life_index = current_index
+        skeleton_life = skeleton_info.get("life", 0)
+        current_index += 1
+
+        self.surroundings_list_index = current_index
         surroundings_list = info.get("Surroundings")
+        current_index += 1
 
         if surroundings_list is not None:
             surroundings = get_grid_obs_vector(surroundings_list)
@@ -122,6 +143,7 @@ class Observation:
             relative_position,
             direction_vector,
             player_life,
+            skeleton_life,
             surroundings
         ))
 
@@ -130,22 +152,26 @@ class Observation:
         low_position = -RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
         low_direction = -1 * np.ones(3)
         low_player_life = 0
+        low_skeleton_life = 0
         low_surroundings = -1 * np.ones(GRID_SIZE)
         low = np.hstack((
             low_position,
             low_direction,
             low_player_life,
+            low_skeleton_life,
             low_surroundings
         ))
 
         high_position = RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
         high_direction = np.ones(3)
         high_player_life = 100
+        high_skeleton_life = ENEMY_MAX_LIFE
         high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
         high = np.hstack((
             high_position,
             high_direction,
             high_player_life,
+            high_skeleton_life,
             high_surroundings
         ))
 

@@ -6,7 +6,7 @@
     </About>
 
     <ModSettings>
-        <MsPerTick>15</MsPerTick>
+        <MsPerTick>20</MsPerTick>
         <PrioritiseOffscreenRendering>false</PrioritiseOffscreenRendering>
     </ModSettings>
 
@@ -44,10 +44,10 @@
                 <DrawSphere type="stone" x="125" y="3" z="135" radius="1"/>
                 <DrawSphere type="stone" x="135" y="3" z="131" radius="1"/>
 
-                <DrawCuboid type="fire" x1="90" y1="4" z1="105" x2="110" y2="4" z2="108"/>
+                <DrawCuboid type="fire" x1="87" y1="4" z1="130" x2="98" y2="4" z2="130"/>
+                <DrawCuboid type="fire" x1="102" y1="4" z1="130" x2="130" y2="4" z2="130"/>
 
-                <DrawEntity x="100" y="6" z="110" yaw="-90" type="Skeleton"/>
-
+                <DrawEntity x="100" y="6" z="125" yaw="-90" type="VindicationIllager"/>
 
             </DrawingDecorator>
         </ServerHandlers>
@@ -56,9 +56,13 @@
     <AgentSection mode="Survival">
         <Name>Rover</Name>
         <AgentStart>
-            <Placement x="103" y="7" z="120" yaw="45"/>
+            <Placement x="103" y="7" z="135" yaw="45"/>
             <Inventory>
-                <InventoryItem type="diamond_pickaxe" slot="1"/>
+                <InventoryItem type="diamond_sword" slot="0"/>
+                <InventoryItem type="diamond_boots" slot="36"/>
+                <InventoryItem type="diamond_leggings" slot="37"/>
+                <InventoryItem type="diamond_chestplate" slot="38"/>
+                <InventoryItem type="diamond_helmet" slot="39"/>
             </Inventory>
         </AgentStart>
         <AgentHandlers>
@@ -81,7 +85,6 @@
             <AbsoluteMovementCommands/>
             <ChatCommands/>
             <MissionQuitCommands quitDescription="give_up"/>
-            <RewardForTimeTaken initialReward="0" delta="-0.1" density="PER_TICK"/>
         </AgentHandlers>
     </AgentSection>
 

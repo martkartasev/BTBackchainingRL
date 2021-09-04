@@ -204,6 +204,22 @@ class Crouch(Action):
         self.agent.crouch(0)
 
 
+class StopMoving(Action):
+    def __init__(self, agent, name="Move Left"):
+        super().__init__(name, agent)
+
+    def update(self):
+        self.agent.continuous_move(0)
+        self.agent.continuous_strafe(0)
+        self.agent.continuous_turn(0)
+        self.agent.continuous_pitch(0)
+        return Status.RUNNING
+
+    def terminate(self, new_status):
+        #   print("Strafe 0")
+        self.agent.continuous_strafe(0)
+
+
 class Use(Action):
     def __init__(self, agent, name="Use"):
         super().__init__(name, agent)

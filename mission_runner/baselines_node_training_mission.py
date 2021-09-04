@@ -5,13 +5,10 @@ from observation import Observation
 class BaselinesNodeTrainingMission(AbstractMission):
 
     def run_mission(self):
-        world_state = self.agent.get_next_world_state()
-        observation = Observation(world_state.observations)
+        observations, reward = self.agent.get_next_observations_and_reward()
+        observation = Observation(observations)
         self.agent.set_observation(observation)
-        self.agent.set_rewards(world_state.rewards)
-
-        for error in world_state.errors:
-            print("Error:", error.text)
+        self.agent.set_rewards(reward)
 
     def run(self):
         pass

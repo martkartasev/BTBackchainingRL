@@ -1,17 +1,19 @@
+import time
+
 import numpy as np
 from gym import spaces
 from py_trees.common import Status
 
 from bt.accs import find_accs
-from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack
+from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving
 from bt.sequence import Sequence
 from observation import Observation
 
 
 class BaselinesNode(Sequence):
 
-    ACC_VIOLATED_REWARD = -10
-    POST_CONDITION_FULFILLED_REWARD = 10
+    ACC_VIOLATED_REWARD = -1000
+    POST_CONDITION_FULFILLED_REWARD = 1000
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
         self.agent = agent
@@ -19,6 +21,10 @@ class BaselinesNode(Sequence):
         self.tick_aux = self.execution_tick if model is not None else self.training_tick
         self.child_index = -1
         super(BaselinesNode, self).__init__(name=name, children=children)
+
+    def set_model(self, model):
+        self.model = model
+        self.tick_aux = self.execution_tick if model is not None else self.training_tick
 
     def initialise(self):
         pass
@@ -60,7 +66,7 @@ class BaselinesNode(Sequence):
                             passed = True if child == self.current_child else passed
                     yield self
                     return
-        # all children succeded, set succed ourselves and current child to the last bugger who failed us
+        # all children succeeded, set Success ourselves and current child to the last bugger who failed us
         self.status = Status.SUCCESS
         try:
             self.current_child = self.children[-1]
@@ -69,8 +75,10 @@ class BaselinesNode(Sequence):
         yield self
 
     def execution_tick(self):
-        child_index, _ = self.model.predict(self.get_observation_array())
-        self.child_index = child_index
+        observation = self.get_observation_array()
+        if observation is not None:
+            child_index, _ = self.model.predict(observation)
+            self.child_index = child_index
         return self.training_tick()
 
     def set_tick_child(self, child_index):
@@ -92,21 +100,24 @@ class DynamicBaselinesNode(BaselinesNode):
         super(DynamicBaselinesNode, self).__init__(agent, name=name, children=children, model=model)
         self.accs = []
         self.post_conditions = []
+        self.total_reward = 0
 
     def get_observation_space(self):
         return Observation.get_observation_space()
 
     def get_observation_array(self):
-        return self.agent.observation.vector
+        observation = self.agent.observation
+
+        return None if observation is None else observation.vector
 
     def calculate_rewards(self):
-        malmo_reward = sum(reward.getValue() for reward in self.agent.rewards)
-        bt_reward = 0
+        reward = -0.1
         if self.is_acc_violated():
-            bt_reward += BaselinesNode.ACC_VIOLATED_REWARD
+            reward += BaselinesNode.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():
-            bt_reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
-        return bt_reward + malmo_reward
+            reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
+        self.total_reward += reward
+        return reward
 
     def is_acc_violated(self):
         for acc in self.accs:
@@ -124,6 +135,11 @@ class DynamicBaselinesNode(BaselinesNode):
                 return False
         return True
 
+    def reset_node(self):
+        print("Total Reward of Episode", self.total_reward)
+        self.total_reward = 0
+
+
 
 class DefeatSkeleton(DynamicBaselinesNode):
 
@@ -133,6 +149,7 @@ class DefeatSkeleton(DynamicBaselinesNode):
             TurnRight(agent),
             MoveForward(agent),
             MoveBackward(agent),
+            StopMoving(agent),
             Attack(agent)
         ]
         super().__init__(agent, "DefeatSkeleton", children, model)

@@ -7,6 +7,8 @@ CIRCLE_DEGREES = 360
 
 RELATIVE_DISTANCE_AXIS_MAX = 1000
 
+ENEMY_TYPE = "VindicationIllager"
+
 # TODO: This shouldn't be hard-coded
 GRID_SIZE = 3 * 3 * 2
 GRID_SIZE_AXIS = [3, 2, 3]
@@ -18,7 +20,7 @@ game_objects = ["dirt", "grass", "stone", "fire", "air"]
 def get_skeleton_info(info):
     if "Entities" in info:
         for entity in info["Entities"]:
-            if entity.get("name") == "Skeleton":
+            if entity.get("name") == ENEMY_TYPE:
                 return entity
 
 
@@ -126,7 +128,7 @@ class Observation:
     @staticmethod
     def get_observation_space():
         low_position = -RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
-        low_direction = np.zeros(3)
+        low_direction = -1 * np.ones(3)
         low_player_life = 0
         low_surroundings = -1 * np.ones(GRID_SIZE)
         low = np.hstack((

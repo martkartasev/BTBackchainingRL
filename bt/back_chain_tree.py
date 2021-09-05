@@ -1,23 +1,32 @@
 from bt import conditions
 from bt.accs import find_accs
 from bt.ppa import AvoidFirePPA, DefeatSkeletonPPA, EatPPA, PickupBeefPPA, DefeatCowPPA
+from bt.sequence import Sequence
 from learning.baseline_node import DynamicBaselinesNode
 
 
 class BackChainTree:
-    def __init__(self, agent, goal):
+    def __init__(self, agent, goals):
         self.agent = agent
         self.baseline_nodes = []
-        self.root = self.get_base_back_chain_tree(goal)
+        self.root = self.get_base_back_chain_tree(goals)
 
-    def get_base_back_chain_tree(self, goal):
-        goal_ppa_tree = self.back_chain_recursive(self.agent, goal)
-        if goal_ppa_tree is None:
+    def get_base_back_chain_tree(self, goals):
+        if len(goals) == 1:
+            back_chain_tree = self.back_chain_recursive(self.agent, goals[0])
+        else:
+            goal_ppa_trees = []
+            for goal in goals:
+                goal_ppa_trees.append(self.back_chain_recursive(self.agent, goal))
+            back_chain_tree = Sequence("Back-chain Tree", children=goal_ppa_trees)
+
+        if back_chain_tree is None:
             return None
-        goal_ppa_tree.setup_with_descendants()
+        back_chain_tree.setup_with_descendants()
+
         for baseline_node in self.baseline_nodes:
             baseline_node.accs = find_accs(baseline_node)
-        return goal_ppa_tree
+        return back_chain_tree
 
     def back_chain_recursive(self, agent, condition):
         ppa = self.condition_to_ppa_tree(agent, condition)

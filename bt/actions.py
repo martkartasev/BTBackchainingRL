@@ -80,7 +80,7 @@ class EatBeef(Action):
         return Status.SUCCESS
 
 
-# TODO: Implement
+# TODO: Implement (Need to add position of this entity for that)
 class PickUpBeef(Action):
 
     def __init__(self, agent, name="Pick up Beef"):

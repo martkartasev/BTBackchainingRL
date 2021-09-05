@@ -114,8 +114,6 @@ class DynamicBaselinesNode(BaselinesNode):
         if not self.agent.is_agent_alive():
             reward += BaselinesNode.AGENT_DEAD_REWARD
         self.total_reward += reward
-
-        print(reward)
         return reward
 
     def is_acc_violated(self):

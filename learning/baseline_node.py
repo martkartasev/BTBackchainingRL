@@ -111,7 +111,7 @@ class DynamicBaselinesNode(BaselinesNode):
         return None if observation is None else observation.vector
 
     def calculate_rewards(self):
-        reward = -0.1
+        reward = self.agent.rewards - 0.1
         if self.is_acc_violated():
             reward += BaselinesNode.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():

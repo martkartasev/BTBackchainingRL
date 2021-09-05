@@ -21,10 +21,10 @@ GRID_SIZE_AXIS = [3, 2, 3]
 game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block"]
 
 
-def get_skeleton_info(info):
+def get_entity_info(info, entity_name):
     if "Entities" in info:
         for entity in info["Entities"]:
-            if entity.get("name") == ENEMY_TYPE:
+            if entity.get("name") == entity_name:
                 return entity
 
 
@@ -125,7 +125,7 @@ class Observation:
         standardized_position = np.clip(standardized_position, -1, 1)
         current_index += 3
 
-        skeleton_info = get_skeleton_info(info)
+        skeleton_info = get_entity_info(info, ENEMY_TYPE)
         self.skeleton_relative_position_start_index = current_index
         skeleton_relative_position = get_standardized_relative_position(skeleton_info, player_position)
         current_index += 3

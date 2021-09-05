@@ -54,7 +54,7 @@ class AbstractMission:
         # Attempt to start a mission:
         self.agentExited = False
         self.agent.reset_agent()
-        max_retries = 12
+        max_retries = 14
         for retry in range(max_retries):
             try:
                 if isinstance(self.mission, list):

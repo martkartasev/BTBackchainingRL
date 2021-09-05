@@ -7,6 +7,8 @@ CIRCLE_DEGREES = 360
 
 RELATIVE_DISTANCE_AXIS_MAX = 1000
 
+PLAYER_MAX_LIFE = 100
+
 ENEMY_TYPE = "VindicationIllager"
 ENEMY_MAX_LIFE = 24
 
@@ -68,12 +70,12 @@ def get_grid_obs_vector(grid):
 
 def get_game_object_ordinal(game_object):
     if game_object is None:
-        return -1
+        return 0
     if game_object not in game_objects:
         print(f"Object {game_object} has not been added to the game objects list")
-        return -1
+        return 0
     else:
-        return game_objects.index(game_object)
+        return game_objects.index(game_object) + 1
 
 
 def get_relative_position(skeleton_info, info):
@@ -93,7 +95,7 @@ def get_relative_position(skeleton_info, info):
     else:
         relative_position = np.zeros(3)
 
-    standardized_relative_position = 2 * relative_position / RELATIVE_DISTANCE_AXIS_MAX - 1
+    standardized_relative_position = relative_position/RELATIVE_DISTANCE_AXIS_MAX
 
     return standardized_relative_position
 
@@ -126,10 +128,12 @@ class Observation:
 
         self.player_life_index = current_index
         player_life = info.get("Life", 0)
+        player_life = player_life / PLAYER_MAX_LIFE
         current_index += 1
 
         self.skeleton_life_index = current_index
-        skeleton_life = skeleton_info.get("life", 0)
+        skeleton_life = 0 if skeleton_info is None else skeleton_info.get("life", 0)
+        skeleton_life = skeleton_life / ENEMY_MAX_LIFE
         current_index += 1
 
         self.surroundings_list_index = current_index
@@ -139,7 +143,7 @@ class Observation:
         if surroundings_list is not None:
             surroundings = get_grid_obs_vector(surroundings_list)
         else:
-            surroundings = -1 * np.ones(GRID_SIZE)
+            surroundings = np.zeros(GRID_SIZE)
 
         self.vector = np.hstack((
             relative_position,
@@ -155,7 +159,7 @@ class Observation:
         low_direction = -1 * np.ones(3)
         low_player_life = 0
         low_skeleton_life = 0
-        low_surroundings = -1 * np.ones(GRID_SIZE)
+        low_surroundings = np.zeros(GRID_SIZE)
         low = np.hstack((
             low_position,
             low_direction,
@@ -166,8 +170,8 @@ class Observation:
 
         high_position = np.ones(3)
         high_direction = np.ones(3)
-        high_player_life = 100
-        high_skeleton_life = ENEMY_MAX_LIFE
+        high_player_life = 1
+        high_skeleton_life = 1
         high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
         high = np.hstack((
             high_position,

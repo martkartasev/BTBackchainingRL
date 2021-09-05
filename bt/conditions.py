@@ -16,7 +16,7 @@ class IsNotInFire(Condition):
 
     def update(self):
         grid_list = self.agent.observation.vector[self.agent.observation.surroundings_list_index:]
-        return Status.SUCCESS if grid_list[0] != game_objects.index("fire") else Status.FAILURE
+        return Status.SUCCESS if grid_list[0] != (game_objects.index("fire") + 1) else Status.FAILURE
 
 
 class IsSkeletonDefeated(Condition):

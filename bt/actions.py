@@ -37,7 +37,10 @@ class AvoidFire(Action):
 
         min_distance_vector = distances_vector[min_dist_arg]
         distance_vector_direction = min_distance_vector / np.linalg.norm(min_distance_vector)
-        direction_vector = self.agent.observation.vector[3:6]
+
+        direction_vector_start_index = self.agent.observation.direction_vector_start_index
+        direction_vector_end_index = direction_vector_start_index + 3
+        direction_vector = self.agent.observation.vector[direction_vector_start_index:direction_vector_end_index]
         flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
         flat_direction_vector /= np.linalg.norm(flat_direction_vector)
 
@@ -49,7 +52,7 @@ class AvoidFire(Action):
         return Status.SUCCESS if grid[0, 0] == game_objects.index("air") else Status.FAILURE
 
     def grid_observation_from_list(self):
-        grid_observation_list = self.agent.observation.vector[7:]
+        grid_observation_list = self.agent.observation.vector[self.agent.observation.surroundings_list_index:]
 
         grid = np.array(grid_observation_list).reshape((GRID_SIZE_AXIS[1], GRID_SIZE_AXIS[2], GRID_SIZE_AXIS[0]))
         grid = np.transpose(grid, (2, 0, 1))

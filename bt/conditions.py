@@ -1,7 +1,8 @@
+import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-from observation.observation import game_objects
+from observation.observation import game_objects, GRID_SIZE_AXIS
 
 
 class Condition(Behaviour):
@@ -16,7 +17,8 @@ class IsNotInFire(Condition):
 
     def update(self):
         grid_list = self.agent.observation.vector[self.agent.observation.surroundings_list_index:]
-        return Status.SUCCESS if grid_list[0] != (game_objects.index("fire") + 1) else Status.FAILURE
+        me_position_index = GRID_SIZE_AXIS[1] * GRID_SIZE_AXIS[2] + 1
+        return Status.SUCCESS if grid_list[me_position_index] != (game_objects.index("fire") + 1) else Status.FAILURE
 
 
 class IsSkeletonDefeated(Condition):

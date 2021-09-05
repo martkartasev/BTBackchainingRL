@@ -1,7 +1,6 @@
 from bt import conditions
 from bt.accs import find_accs
-from bt.ppa import AvoidFirePPA, DefeatSkeletonPPA
-from bt.sequence import Sequence
+from bt.ppa import AvoidFirePPA, DefeatSkeletonPPA, EatPPA, PickupBeefPPA, DefeatCowPPA
 from learning.baseline_node import DynamicBaselinesNode
 
 
@@ -36,6 +35,13 @@ class BackChainTree:
             ppa = AvoidFirePPA(agent)
         elif isinstance(condition, conditions.IsSkeletonDefeated):
             ppa = DefeatSkeletonPPA(agent)
+        elif isinstance(condition, conditions.IsNotHungry):
+            ppa = EatPPA(agent)
+        elif isinstance(condition, conditions.HasBeef):
+            ppa = PickupBeefPPA(agent)
+        elif isinstance(condition, conditions.IsBeefOnGround):
+            ppa = DefeatCowPPA(agent)
+
         if ppa is not None and isinstance(ppa.action, DynamicBaselinesNode):
             self.baseline_nodes.append(ppa.action)
             ppa.action.post_conditions.append(ppa.post_condition)

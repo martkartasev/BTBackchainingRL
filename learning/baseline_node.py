@@ -1,10 +1,5 @@
-import time
-
-import numpy as np
-from gym import spaces
 from py_trees.common import Status
 
-from bt.accs import find_accs
 from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving
 from bt.sequence import Sequence
 from observation import Observation
@@ -146,6 +141,20 @@ class DynamicBaselinesNode(BaselinesNode):
 
 
 class DefeatSkeleton(DynamicBaselinesNode):
+
+    def __init__(self, agent, model=None):
+        children = [
+            TurnLeft(agent),
+            TurnRight(agent),
+            MoveForward(agent),
+            MoveBackward(agent),
+            StopMoving(agent),
+            Attack(agent)
+        ]
+        super().__init__(agent, "DefeatSkeleton", children, model)
+
+
+class DefeatCow(DynamicBaselinesNode):
 
     def __init__(self, agent, model=None):
         children = [

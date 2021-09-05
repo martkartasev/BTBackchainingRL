@@ -58,6 +58,26 @@ class AvoidFire(Action):
         self.agent.continuous_strafe(0)
 
 
+# TODO: Implement
+class EatBeef(Action):
+
+    def __init__(self, agent, name="Eat Beef"):
+        super().__init__(name, agent)
+
+    def update(self):
+        return Status.SUCCESS
+
+
+# TODO: Implement
+class PickUpBeef(Action):
+
+    def __init__(self, agent, name="Pick up Beef"):
+        super().__init__(name, agent)
+
+    def update(self):
+        return Status.SUCCESS
+
+
 class MoveForward(Action):
     def __init__(self, agent, name="Move Forward"):
         super().__init__(name, agent)

@@ -26,3 +26,30 @@ class IsSkeletonDefeated(Condition):
     def update(self):
         skeleton_life = self.agent.observation.vector[self.agent.observation.skeleton_life_index]
         return Status.SUCCESS if skeleton_life == 0 else Status.FAILURE
+
+
+# TODO: Should we use hunger here? Discuss with Mart
+class IsNotHungry(Condition):
+    def __init__(self, agent):
+        super(IsNotHungry, self).__init__(f"Is not hungry", agent)
+
+    def update(self):
+        return Status.FAILURE
+
+
+# TODO: Here we need to integrate inventory to our observation
+class HasBeef(Condition):
+    def __init__(self, agent):
+        super(HasBeef, self).__init__(f"Has beef", agent)
+
+    def update(self):
+        return Status.FAILURE
+
+
+# TODO: Implement
+class IsBeefOnGround(Condition):
+    def __init__(self, agent):
+        super(IsBeefOnGround, self).__init__(f"Is beef on ground", agent)
+
+    def update(self):
+        return Status.FAILURE

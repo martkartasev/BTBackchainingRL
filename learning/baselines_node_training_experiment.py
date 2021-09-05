@@ -1,9 +1,7 @@
 import os
 
-import malmo.minecraftbootstrap
-from stable_baselines3 import A2C, DQN
+from stable_baselines3 import DQN
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.env_checker import check_env
 
 from bt import conditions
 from bt.back_chain_tree import BackChainTree
@@ -24,11 +22,11 @@ def train_node():
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
-    tree = BackChainTree(agent, conditions.IsSkeletonDefeated(agent))
+    tree = BackChainTree(agent, conditions.IsNotHungry(agent))
 
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
 
-    save_tree_to_log(tree.root, "skeleton_tree.txt")
+    save_tree_to_log(tree.root, "cow_tree.txt")
 
     node = tree.baseline_nodes[0]
 
@@ -38,7 +36,7 @@ def train_node():
 
     model = DQN('MlpPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"))
     model.learn(total_timesteps=TOTAL_TIMESTEPS, callback=SaveOnBestTrainingRewardCallback(5000, log_dir=log_dir))
-    model.save(log_dir + "/finalbasicfighter.mdl")
+    model.save(log_dir + "/finalbasicfarmer.mdl")
 
 
 def test_node():

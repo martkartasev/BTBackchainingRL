@@ -68,6 +68,10 @@ class MalmoAgent(BaseAgent):
     def crouch(self, toggle):
         self.agent_host.sendCommand("crouch " + str(toggle))
 
+    def swap_items(self, position1, position2):
+        self.agent_host.sendCommand("swapInventoryItems {0} {1}".format(position1, position2))
+
+
     def use(self, toggle=None):
         if toggle is None:
             self.agent_host.sendCommand("use")

@@ -3,7 +3,7 @@ import time
 from collections import namedtuple
 
 from mission_runner.abstract_mission import AbstractMission
-from observation import Observation
+from observation.observation import Observation
 
 
 class NormalMission(AbstractMission):

@@ -7,10 +7,11 @@ CIRCLE_DEGREES = 360
 
 ARENA_SIZE = 16
 RELATIVE_DISTANCE_AXIS_MAX = 50
+INVENTORY_SIZE = 41
 
 PLAYER_MAX_LIFE = 100
 
-ENEMY_TYPE = "Skeleton"
+ENEMY_TYPE = "Cow"
 ENEMY_MAX_LIFE = 24
 
 # TODO: This shouldn't be hard-coded
@@ -104,6 +105,16 @@ def get_player_position(info):
     return player_position
 
 
+def get_item_inventory_index(info, item):
+    if "inventory" in info:
+        for inventory_slot in info["inventory"]:
+            if inventory_slot.get("type") == item:
+                return inventory_slot.get("index", -1) + 1
+        return 0
+    else:
+        return 0
+
+
 class Observation:
 
     def __init__(self, observations):
@@ -119,6 +130,7 @@ class Observation:
         info = json.loads(info_json)
 
         current_index = 0
+
         self.player_position_start_index = current_index
         player_position = get_player_position(info)
         standardized_position = np.zeros(3) if player_position is None else player_position / ARENA_SIZE
@@ -144,6 +156,15 @@ class Observation:
         skeleton_life = skeleton_life / ENEMY_MAX_LIFE
         current_index += 1
 
+        self.is_beef_on_ground_index = current_index
+        beef_info = get_entity_info(info, "beef")
+        is_beef_on_ground = beef_info is not None
+        current_index += 1
+
+        self.beef_inventory_index_index = current_index
+        beef_inventory_index = get_item_inventory_index(info, "beef")
+        current_index += 1
+
         self.surroundings_list_index = current_index
         surroundings_list = info.get("Surroundings")
         current_index += 1
@@ -159,6 +180,8 @@ class Observation:
             direction_vector,
             player_life,
             skeleton_life,
+            is_beef_on_ground,
+            beef_inventory_index,
             surroundings
         ))
 
@@ -169,6 +192,8 @@ class Observation:
         low_direction = -np.ones(3)
         low_player_life = 0
         low_skeleton_life = 0
+        low_is_beef_on_ground = 0
+        low_beef_inventory_index = 0
         low_surroundings = np.zeros(GRID_SIZE)
         low = np.hstack((
             low_position,
@@ -176,6 +201,8 @@ class Observation:
             low_direction,
             low_player_life,
             low_skeleton_life,
+            low_is_beef_on_ground,
+            low_beef_inventory_index,
             low_surroundings
         ))
 
@@ -184,13 +211,17 @@ class Observation:
         high_direction = np.ones(3)
         high_player_life = 1
         high_skeleton_life = 1
+        high_is_beef_on_ground = 1
+        high_beef_inventory_index = INVENTORY_SIZE + 1
         high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
         high = np.hstack((
-            low_relative_position,
+            high_position,
             high_relative_position,
             high_direction,
             high_player_life,
             high_skeleton_life,
+            high_is_beef_on_ground,
+            high_beef_inventory_index,
             high_surroundings
         ))
 

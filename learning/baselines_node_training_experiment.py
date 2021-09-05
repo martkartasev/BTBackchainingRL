@@ -18,7 +18,7 @@ TOTAL_TIMESTEPS = 500000
 
 
 def train_node():
-    mission_xml_path = get_absolute_path("resources/arena_skeleton_v2.xml")
+    mission_xml_path = get_absolute_path("resources/arena_cow.xml")
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()

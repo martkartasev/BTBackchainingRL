@@ -37,12 +37,11 @@ class BaselinesNodeTrainingEnv(gym.Env):
             print("Post Condition was fulfilled")
         return ob, reward, done, {}
 
-
-
     def close(self):
         self.agent.quit()
 
     def reset(self):
+        self.node.reset_node()
         if self.agent.get_world_state().is_mission_running:
             self.agent.quit()
 

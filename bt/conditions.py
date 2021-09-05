@@ -1,7 +1,7 @@
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-from observation import game_objects
+from observation.observation import game_objects
 
 
 class Condition(Behaviour):
@@ -37,19 +37,19 @@ class IsNotHungry(Condition):
         return Status.FAILURE
 
 
-# TODO: Here we need to integrate inventory to our observation
 class HasBeef(Condition):
     def __init__(self, agent):
         super(HasBeef, self).__init__(f"Has beef", agent)
 
     def update(self):
-        return Status.FAILURE
+        return self.agent.observation.vector[self.agent.observation.beef_inventory_index_index] > 0
 
 
-# TODO: Implement
 class IsBeefOnGround(Condition):
     def __init__(self, agent):
         super(IsBeefOnGround, self).__init__(f"Is beef on ground", agent)
 
     def update(self):
-        return Status.FAILURE
+        is_beef_on_ground = self.agent.observation.vector[self.agent.observation.is_beef_on_ground_index]
+        is_beef_on_ground = is_beef_on_ground == 1
+        return Status.SUCCESS if is_beef_on_ground else Status.FAILURE

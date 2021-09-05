@@ -1,8 +1,10 @@
+import time
+
 import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-from observation import GRID_SIZE_AXIS, game_objects
+from observation.observation import GRID_SIZE_AXIS, game_objects
 
 
 class Action(Behaviour):
@@ -58,13 +60,23 @@ class AvoidFire(Action):
         self.agent.continuous_strafe(0)
 
 
-# TODO: Implement
 class EatBeef(Action):
 
     def __init__(self, agent, name="Eat Beef"):
         super().__init__(name, agent)
 
     def update(self):
+        beef_inventory_item = self.agent.observation.vector[self.agent.observation.beef_inventory_index_index]
+        temp_inventory_spot = 3
+        self.agent.swap_items(0, temp_inventory_spot)
+        self.agent.swap_items(0, beef_inventory_item)
+
+        self.agent.use()
+        eat_time = 1
+        time.sleep(eat_time)
+
+        self.agent.swap_items(0, temp_inventory_spot)
+
         return Status.SUCCESS
 
 

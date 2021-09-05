@@ -2,7 +2,7 @@ from py_trees.common import Status
 
 from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving
 from bt.sequence import Sequence
-from observation import Observation
+from observation.observation import Observation
 
 
 class BaselinesNode(Sequence):
@@ -114,6 +114,8 @@ class DynamicBaselinesNode(BaselinesNode):
         if not self.agent.is_agent_alive():
             reward += BaselinesNode.AGENT_DEAD_REWARD
         self.total_reward += reward
+
+        print(reward)
         return reward
 
     def is_acc_violated(self):

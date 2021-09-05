@@ -5,7 +5,8 @@ from gym.spaces import Box
 
 CIRCLE_DEGREES = 360
 
-RELATIVE_DISTANCE_AXIS_MAX = 1000
+ARENA_SIZE = 16
+RELATIVE_DISTANCE_AXIS_MAX = 50
 
 PLAYER_MAX_LIFE = 100
 
@@ -78,7 +79,7 @@ def get_game_object_ordinal(game_object):
         return game_objects.index(game_object) + 1
 
 
-def get_relative_position(skeleton_info, info):
+def get_standardized_relative_position(skeleton_info, player_position):
     if skeleton_info is not None:
         skeleton_position_list = [skeleton_info.get("x"), skeleton_info.get("y"), skeleton_info.get("z")]
     else:
@@ -86,18 +87,21 @@ def get_relative_position(skeleton_info, info):
 
     skeleton_position = None if None in skeleton_position_list else np.array(skeleton_position_list)
 
-    player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
-    player_position = None if None in player_position_list else np.array(player_position_list)
-
     if player_position is not None and skeleton_position is not None:
         relative_position = skeleton_position - player_position
         relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
     else:
         relative_position = np.zeros(3)
 
-    standardized_relative_position = relative_position/RELATIVE_DISTANCE_AXIS_MAX
+    standardized_relative_position = relative_position / RELATIVE_DISTANCE_AXIS_MAX
 
     return standardized_relative_position
+
+
+def get_player_position(info):
+    player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
+    player_position = None if None in player_position_list else np.array(player_position_list)
+    return player_position
 
 
 class Observation:
@@ -115,11 +119,15 @@ class Observation:
         info = json.loads(info_json)
 
         current_index = 0
+        self.player_position_start_index = current_index
+        player_position = get_player_position(info)
+        standardized_position = np.zeros(3) if player_position is None else player_position / ARENA_SIZE
+        standardized_position = np.clip(standardized_position, -1, 1)
+        current_index += 3
 
         skeleton_info = get_skeleton_info(info)
-
-        self.relative_position_start_index = current_index
-        relative_position = get_relative_position(skeleton_info, info)
+        self.skeleton_relative_position_start_index = current_index
+        skeleton_relative_position = get_standardized_relative_position(skeleton_info, player_position)
         current_index += 3
 
         self.direction_vector_start_index = current_index
@@ -146,7 +154,8 @@ class Observation:
             surroundings = np.zeros(GRID_SIZE)
 
         self.vector = np.hstack((
-            relative_position,
+            standardized_position,
+            skeleton_relative_position,
             direction_vector,
             player_life,
             skeleton_life,
@@ -155,13 +164,15 @@ class Observation:
 
     @staticmethod
     def get_observation_space():
-        low_position = -1 * np.ones(3)
-        low_direction = -1 * np.ones(3)
+        low_position = -np.ones(3)
+        low_relative_position = -np.ones(3)
+        low_direction = -np.ones(3)
         low_player_life = 0
         low_skeleton_life = 0
         low_surroundings = np.zeros(GRID_SIZE)
         low = np.hstack((
             low_position,
+            low_relative_position,
             low_direction,
             low_player_life,
             low_skeleton_life,
@@ -169,12 +180,14 @@ class Observation:
         ))
 
         high_position = np.ones(3)
+        high_relative_position = np.ones(3)
         high_direction = np.ones(3)
         high_player_life = 1
         high_skeleton_life = 1
         high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
         high = np.hstack((
-            high_position,
+            low_relative_position,
+            high_relative_position,
             high_direction,
             high_player_life,
             high_skeleton_life,

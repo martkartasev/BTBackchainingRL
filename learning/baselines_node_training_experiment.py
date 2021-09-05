@@ -1,5 +1,6 @@
 import os
 
+import malmo.minecraftbootstrap
 from stable_baselines3 import A2C, DQN
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.env_checker import check_env
@@ -19,7 +20,7 @@ TOTAL_TIMESTEPS = 500000
 
 
 def train_node():
-    mission_xml_path = get_absolute_path("resources/arena_skeleton.xml")
+    mission_xml_path = get_absolute_path("resources/arena_skeleton_v2.xml")
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()

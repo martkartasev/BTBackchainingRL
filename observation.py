@@ -9,7 +9,7 @@ RELATIVE_DISTANCE_AXIS_MAX = 1000
 
 PLAYER_MAX_LIFE = 100
 
-ENEMY_TYPE = "VindicationIllager"
+ENEMY_TYPE = "Skeleton"
 ENEMY_MAX_LIFE = 24
 
 # TODO: This shouldn't be hard-coded
@@ -17,7 +17,7 @@ GRID_SIZE = 3 * 3 * 2
 GRID_SIZE_AXIS = [3, 2, 3]
 
 # Always append at the end of this list
-game_objects = ["dirt", "grass", "stone", "fire", "air"]
+game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block"]
 
 
 def get_skeleton_info(info):

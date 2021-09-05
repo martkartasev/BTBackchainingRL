@@ -24,7 +24,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
         reward = self.node.calculate_rewards()
         ob = self.node.get_observation_array()
 
-        is_mission_over = self.agent.is_mission_over()
+        is_mission_over = self.node.is_mission_over()
         is_acc_violated = self.node.is_acc_violated()
         is_post_conditions_fulfilled = self.node.is_post_conditions_fulfilled()
 
@@ -36,6 +36,8 @@ class BaselinesNodeTrainingEnv(gym.Env):
         elif is_post_conditions_fulfilled:
             print("Post Condition was fulfilled")
         return ob, reward, done, {}
+
+
 
     def close(self):
         self.agent.quit()

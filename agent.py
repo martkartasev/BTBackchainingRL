@@ -36,6 +36,8 @@ class BaseAgent:
     def activate_night_vision(self):
         self.agent_host.sendCommand(f"chat /effect @p night_vision 99999 255")
 
+    def make_hungry(self):
+        self.agent_host.sendCommand(f"chat /effect @p hunger 5 255")
 
 class MalmoAgent(BaseAgent):
     def __init__(self):

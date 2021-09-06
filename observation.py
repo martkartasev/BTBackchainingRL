@@ -12,13 +12,12 @@ INVENTORY_SIZE = 41
 PLAYER_MAX_LIFE = 100
 PLAYER_MAX_FOOD = 20
 
-ENEMY_TYPE = "Skeleton"
-FOOD_TYPE = "Beef"
+ENEMY_TYPE = "Cow"
+FOOD_TYPE = "beef"
 ENEMY_MAX_LIFE = 24
 
-# TODO: This shouldn't be hard-coded
-GRID_SIZE = 3 * 3 * 2
 GRID_SIZE_AXIS = [3, 2, 3]
+GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
 # Always append at the end of this list
 game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block"]

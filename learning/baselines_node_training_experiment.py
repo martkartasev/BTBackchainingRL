@@ -16,9 +16,10 @@ from utils.visualisation import save_tree_to_log
 
 TOTAL_TIMESTEPS = 1500000
 
+MISSION_PATH = "resources/arena_cow.xml"
 
 def train_node():
-    mission_xml_path = get_absolute_path("resources/arena_skeleton_v2.xml")
+    mission_xml_path = get_absolute_path(MISSION_PATH)
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
@@ -43,7 +44,7 @@ def train_node():
 
 def test_node():
     agent = TrainedSkeletonFightingAgent()
-    mission_xml_path = get_absolute_path("resources/arena_skeleton.xml")
+    mission_xml_path = get_absolute_path(MISSION_PATH)
     mission = NormalMission(agent, mission_xml_path)
     while True:
         mission.run()

@@ -83,6 +83,9 @@ class AbstractMission:
 
         print()
         print("Running mission", end=' ')
+
+        self.agent.activate_night_vision()
+
         return world_state
 
     def run_mission(self):

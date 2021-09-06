@@ -196,46 +196,38 @@ class Observation:
 
     @staticmethod
     def get_observation_space():
-        low_position = -np.ones(3)
-        low_relative_position = -np.ones(3)
-        low_direction = -np.ones(3)
-        low_player_life = 0
-        low_player_food = 0
-        low_entity_life = 0
-        low_is_entity_pickable = 0
-        low_food_inventory_index = 0
-        low_surroundings = np.zeros(GRID_SIZE)
+        position_range = (-np.ones(3), np.ones(3))
+        relative_position_range = (-np.ones(3), np.ones(3))
+        direction_range = (-np.ones(3), np.ones(3))
+        player_life_range = (0, 1)
+        player_food_range = (0, 1)
+        entity_life_range = (0, 1)
+        is_entity_pickable_range = (0, 1)
+        food_inventory_index_range = (0, INVENTORY_SIZE + 1)
+        surroundings_range = (np.zeros(GRID_SIZE), len(game_objects) * np.ones(GRID_SIZE))
+
         low = np.hstack((
-            low_position,
-            low_relative_position,
-            low_direction,
-            low_player_life,
-            low_player_food,
-            low_entity_life,
-            low_is_entity_pickable,
-            low_food_inventory_index,
-            low_surroundings
+            position_range[0],
+            relative_position_range[0],
+            direction_range[0],
+            player_life_range[0],
+            player_food_range[0],
+            entity_life_range[0],
+            is_entity_pickable_range[0],
+            food_inventory_index_range[0],
+            surroundings_range[0]
         ))
 
-        high_position = np.ones(3)
-        high_relative_position = np.ones(3)
-        high_direction = np.ones(3)
-        high_player_life = 1
-        high_player_food = 1
-        high_entity_life = 1
-        high_is_entity_pickable = 1
-        high_food_inventory_index = INVENTORY_SIZE + 1
-        high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
         high = np.hstack((
-            high_position,
-            high_relative_position,
-            high_direction,
-            high_player_life,
-            high_player_food,
-            high_entity_life,
-            high_is_entity_pickable,
-            high_food_inventory_index,
-            high_surroundings
+            position_range[1],
+            relative_position_range[1],
+            direction_range[1],
+            player_life_range[1],
+            player_food_range[1],
+            entity_life_range[1],
+            is_entity_pickable_range[1],
+            food_inventory_index_range[1],
+            surroundings_range[1]
         ))
 
         return Box(low, high)

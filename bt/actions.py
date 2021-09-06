@@ -63,16 +63,16 @@ class AvoidFire(Action):
         self.agent.continuous_strafe(0)
 
 
-class EatBeef(Action):
+class Eat(Action):
 
-    def __init__(self, agent, name="Eat Beef"):
+    def __init__(self, agent, name="Eat"):
         super().__init__(name, agent)
 
     def update(self):
-        beef_inventory_item = self.agent.observation.vector[self.agent.observation.food_inventory_index_index]
+        food_inventory_item = self.agent.observation.vector[self.agent.observation.food_inventory_index_index]
         temp_inventory_spot = 3
         self.agent.swap_items(0, temp_inventory_spot)
-        self.agent.swap_items(0, beef_inventory_item)
+        self.agent.swap_items(0, food_inventory_item)
 
         self.agent.use()
         eat_time = 1
@@ -83,12 +83,29 @@ class EatBeef(Action):
         return Status.SUCCESS
 
 
-class PickUpBeef(Action):
+class PickUpEntity(Action):
 
-    def __init__(self, agent, name="Pick up Beef"):
+    def __init__(self, agent, name="Pick up Entity"):
         super().__init__(name, agent)
 
     def update(self):
+        distance_start_index = self.agent.observation.entity_relative_position_start_index
+        distance_end_index = self.agent.observation.entity_relative_position_start_index + 3
+
+        distance_vector = self.agent.observation.vector[distance_start_index:distance_end_index]
+        entity_direction_vector = distance_vector/np.linalg.norm(distance_vector)
+
+        direction_vector_start_index = self.agent.observation.direction_vector_start_index
+        direction_vector_end_index = direction_vector_start_index + 3
+        direction_vector = self.agent.observation.vector[direction_vector_start_index:direction_vector_end_index]
+        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
+        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
+
+        angle = np.arccos(np.dot(entity_direction_vector, flat_direction_vector))
+
+        self.agent.continuous_move(np.cos(angle))
+        self.agent.continuous_strafe(-np.sin(angle))
+
         return Status.SUCCESS
 
 

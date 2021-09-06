@@ -203,7 +203,7 @@ class Observation:
         low_player_food = 0
         low_entity_life = 0
         low_is_entity_pickable = 0
-        low_beef_inventory_index = 0
+        low_food_inventory_index = 0
         low_surroundings = np.zeros(GRID_SIZE)
         low = np.hstack((
             low_position,
@@ -213,7 +213,7 @@ class Observation:
             low_player_food,
             low_entity_life,
             low_is_entity_pickable,
-            low_beef_inventory_index,
+            low_food_inventory_index,
             low_surroundings
         ))
 
@@ -224,7 +224,7 @@ class Observation:
         high_player_food = 1
         high_entity_life = 1
         high_is_entity_pickable = 1
-        high_beef_inventory_index = INVENTORY_SIZE + 1
+        high_food_inventory_index = INVENTORY_SIZE + 1
         high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
         high = np.hstack((
             high_position,
@@ -234,7 +234,7 @@ class Observation:
             high_player_food,
             high_entity_life,
             high_is_entity_pickable,
-            high_beef_inventory_index,
+            high_food_inventory_index,
             high_surroundings
         ))
 

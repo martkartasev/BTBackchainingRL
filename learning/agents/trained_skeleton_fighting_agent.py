@@ -23,7 +23,7 @@ class TrainedSkeletonFightingAgent(ObservationAgent):
         self.tree.tick_once()
 
     def define_behavior(self):
-        tree = BackChainTree(self, conditions.IsSkeletonDefeated(self))
+        tree = BackChainTree(self, conditions.IsEnemyDefeated(self))
         node = tree.baseline_nodes[0]
 
         fighter_model = A2C.load(get_project_root() / "results/basicfighter3_only_little_fire/best_model_18")

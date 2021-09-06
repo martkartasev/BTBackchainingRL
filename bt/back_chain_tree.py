@@ -42,13 +42,13 @@ class BackChainTree:
         ppa = None
         if isinstance(condition, conditions.IsNotInFire):
             ppa = AvoidFirePPA(agent)
-        elif isinstance(condition, conditions.IsSkeletonDefeated):
+        elif isinstance(condition, conditions.IsEnemyDefeated):
             ppa = DefeatSkeletonPPA(agent)
         elif isinstance(condition, conditions.IsNotHungry):
             ppa = EatPPA(agent)
-        elif isinstance(condition, conditions.HasBeef):
+        elif isinstance(condition, conditions.HasFood):
             ppa = PickupBeefPPA(agent)
-        elif isinstance(condition, conditions.IsBeefOnGround):
+        elif isinstance(condition, conditions.IsEntityPickable):
             ppa = DefeatCowPPA(agent)
 
         if ppa is not None and isinstance(ppa.action, DynamicBaselinesNode):

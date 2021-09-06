@@ -21,13 +21,13 @@ class IsNotInFire(Condition):
         return Status.SUCCESS if grid_list[me_position_index] != (game_objects.index("fire") + 1) else Status.FAILURE
 
 
-class IsSkeletonDefeated(Condition):
+class IsEnemyDefeated(Condition):
     def __init__(self, agent):
-        super(IsSkeletonDefeated, self).__init__(f"Is skeleton dead", agent)
+        super(IsEnemyDefeated, self).__init__(f"Is enemy defeated", agent)
 
     def update(self):
-        skeleton_life = self.agent.observation.vector[self.agent.observation.entity_life_index]
-        return Status.SUCCESS if skeleton_life == 0 else Status.FAILURE
+        enemy_life = self.agent.observation.vector[self.agent.observation.entity_life_index]
+        return Status.SUCCESS if enemy_life == 0 else Status.FAILURE
 
 
 class IsNotHungry(Condition):
@@ -39,19 +39,19 @@ class IsNotHungry(Condition):
         return Status.SUCCESS if player_food == observation.PLAYER_MAX_FOOD else Status.FAILURE
 
 
-class HasBeef(Condition):
+class HasFood(Condition):
     def __init__(self, agent):
-        super(HasBeef, self).__init__(f"Has beef", agent)
+        super(HasFood, self).__init__(f"Has food", agent)
 
     def update(self):
         return self.agent.observation.vector[self.agent.observation.food_inventory_index_index] > 0
 
 
-class IsBeefOnGround(Condition):
+class IsEntityPickable(Condition):
     def __init__(self, agent):
-        super(IsBeefOnGround, self).__init__(f"Is beef on ground", agent)
+        super(IsEntityPickable, self).__init__(f"Is entity pickable", agent)
 
     def update(self):
-        is_entity_food = self.agent.observation.vector[self.agent.observation.is_entity_pickable_index]
-        is_entity_food = (is_entity_food == 1)
-        return Status.SUCCESS if is_entity_food else Status.FAILURE
+        is_entity_pickable = self.agent.observation.vector[self.agent.observation.is_entity_pickable_index]
+        is_entity_pickable = (is_entity_pickable == 1)
+        return Status.SUCCESS if is_entity_pickable else Status.FAILURE

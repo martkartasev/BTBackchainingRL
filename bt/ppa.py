@@ -50,7 +50,7 @@ class DefeatSkeletonPPA(PPA):
     def __init__(self, agent):
         super(DefeatSkeletonPPA, self).__init__()
         self.name = "Defeat Skeleton"
-        self.post_condition = conditions.IsSkeletonDefeated(agent)
+        self.post_condition = conditions.IsEnemyDefeated(agent)
         self.pre_conditions = [conditions.IsNotInFire(agent)]
         self.action = DefeatSkeleton(agent)
 
@@ -60,23 +60,23 @@ class EatPPA(PPA):
         super(EatPPA, self).__init__()
         self.name = "Eat"
         self.post_condition = conditions.IsNotHungry(agent)
-        self.pre_conditions = [conditions.HasBeef(agent)]
-        self.action = actions.EatBeef(agent)
+        self.pre_conditions = [conditions.HasFood(agent)]
+        self.action = actions.Eat(agent)
 
 
 class PickupBeefPPA(PPA):
     def __init__(self, agent):
         super(PickupBeefPPA, self).__init__()
         self.name = "Pick up"
-        self.post_condition = conditions.HasBeef(agent)
-        self.pre_conditions = [conditions.IsBeefOnGround(agent)]
-        self.action = actions.PickUpBeef(agent)
+        self.post_condition = conditions.HasFood(agent)
+        self.pre_conditions = [conditions.IsEntityPickable(agent)]
+        self.action = actions.PickUpEntity(agent)
 
 
 class DefeatCowPPA(PPA):
     def __init__(self, agent):
         super(DefeatCowPPA, self).__init__()
         self.name = "Defeat Cow"
-        self.post_condition = conditions.IsBeefOnGround(agent)
+        self.post_condition = conditions.IsEntityPickable(agent)
         self.pre_conditions = []
         self.action = DefeatCow(agent)

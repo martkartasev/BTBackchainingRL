@@ -22,7 +22,7 @@ def train_node():
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
-    tree = BackChainTree(agent, [conditions.IsSkeletonDefeated(agent)])
+    tree = BackChainTree(agent, [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)])
 
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
 

@@ -44,7 +44,6 @@ class BaselinesNodeTrainingEnv(gym.Env):
             self.agent.quit()
 
         self.mission.mission_initialization()
-        self.agent.activate_night_vision()
 
         self.mission.run_mission()
 

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://ProjectMalmo.microsoft.com file:///C:\MalmoPlatform\Schemas\mission.xsd">
+    <About>
+        <Summary>Test scenario</Summary>
+    </About>
+
+    <ModSettings>
+        <MsPerTick>20</MsPerTick>
+        <PrioritiseOffscreenRendering>false</PrioritiseOffscreenRendering>
+    </ModSettings>
+
+    <ServerSection>
+        <ServerInitialConditions>
+            <Time>
+                <StartTime>22000</StartTime>
+                <AllowPassageOfTime>false</AllowPassageOfTime>
+            </Time>
+        </ServerInitialConditions>
+        <ServerHandlers>
+            <FlatWorldGenerator forceReset="true"/>
+            <DrawingDecorator>
+
+                <DrawCuboid type="brick_block" x1="-6" y1="4" z1="-6" x2="6" y2="6" z2="6"/>
+
+
+                <DrawCuboid type="air" x1="-5" y1="4" z1="-5" x2="5" y2="6" z2="5"/>
+
+                <DrawCuboid type="netherrack" x1="-5" y1="3" z1="-5" x2="5" y2="3" z2="5"/>
+
+                <DrawCuboid type="fire" x1="-1" y1="4" z1="0" x2="1" y2="4" z2="0"/>
+                <DrawCuboid type="fire" x1="0" y1="4" z1="-1" x2="0" y2="4" z2="1"/>
+
+                <DrawCuboid type="fire" x1="-7" y1="4" z1="-8" x2="-9" y2="4" z2="-8"/>
+                <DrawCuboid type="fire" x1="-8" y1="4" z1="-7" x2="-8" y2="4" z2="-9"/>
+
+                <DrawCuboid type="fire" x1="7" y1="4" z1="-8" x2="9" y2="4" z2="-8"/>
+                <DrawCuboid type="fire" x1="8" y1="4" z1="-7" x2="8" y2="4" z2="-9"/>
+
+                <DrawCuboid type="fire" x1="-7" y1="4" z1="8" x2="-9" y2="4" z2="8"/>
+                <DrawCuboid type="fire" x1="-8" y1="4" z1="7" x2="-8" y2="4" z2="9"/>
+
+                <DrawCuboid type="fire" x1="7" y1="4" z1="8" x2="9" y2="4" z2="8"/>
+                <DrawCuboid type="fire" x1="8" y1="4" z1="7" x2="8" y2="4" z2="9"/>
+
+                <DrawBlock type="fire" x="-15" y="4" z="-15"/>
+                <DrawBlock type="fire" x="15" y="4" z="-15"/>
+                <DrawBlock type="fire" x="-15" y="4" z="15"/>
+                <DrawBlock type="fire" x="15" y="4" z="15"/>
+
+
+                <DrawEntity x="4" y="6" z="4" yaw="-180" type="Cow"/>
+
+            </DrawingDecorator>
+        </ServerHandlers>
+    </ServerSection>
+
+    <AgentSection mode="Survival">
+        <Name>Rover</Name>
+        <AgentStart>
+            <Placement x="-4" y="6" z="-4" yaw="0"/>
+            <Inventory>
+                <InventoryItem type="diamond_sword" slot="0"/>
+                <InventoryItem type="diamond_boots" slot="36"/>
+                <InventoryItem type="diamond_leggings" slot="37"/>
+                <InventoryItem type="diamond_chestplate" slot="38"/>
+                <InventoryItem type="diamond_helmet" slot="39"/>
+            </Inventory>
+        </AgentStart>
+        <AgentHandlers>
+            <ObservationFromNearbyEntities>
+                <Range name="Entities" xrange="100" yrange="100" zrange="100"/>
+            </ObservationFromNearbyEntities>
+            <ObservationFromRay/>
+            <ObservationFromGrid>
+                <Grid name="Surroundings">
+                    <min x="-2" y="0" z="-2"/>
+                    <max x="2" y="0" z="2"/>
+                </Grid>
+            </ObservationFromGrid>
+            <ObservationFromFullStats/>
+            <ObservationFromFullInventory flat="false"/>
+            <SimpleCraftCommands/>
+            <InventoryCommands/>
+            <ObservationFromHotBar/>
+            <ContinuousMovementCommands/>
+            <AbsoluteMovementCommands/>
+            <ChatCommands/>
+            <MissionQuitCommands quitDescription="give_up"/>
+            <RewardForDamagingEntity>
+                <Mob type="Cow" reward="20"/>
+            </RewardForDamagingEntity>
+        </AgentHandlers>
+    </AgentSection>
+
+</Mission>

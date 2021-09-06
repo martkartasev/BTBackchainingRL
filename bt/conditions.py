@@ -15,8 +15,11 @@ class IsNotInFire(Condition):
         super(IsNotInFire, self).__init__(f"Is not in fire", agent)
 
     def update(self):
+        print(self.agent.observation.vector)
         grid_list = self.agent.observation.vector[self.agent.observation.surroundings_list_index:]
-        me_position_index = GRID_SIZE_AXIS[1] * GRID_SIZE_AXIS[2] + 1
+        print(grid_list)
+        me_position_index = int((GRID_SIZE_AXIS[0] * GRID_SIZE_AXIS[2] - 1)/2)
+        print(grid_list[me_position_index])
         return Status.SUCCESS if grid_list[me_position_index] != (game_objects.index("fire") + 1) else Status.FAILURE
 
 

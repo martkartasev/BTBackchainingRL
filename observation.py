@@ -16,7 +16,7 @@ ENEMY_TYPE = "Cow"
 FOOD_TYPES = ["beef", "cooked_beef"]
 ENEMY_MAX_LIFE = 24
 
-GRID_SIZE_AXIS = [3, 2, 3]
+GRID_SIZE_AXIS = [5, 1, 5]
 GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
 # Always append at the end of this list

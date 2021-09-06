@@ -1,10 +1,7 @@
-import time
-
 import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-import observation
 from observation import GRID_SIZE_AXIS, game_objects
 
 
@@ -63,12 +60,10 @@ class Eat(Action):
 
     def update(self):
         player_food = self.agent.observation.vector[self.agent.observation.player_food_index]
-        print(player_food)
         if player_food == 1:
             return Status.SUCCESS
 
         food_inventory_item = self.agent.observation.vector[self.agent.observation.food_inventory_index_index]
-        print(food_inventory_item)
         if food_inventory_item == 0:
             return Status.FAILURE
 

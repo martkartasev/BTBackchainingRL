@@ -1,7 +1,6 @@
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-import observation
 from observation import game_objects, GRID_SIZE_AXIS
 
 
@@ -36,7 +35,7 @@ class IsNotHungry(Condition):
 
     def update(self):
         player_food = self.agent.observation.vector[self.agent.observation.player_food_index]
-        return Status.SUCCESS if player_food == observation.PLAYER_MAX_FOOD else Status.FAILURE
+        return Status.SUCCESS if player_food == 1 else Status.FAILURE
 
 
 class HasFood(Condition):
@@ -44,7 +43,8 @@ class HasFood(Condition):
         super(HasFood, self).__init__(f"Has food", agent)
 
     def update(self):
-        return self.agent.observation.vector[self.agent.observation.food_inventory_index_index] > 0
+        has_food =  self.agent.observation.vector[self.agent.observation.food_inventory_index_index] > 0
+        return Status.SUCCESS if has_food else Status.FAILURE
 
 
 class IsEntityPickable(Condition):
@@ -54,4 +54,5 @@ class IsEntityPickable(Condition):
     def update(self):
         is_entity_pickable = self.agent.observation.vector[self.agent.observation.is_entity_pickable_index]
         is_entity_pickable = (is_entity_pickable == 1)
+
         return Status.SUCCESS if is_entity_pickable else Status.FAILURE

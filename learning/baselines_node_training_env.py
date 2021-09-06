@@ -44,7 +44,6 @@ class BaselinesNodeTrainingEnv(gym.Env):
             self.agent.quit()
 
         self.mission.mission_initialization()
-
         self.mission.run_mission()
 
         return self.node.get_observation_array()

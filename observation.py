@@ -13,7 +13,7 @@ PLAYER_MAX_LIFE = 100
 PLAYER_MAX_FOOD = 20
 
 ENEMY_TYPE = "Cow"
-FOOD_TYPE = "beef"
+FOOD_TYPES = ["beef", "cooked_beef"]
 ENEMY_MAX_LIFE = 24
 
 GRID_SIZE_AXIS = [3, 2, 3]
@@ -23,10 +23,10 @@ GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block"]
 
 
-def get_entity_info(info, entity_name):
+def get_entity_info(info, entity_names):
     if "Entities" in info:
         for entity in info["Entities"]:
-            if entity.get("name") == entity_name:
+            if entity.get("name") in entity_names:
                 return entity
 
 
@@ -106,10 +106,10 @@ def get_player_position(info):
     return player_position
 
 
-def get_item_inventory_index(info, item):
+def get_item_inventory_index(info, items):
     if "inventory" in info:
         for inventory_slot in info["inventory"]:
-            if inventory_slot.get("type") == item:
+            if inventory_slot.get("type") in items:
                 return inventory_slot.get("index", -1) + 1
         return 0
     else:
@@ -138,8 +138,8 @@ class Observation:
         standardized_position = np.clip(standardized_position, -1, 1)
         current_index += 3
 
-        food_info = get_entity_info(info, FOOD_TYPE)
-        entity_info = get_entity_info(info, ENEMY_TYPE) if food_info is None else food_info
+        food_info = get_entity_info(info, FOOD_TYPES)
+        entity_info = get_entity_info(info, [ENEMY_TYPE]) if food_info is None else food_info
 
         self.entity_relative_position_start_index = current_index
         entity_relative_position = get_standardized_relative_position(entity_info, player_position)
@@ -169,7 +169,7 @@ class Observation:
         current_index += 1
 
         self.food_inventory_index_index = current_index
-        food_inventory_index = get_item_inventory_index(info, FOOD_TYPE)
+        food_inventory_index = get_item_inventory_index(info, FOOD_TYPES)
         current_index += 1
 
         self.surroundings_list_index = current_index

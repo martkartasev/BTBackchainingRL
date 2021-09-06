@@ -1,5 +1,6 @@
 import time
 
+import numpy as np
 from malmo.MalmoPython import AgentHost
 
 
@@ -39,9 +40,24 @@ class BaseAgent:
     def make_hungry(self):
         self.agent_host.sendCommand(f"chat /effect @p hunger 5 255")
 
+
 class MalmoAgent(BaseAgent):
     def __init__(self):
         super().__init__()
+
+    def move_towards_flat_direction(self, wanted_flat_direction_vector):
+        direction_vector_start_index = self.observation.direction_vector_start_index
+        direction_vector_end_index = direction_vector_start_index + 3
+        direction_vector = self.observation.vector[direction_vector_start_index:direction_vector_end_index]
+        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
+        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
+        side_direction_vector = np.array([flat_direction_vector[1], -flat_direction_vector[0]])
+
+        angle = np.arccos(np.dot(wanted_flat_direction_vector, flat_direction_vector))
+        sign = 1 if np.dot(wanted_flat_direction_vector, side_direction_vector) > 0 else -1
+
+        self.continuous_move(np.cos(angle))
+        self.continuous_strafe(-sign * np.sin(angle))
 
     def continuous_move(self, val):
         self.agent_host.sendCommand("move " + str(val))
@@ -73,6 +89,10 @@ class MalmoAgent(BaseAgent):
     def swap_items(self, position1, position2):
         self.agent_host.sendCommand("swapInventoryItems {0} {1}".format(position1, position2))
 
+    def select_on_hotbar(self, position):
+        self.agent_host.sendCommand(f"hotbar.{position + 1} 1")  # press
+        self.agent_host.sendCommand(f"hotbar.{position + 1} 0")  # release
+        time.sleep(0.1)  # Stupid but necessary
 
     def use(self, toggle=None):
         if toggle is None:
@@ -84,6 +104,10 @@ class MalmoAgent(BaseAgent):
             time.sleep(0.001)
             self.agent_host.sendCommand("use 0")
             time.sleep(0.5)  # Stupid but necessary
+
+    def continuous_use(self, toggle):
+        self.agent_host.sendCommand("use " + str(toggle))
+
 
     def quit(self):
         self.agent_host.sendCommand("quit")

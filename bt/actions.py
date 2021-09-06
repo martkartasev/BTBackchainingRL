@@ -4,6 +4,7 @@ import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
+import observation
 from observation import GRID_SIZE_AXIS, game_objects
 
 
@@ -38,16 +39,7 @@ class AvoidFire(Action):
         min_distance_vector = distances_vector[min_dist_arg]
         distance_vector_direction = min_distance_vector / np.linalg.norm(min_distance_vector)
 
-        direction_vector_start_index = self.agent.observation.direction_vector_start_index
-        direction_vector_end_index = direction_vector_start_index + 3
-        direction_vector = self.agent.observation.vector[direction_vector_start_index:direction_vector_end_index]
-        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
-        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
-
-        angle = np.arccos(np.dot(distance_vector_direction, flat_direction_vector))
-
-        self.agent.continuous_move(np.cos(angle))
-        self.agent.continuous_strafe(-np.sin(angle))
+        self.agent.move_towards_flat_direction(distance_vector_direction)
 
         return Status.SUCCESS if grid[0, 0] == game_objects.index("air") else Status.FAILURE
 
@@ -67,20 +59,30 @@ class Eat(Action):
 
     def __init__(self, agent, name="Eat"):
         super().__init__(name, agent)
+        self.is_running = False
 
     def update(self):
+        player_food = self.agent.observation.vector[self.agent.observation.player_food_index]
+        print(player_food)
+        if player_food == 1:
+            return Status.SUCCESS
+
         food_inventory_item = self.agent.observation.vector[self.agent.observation.food_inventory_index_index]
-        temp_inventory_spot = 3
-        self.agent.swap_items(0, temp_inventory_spot)
-        self.agent.swap_items(0, food_inventory_item)
+        print(food_inventory_item)
+        if food_inventory_item == 0:
+            return Status.FAILURE
 
-        self.agent.use()
-        eat_time = 1
-        time.sleep(eat_time)
+        if not self.is_running:
+            self.agent.select_on_hotbar(int(food_inventory_item) - 1)
+            self.is_running = True
 
-        self.agent.swap_items(0, temp_inventory_spot)
+        self.agent.continuous_use(1)
+        return Status.RUNNING
 
-        return Status.SUCCESS
+    def terminate(self, new_status):
+        self.is_running = False
+        self.agent.continuous_use(0)
+        self.agent.select_on_hotbar(0)
 
 
 class PickUpEntity(Action):
@@ -89,25 +91,23 @@ class PickUpEntity(Action):
         super().__init__(name, agent)
 
     def update(self):
+
         distance_start_index = self.agent.observation.entity_relative_position_start_index
         distance_end_index = self.agent.observation.entity_relative_position_start_index + 3
 
         distance_vector = self.agent.observation.vector[distance_start_index:distance_end_index]
-        entity_direction_vector = distance_vector/np.linalg.norm(distance_vector)
+        entity_direction_vector = np.array([distance_vector[0], distance_vector[2]])
+        entity_direction_vector = entity_direction_vector/np.linalg.norm(entity_direction_vector)
 
-        direction_vector_start_index = self.agent.observation.direction_vector_start_index
-        direction_vector_end_index = direction_vector_start_index + 3
-        direction_vector = self.agent.observation.vector[direction_vector_start_index:direction_vector_end_index]
-        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
-        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
+        self.agent.move_towards_flat_direction(entity_direction_vector)
 
-        angle = np.arccos(np.dot(entity_direction_vector, flat_direction_vector))
+        has_food =  self.agent.observation.vector[self.agent.observation.food_inventory_index_index] > 0
+        return Status.SUCCESS if has_food else Status.RUNNING
 
-        self.agent.continuous_move(np.cos(angle))
-        self.agent.continuous_strafe(-np.sin(angle))
-
-        return Status.SUCCESS
-
+    def terminate(self, new_status):
+        #   print("Forward 0")
+        self.agent.continuous_move(0)
+        self.agent.continuous_strafe(0)
 
 class MoveForward(Action):
     def __init__(self, agent, name="Move Forward"):

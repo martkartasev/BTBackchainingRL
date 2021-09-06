@@ -5,13 +5,13 @@ from stable_baselines3.common.monitor import Monitor
 
 from bt import conditions
 from bt.back_chain_tree import BackChainTree
+from learning.agents.baselines_node_testing_agent import BaselinesNodeTestingAgent
 from learning.agents.baselines_node_training_agent import BasicFighterNodeTrainingAgent
-from learning.agents.trained_skeleton_fighting_agent import TrainedSkeletonFightingAgent
 from learning.baselines_node_training_env import BaselinesNodeTrainingEnv
 from learning.save_best_model_callback import SaveOnBestTrainingRewardCallback
+from mission_runner.baselines_node_testing_mission import BaselinesNodeTestingMission
 from mission_runner.baselines_node_training_mission import BaselinesNodeTrainingMission
-from mission_runner.normal_mission import NormalMission
-from utils.file import get_absolute_path
+from utils.file import get_absolute_path, get_project_root
 from utils.visualisation import save_tree_to_log
 
 TOTAL_TIMESTEPS = 1500000
@@ -23,7 +23,8 @@ def train_node():
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
-    tree = BackChainTree(agent, [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)])
+    goals = [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)]
+    tree = BackChainTree(agent, goals)
 
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
 
@@ -43,12 +44,21 @@ def train_node():
 
 
 def test_node():
-    agent = TrainedSkeletonFightingAgent()
+    agent = BaselinesNodeTestingAgent()
+    goals = [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)]
+    model_path = "results/basicfighter3_good/best_model_2"
+
+    tree = BackChainTree(agent, goals)
+
+    node = tree.baseline_nodes[0]
+    fighter_model = DQN.load(get_project_root() / model_path)
+    node.set_model(fighter_model)
+
     mission_xml_path = get_absolute_path(MISSION_PATH)
-    mission = NormalMission(agent, mission_xml_path)
+    mission = BaselinesNodeTestingMission(agent, tree.root, mission_xml_path)
     while True:
         mission.run()
 
 
 if __name__ == '__main__':
-    train_node()
+    test_node()

@@ -85,6 +85,7 @@ class AbstractMission:
         print("Running mission", end=' ')
 
         self.agent.activate_night_vision()
+        self.agent.make_hungry()
 
         return world_state
 

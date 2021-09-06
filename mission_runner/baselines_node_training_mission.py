@@ -1,5 +1,5 @@
 from mission_runner.abstract_mission import AbstractMission
-from observation.observation import Observation
+from observation import Observation
 
 
 class BaselinesNodeTrainingMission(AbstractMission):

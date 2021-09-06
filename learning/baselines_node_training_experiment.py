@@ -14,15 +14,15 @@ from mission_runner.normal_mission import NormalMission
 from utils.file import get_absolute_path
 from utils.visualisation import save_tree_to_log
 
-TOTAL_TIMESTEPS = 500000
+TOTAL_TIMESTEPS = 1500000
 
 
 def train_node():
-    mission_xml_path = get_absolute_path("resources/arena_cow.xml")
+    mission_xml_path = get_absolute_path("resources/arena_skeleton_v2.xml")
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
-    tree = BackChainTree(agent, [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)])
+    tree = BackChainTree(agent, [conditions.IsSkeletonDefeated(agent)])
 
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
 
@@ -34,7 +34,9 @@ def train_node():
     env = BaselinesNodeTrainingEnv(node, mission)
     env = Monitor(env, log_dir)
 
-    model = DQN('MlpPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"))
+    model = DQN(
+        'MlpPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"), exploration_fraction=0.05
+    )
     model.learn(total_timesteps=TOTAL_TIMESTEPS, callback=SaveOnBestTrainingRewardCallback(5000, log_dir=log_dir))
     model.save(log_dir + "/finalbasicfarmer.mdl")
 

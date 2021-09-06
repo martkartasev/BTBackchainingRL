@@ -4,7 +4,7 @@ import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-from observation.observation import GRID_SIZE_AXIS, game_objects
+from observation import GRID_SIZE_AXIS, game_objects
 
 
 class Action(Behaviour):
@@ -69,7 +69,7 @@ class EatBeef(Action):
         super().__init__(name, agent)
 
     def update(self):
-        beef_inventory_item = self.agent.observation.vector[self.agent.observation.beef_inventory_index_index]
+        beef_inventory_item = self.agent.observation.vector[self.agent.observation.food_inventory_index_index]
         temp_inventory_spot = 3
         self.agent.swap_items(0, temp_inventory_spot)
         self.agent.swap_items(0, beef_inventory_item)
@@ -83,7 +83,6 @@ class EatBeef(Action):
         return Status.SUCCESS
 
 
-# TODO: Implement (Need to add position of this entity for that)
 class PickUpBeef(Action):
 
     def __init__(self, agent, name="Pick up Beef"):

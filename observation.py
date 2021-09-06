@@ -10,8 +10,10 @@ RELATIVE_DISTANCE_AXIS_MAX = 50
 INVENTORY_SIZE = 41
 
 PLAYER_MAX_LIFE = 100
+PLAYER_MAX_FOOD = 20
 
-ENEMY_TYPE = "Cow"
+ENEMY_TYPE = "Skeleton"
+FOOD_TYPE = "Beef"
 ENEMY_MAX_LIFE = 24
 
 # TODO: This shouldn't be hard-coded
@@ -80,16 +82,16 @@ def get_game_object_ordinal(game_object):
         return game_objects.index(game_object) + 1
 
 
-def get_standardized_relative_position(skeleton_info, player_position):
-    if skeleton_info is not None:
-        skeleton_position_list = [skeleton_info.get("x"), skeleton_info.get("y"), skeleton_info.get("z")]
+def get_standardized_relative_position(entity_info, player_position):
+    if entity_info is not None:
+        entity_position_list = [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
     else:
-        skeleton_position_list = [None, None, None]
+        entity_position_list = [None, None, None]
 
-    skeleton_position = None if None in skeleton_position_list else np.array(skeleton_position_list)
+    entity_position = None if None in entity_position_list else np.array(entity_position_list)
 
-    if player_position is not None and skeleton_position is not None:
-        relative_position = skeleton_position - player_position
+    if player_position is not None and entity_position is not None:
+        relative_position = entity_position - player_position
         relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
     else:
         relative_position = np.zeros(3)
@@ -137,9 +139,11 @@ class Observation:
         standardized_position = np.clip(standardized_position, -1, 1)
         current_index += 3
 
-        skeleton_info = get_entity_info(info, ENEMY_TYPE)
-        self.skeleton_relative_position_start_index = current_index
-        skeleton_relative_position = get_standardized_relative_position(skeleton_info, player_position)
+        food_info = get_entity_info(info, FOOD_TYPE)
+        entity_info = get_entity_info(info, ENEMY_TYPE) if food_info is None else food_info
+
+        self.entity_relative_position_start_index = current_index
+        entity_relative_position = get_standardized_relative_position(entity_info, player_position)
         current_index += 3
 
         self.direction_vector_start_index = current_index
@@ -151,18 +155,22 @@ class Observation:
         player_life = player_life / PLAYER_MAX_LIFE
         current_index += 1
 
-        self.skeleton_life_index = current_index
-        skeleton_life = 0 if skeleton_info is None else skeleton_info.get("life", 0)
-        skeleton_life = skeleton_life / ENEMY_MAX_LIFE
+        self.player_food_index = current_index
+        player_food = info.get("Food", 0)
+        player_food = player_food / PLAYER_MAX_FOOD
         current_index += 1
 
-        self.is_beef_on_ground_index = current_index
-        beef_info = get_entity_info(info, "beef")
-        is_beef_on_ground = beef_info is not None
+        self.entity_life_index = current_index
+        entity_life = 0 if entity_info is None else entity_info.get("life", 0)
+        entity_life = entity_life / ENEMY_MAX_LIFE
         current_index += 1
 
-        self.beef_inventory_index_index = current_index
-        beef_inventory_index = get_item_inventory_index(info, "beef")
+        self.is_entity_pickable_index = current_index
+        is_entity_pickable = food_info is not None
+        current_index += 1
+
+        self.food_inventory_index_index = current_index
+        food_inventory_index = get_item_inventory_index(info, FOOD_TYPE)
         current_index += 1
 
         self.surroundings_list_index = current_index
@@ -176,12 +184,13 @@ class Observation:
 
         self.vector = np.hstack((
             standardized_position,
-            skeleton_relative_position,
+            entity_relative_position,
             direction_vector,
             player_life,
-            skeleton_life,
-            is_beef_on_ground,
-            beef_inventory_index,
+            player_food,
+            entity_life,
+            is_entity_pickable,
+            food_inventory_index,
             surroundings
         ))
 
@@ -191,8 +200,9 @@ class Observation:
         low_relative_position = -np.ones(3)
         low_direction = -np.ones(3)
         low_player_life = 0
-        low_skeleton_life = 0
-        low_is_beef_on_ground = 0
+        low_player_food = 0
+        low_entity_life = 0
+        low_is_entity_pickable = 0
         low_beef_inventory_index = 0
         low_surroundings = np.zeros(GRID_SIZE)
         low = np.hstack((
@@ -200,8 +210,9 @@ class Observation:
             low_relative_position,
             low_direction,
             low_player_life,
-            low_skeleton_life,
-            low_is_beef_on_ground,
+            low_player_food,
+            low_entity_life,
+            low_is_entity_pickable,
             low_beef_inventory_index,
             low_surroundings
         ))
@@ -210,8 +221,9 @@ class Observation:
         high_relative_position = np.ones(3)
         high_direction = np.ones(3)
         high_player_life = 1
-        high_skeleton_life = 1
-        high_is_beef_on_ground = 1
+        high_player_food = 1
+        high_entity_life = 1
+        high_is_entity_pickable = 1
         high_beef_inventory_index = INVENTORY_SIZE + 1
         high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
         high = np.hstack((
@@ -219,8 +231,9 @@ class Observation:
             high_relative_position,
             high_direction,
             high_player_life,
-            high_skeleton_life,
-            high_is_beef_on_ground,
+            high_player_food,
+            high_entity_life,
+            high_is_entity_pickable,
             high_beef_inventory_index,
             high_surroundings
         ))

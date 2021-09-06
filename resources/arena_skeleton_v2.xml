@@ -55,10 +55,6 @@
             <Placement x="0" y="6" z="-5" yaw="0"/>
             <Inventory>
                 <InventoryItem type="diamond_sword" slot="0"/>
-                <InventoryItem type="diamond_boots" slot="36"/>
-                <InventoryItem type="diamond_leggings" slot="37"/>
-                <InventoryItem type="diamond_chestplate" slot="38"/>
-                <InventoryItem type="diamond_helmet" slot="39"/>
             </Inventory>
         </AgentStart>
         <AgentHandlers>

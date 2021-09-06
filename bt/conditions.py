@@ -1,8 +1,8 @@
-import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-from observation.observation import game_objects, GRID_SIZE_AXIS
+import observation
+from observation import game_objects, GRID_SIZE_AXIS
 
 
 class Condition(Behaviour):
@@ -26,17 +26,17 @@ class IsSkeletonDefeated(Condition):
         super(IsSkeletonDefeated, self).__init__(f"Is skeleton dead", agent)
 
     def update(self):
-        skeleton_life = self.agent.observation.vector[self.agent.observation.skeleton_life_index]
+        skeleton_life = self.agent.observation.vector[self.agent.observation.entity_life_index]
         return Status.SUCCESS if skeleton_life == 0 else Status.FAILURE
 
 
-# TODO: Should we use hunger here? Discuss with Mart
 class IsNotHungry(Condition):
     def __init__(self, agent):
         super(IsNotHungry, self).__init__(f"Is not hungry", agent)
 
     def update(self):
-        return Status.FAILURE
+        player_food = self.agent.observation.vector[self.agent.observation.player_food_index]
+        return Status.SUCCESS if player_food == observation.PLAYER_MAX_FOOD else Status.FAILURE
 
 
 class HasBeef(Condition):
@@ -44,7 +44,7 @@ class HasBeef(Condition):
         super(HasBeef, self).__init__(f"Has beef", agent)
 
     def update(self):
-        return self.agent.observation.vector[self.agent.observation.beef_inventory_index_index] > 0
+        return self.agent.observation.vector[self.agent.observation.food_inventory_index_index] > 0
 
 
 class IsBeefOnGround(Condition):
@@ -52,6 +52,6 @@ class IsBeefOnGround(Condition):
         super(IsBeefOnGround, self).__init__(f"Is beef on ground", agent)
 
     def update(self):
-        is_beef_on_ground = self.agent.observation.vector[self.agent.observation.is_beef_on_ground_index]
-        is_beef_on_ground = is_beef_on_ground == 1
-        return Status.SUCCESS if is_beef_on_ground else Status.FAILURE
+        is_entity_food = self.agent.observation.vector[self.agent.observation.is_entity_pickable_index]
+        is_entity_food = (is_entity_food == 1)
+        return Status.SUCCESS if is_entity_food else Status.FAILURE

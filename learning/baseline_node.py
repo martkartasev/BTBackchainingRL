@@ -2,7 +2,7 @@ from py_trees.common import Status
 
 from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving
 from bt.sequence import Sequence
-from observation.observation import Observation
+from observation import Observation
 
 
 class BaselinesNode(Sequence):

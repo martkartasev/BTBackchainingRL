@@ -1,6 +1,8 @@
+import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
+import observation
 from observation import game_objects, GRID_SIZE_AXIS
 
 
@@ -18,7 +20,7 @@ class IsNotInFire(Condition):
         print(self.agent.observation.vector)
         grid_list = self.agent.observation.vector[self.agent.observation.surroundings_list_index:]
         print(grid_list)
-        me_position_index = int((GRID_SIZE_AXIS[0] * GRID_SIZE_AXIS[2] - 1)/2)
+        me_position_index = int((GRID_SIZE_AXIS[0] * GRID_SIZE_AXIS[2] - 1) / 2)
         print(grid_list[me_position_index])
         return Status.SUCCESS if grid_list[me_position_index] != (game_objects.index("fire") + 1) else Status.FAILURE
 
@@ -30,6 +32,21 @@ class IsEnemyDefeated(Condition):
     def update(self):
         enemy_life = self.agent.observation.vector[self.agent.observation.entity_life_index]
         return Status.SUCCESS if enemy_life == 0 else Status.FAILURE
+
+
+class IsNotAttackedByEnemy(Condition):
+    def __init__(self, agent):
+        super(IsNotAttackedByEnemy, self).__init__(f"Is not attacked by enemy", agent)
+
+    def update(self):
+        start_index = self.agent.observation.enemy_relative_position_start_index
+        end_index = start_index + 3
+        enemy_distance = self.agent.observation.vector[start_index:end_index]
+
+        non_standardized_distance = enemy_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
+        distance = np.linalg.norm(non_standardized_distance)
+
+        return Status.SUCCESS if distance >= 2 else Status.FAILURE
 
 
 class IsNotHungry(Condition):
@@ -46,7 +63,7 @@ class HasFood(Condition):
         super(HasFood, self).__init__(f"Has food", agent)
 
     def update(self):
-        has_food =  self.agent.observation.vector[self.agent.observation.food_inventory_index_index] > 0
+        has_food = self.agent.observation.vector[self.agent.observation.food_inventory_index_index] > 0
         return Status.SUCCESS if has_food else Status.FAILURE
 
 

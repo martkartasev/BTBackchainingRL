@@ -12,7 +12,8 @@ INVENTORY_SIZE = 41
 PLAYER_MAX_LIFE = 100
 PLAYER_MAX_FOOD = 20
 
-ENEMY_TYPE = "Cow"
+ENEMY_TYPE = "Skeleton"
+ANIMAL_TYPE = "Cow"
 FOOD_TYPES = ["beef", "cooked_beef"]
 ENEMY_MAX_LIFE = 24
 
@@ -93,7 +94,7 @@ def get_standardized_relative_position(entity_info, player_position):
         relative_position = entity_position - player_position
         relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
     else:
-        relative_position = np.zeros(3)
+        relative_position = RELATIVE_DISTANCE_AXIS_MAX*np.ones(3)
 
     standardized_relative_position = relative_position / RELATIVE_DISTANCE_AXIS_MAX
 
@@ -139,10 +140,15 @@ class Observation:
         current_index += 3
 
         food_info = get_entity_info(info, FOOD_TYPES)
-        entity_info = get_entity_info(info, [ENEMY_TYPE]) if food_info is None else food_info
+        entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
 
         self.entity_relative_position_start_index = current_index
         entity_relative_position = get_standardized_relative_position(entity_info, player_position)
+        current_index += 3
+
+        self.enemy_relative_position_start_index = current_index
+        enemy_info = get_entity_info(info, [ENEMY_TYPE])
+        enemy_relative_position = get_standardized_relative_position(enemy_info, player_position)
         current_index += 3
 
         self.direction_vector_start_index = current_index
@@ -184,6 +190,7 @@ class Observation:
         self.vector = np.hstack((
             standardized_position,
             entity_relative_position,
+            enemy_relative_position,
             direction_vector,
             player_life,
             player_food,
@@ -197,6 +204,7 @@ class Observation:
     def get_observation_space():
         position_range = (-np.ones(3), np.ones(3))
         relative_position_range = (-np.ones(3), np.ones(3))
+        enemy_relative_position_range = (-np.ones(3), np.ones(3))
         direction_range = (-np.ones(3), np.ones(3))
         player_life_range = (0, 1)
         player_food_range = (0, 1)
@@ -208,6 +216,7 @@ class Observation:
         low = np.hstack((
             position_range[0],
             relative_position_range[0],
+            enemy_relative_position_range[0],
             direction_range[0],
             player_life_range[0],
             player_food_range[0],
@@ -220,6 +229,7 @@ class Observation:
         high = np.hstack((
             position_range[1],
             relative_position_range[1],
+            enemy_relative_position_range[1],
             direction_range[1],
             player_life_range[1],
             player_food_range[1],

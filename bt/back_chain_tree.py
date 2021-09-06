@@ -1,6 +1,6 @@
 from bt import conditions
 from bt.accs import find_accs
-from bt.ppa import AvoidFirePPA, DefeatSkeletonPPA, EatPPA, PickupBeefPPA, DefeatCowPPA
+from bt.ppa import AvoidFirePPA, DefeatSkeletonPPA, EatPPA, PickupBeefPPA, DefeatCowPPA, IsNotAttackedByEnemyPPA
 from bt.sequence import Sequence
 from learning.baseline_node import DynamicBaselinesNode
 
@@ -36,7 +36,7 @@ class BackChainTree:
                 if ppa_condition_tree is not None:
                     ppa.pre_conditions[i] = ppa_condition_tree
             return ppa.as_tree()
-        return None
+        return condition
 
     def condition_to_ppa_tree(self, agent, condition):
         ppa = None
@@ -50,6 +50,8 @@ class BackChainTree:
             ppa = PickupBeefPPA(agent)
         elif isinstance(condition, conditions.IsEntityPickable):
             ppa = DefeatCowPPA(agent)
+        elif isinstance(condition, conditions.IsNotAttackedByEnemy):
+            ppa = IsNotAttackedByEnemyPPA(agent)
 
         if ppa is not None and isinstance(ppa.action, DynamicBaselinesNode):
             self.baseline_nodes.append(ppa.action)

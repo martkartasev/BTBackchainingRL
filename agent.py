@@ -35,10 +35,14 @@ class BaseAgent:
         return observations, reward
 
     def activate_night_vision(self):
-        self.agent_host.sendCommand(f"chat /effect @p night_vision 99999 255")
+        self.agent_host.sendCommand("chat /effect @p night_vision 99999 255")
 
     def make_hungry(self):
-        self.agent_host.sendCommand(f"chat /effect @p hunger 5 255")
+        self.agent_host.sendCommand("chat /effect @p hunger 5 255")
+
+    def create_static_skeleton(self):
+        self.agent_host.sendCommand("chat /summon skeleton -5 4 5 {NoAI:1}")
+
 
 
 class MalmoAgent(BaseAgent):

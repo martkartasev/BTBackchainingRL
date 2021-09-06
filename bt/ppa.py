@@ -54,6 +54,15 @@ class DefeatSkeletonPPA(PPA):
         self.pre_conditions = [conditions.IsNotInFire(agent)]
         self.action = DefeatSkeleton(agent)
 
+#TODO: We don't really support choosing which baseline node to train so it will always take the first
+class IsNotAttackedByEnemyPPA(PPA):
+    def __init__(self, agent):
+        super(IsNotAttackedByEnemyPPA, self).__init__()
+        self.name = "Is not Attacked by Enemy PPA"
+        self.post_condition = conditions.IsNotAttackedByEnemy(agent)
+        self.pre_conditions = []
+        self.action = DefeatSkeleton(agent)
+
 
 class EatPPA(PPA):
     def __init__(self, agent):

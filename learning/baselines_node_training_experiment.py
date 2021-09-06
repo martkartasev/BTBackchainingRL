@@ -1,6 +1,7 @@
 import os
 
-from stable_baselines3 import A2C
+import malmo.minecraftbootstrap
+from stable_baselines3 import A2C, DQN
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.env_checker import check_env
 
@@ -15,11 +16,11 @@ from mission_runner.normal_mission import NormalMission
 from utils.file import get_absolute_path
 from utils.visualisation import save_tree_to_log
 
-TOTAL_TIMESTEPS = 10000000
+TOTAL_TIMESTEPS = 500000
 
 
 def train_node():
-    mission_xml_path = get_absolute_path("resources/arena_skeleton.xml")
+    mission_xml_path = get_absolute_path("resources/arena_skeleton_v2.xml")
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
@@ -35,7 +36,7 @@ def train_node():
     env = BaselinesNodeTrainingEnv(node, mission)
     env = Monitor(env, log_dir)
 
-    model = A2C('MlpPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"))
+    model = DQN('MlpPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"))
     model.learn(total_timesteps=TOTAL_TIMESTEPS, callback=SaveOnBestTrainingRewardCallback(5000, log_dir=log_dir))
     model.save(log_dir + "/finalbasicfighter.mdl")
 

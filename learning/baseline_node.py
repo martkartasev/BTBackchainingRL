@@ -11,7 +11,7 @@ from observation import Observation
 
 
 class BaselinesNode(Sequence):
-
+    AGENT_DEAD_REWARD = -500
     ACC_VIOLATED_REWARD = -1000
     POST_CONDITION_FULFILLED_REWARD = 1000
 
@@ -111,11 +111,13 @@ class DynamicBaselinesNode(BaselinesNode):
         return None if observation is None else observation.vector
 
     def calculate_rewards(self):
-        reward = -0.1
+        reward = self.agent.rewards - 0.1
         if self.is_acc_violated():
             reward += BaselinesNode.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():
             reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
+        if not self.agent.is_agent_alive():
+            reward += BaselinesNode.AGENT_DEAD_REWARD
         self.total_reward += reward
         return reward
 
@@ -135,10 +137,12 @@ class DynamicBaselinesNode(BaselinesNode):
                 return False
         return True
 
+    def is_mission_over(self):
+        return not self.agent.is_agent_alive()
+
     def reset_node(self):
         print("Total Reward of Episode", self.total_reward)
         self.total_reward = 0
-
 
 
 class DefeatSkeleton(DynamicBaselinesNode):

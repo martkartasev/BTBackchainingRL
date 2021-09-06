@@ -20,34 +20,30 @@
         <ServerHandlers>
             <FlatWorldGenerator forceReset="true"/>
             <DrawingDecorator>
-                <DrawCuboid type="grass" x1="78" y1="4" z1="63" x2="152" y2="4" z2="162"/>
-                <DrawCuboid type="grass" x1="79" y1="5" z1="64" x2="151" y2="5" z2="161"/>
-                <DrawCuboid type="grass" x1="80" y1="4" z1="65" x2="150" y2="6" z2="160"/>
 
-                <DrawCuboid type="netherrack" x1="85" y1="3" z1="105" x2="145" y2="3" z2="158"/>
+                <DrawCuboid type="brick_block" x1="-16" y1="4" z1="-16" x2="16" y2="6" z2="16"/>
 
 
-                <DrawCuboid type="air" x1="85" y1="4" z1="105" x2="145" y2="6" z2="158"/>
-                <DrawCuboid type="air" x1="95" y1="4" z1="95" x2="105" y2="5" z2="98"/>
-                <DrawCuboid type="air" x1="94" y1="5" z1="94" x2="106" y2="5" z2="99"/>
-                <DrawCuboid type="air" x1="93" y1="6" z1="93" x2="107" y2="6" z2="100"/>
+                <DrawCuboid type="air" x1="-15" y1="4" z1="-15" x2="15" y2="6" z2="15"/>
 
-                <DrawSphere type="stone" x="90" y="3" z="115" radius="1"/>
-                <DrawSphere type="stone" x="99" y="3" z="113" radius="1"/>
-                <DrawSphere type="stone" x="97" y="3" z="118" radius="2"/>
-                <DrawSphere type="stone" x="115" y="3" z="110" radius="1"/>
-                <DrawSphere type="stone" x="125" y="3" z="115" radius="1"/>
-                <DrawSphere type="stone" x="135" y="3" z="111" radius="1"/>
-                <DrawSphere type="stone" x="90" y="3" z="135" radius="1"/>
-                <DrawSphere type="stone" x="97" y="3" z="138" radius="1"/>
-                <DrawSphere type="stone" x="115" y="3" z="130" radius="2"/>
-                <DrawSphere type="stone" x="125" y="3" z="135" radius="1"/>
-                <DrawSphere type="stone" x="135" y="3" z="131" radius="1"/>
+                <DrawCuboid type="netherrack" x1="-15" y1="3" z1="-15" x2="15" y2="3" z2="15"/>
 
-                <DrawCuboid type="fire" x1="87" y1="4" z1="130" x2="98" y2="4" z2="130"/>
-                <DrawCuboid type="fire" x1="102" y1="4" z1="130" x2="130" y2="4" z2="130"/>
+                <DrawCuboid type="fire" x1="-1" y1="4" z1="0" x2="1" y2="4" z2="0"/>
+                <DrawCuboid type="fire" x1="0" y1="4" z1="-1" x2="0" y2="4" z2="1"/>
 
-                <DrawEntity x="100" y="6" z="125" yaw="-90" type="Skeleton"/>
+                <DrawCuboid type="fire" x1="-7" y1="4" z1="-8" x2="-9" y2="4" z2="-8"/>
+                <DrawCuboid type="fire" x1="-8" y1="4" z1="-7" x2="-8" y2="4" z2="-9"/>
+
+                <DrawCuboid type="fire" x1="7" y1="4" z1="-8" x2="9" y2="4" z2="-8"/>
+                <DrawCuboid type="fire" x1="8" y1="4" z1="-7" x2="8" y2="4" z2="-9"/>
+
+                <DrawCuboid type="fire" x1="-7" y1="4" z1="8" x2="-9" y2="4" z2="8"/>
+                <DrawCuboid type="fire" x1="-8" y1="4" z1="7" x2="-8" y2="4" z2="9"/>
+
+                <DrawCuboid type="fire" x1="7" y1="4" z1="8" x2="9" y2="4" z2="8"/>
+                <DrawCuboid type="fire" x1="8" y1="4" z1="7" x2="8" y2="4" z2="9"/>
+
+                <DrawEntity x="0" y="6" z="5" yaw="-180" type="Skeleton"/>
 
             </DrawingDecorator>
         </ServerHandlers>
@@ -56,7 +52,7 @@
     <AgentSection mode="Survival">
         <Name>Rover</Name>
         <AgentStart>
-            <Placement x="103" y="7" z="135" yaw="45"/>
+            <Placement x="0" y="6" z="-5" yaw="0"/>
             <Inventory>
                 <InventoryItem type="diamond_sword" slot="0"/>
                 <InventoryItem type="diamond_boots" slot="36"/>
@@ -67,7 +63,7 @@
         </AgentStart>
         <AgentHandlers>
             <ObservationFromNearbyEntities>
-                <Range name="Entities" xrange="40" yrange="30" zrange="40"/>
+                <Range name="Entities" xrange="100" yrange="100" zrange="100"/>
             </ObservationFromNearbyEntities>
             <ObservationFromRay/>
             <ObservationFromGrid>
@@ -85,6 +81,9 @@
             <AbsoluteMovementCommands/>
             <ChatCommands/>
             <MissionQuitCommands quitDescription="give_up"/>
+            <RewardForDamagingEntity>
+                <Mob type="Skeleton" reward="20"/>
+            </RewardForDamagingEntity>
         </AgentHandlers>
     </AgentSection>
 

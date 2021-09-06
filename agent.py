@@ -129,4 +129,4 @@ class ObservationAgent(MalmoAgent):
         return True
 
     def is_agent_alive(self):
-        return self.observation.vector[6] > 0
+        return self.observation.vector[self.observation.player_life_index] > 0

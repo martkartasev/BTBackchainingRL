@@ -1,14 +1,14 @@
 from py_trees.common import Status
 
-from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving
+from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown
 from bt.sequence import Sequence
 from observation import Observation
 
 
 class BaselinesNode(Sequence):
-    AGENT_DEAD_REWARD = -500
-    ACC_VIOLATED_REWARD = -1000
-    POST_CONDITION_FULFILLED_REWARD = 1000
+    AGENT_DEAD_REWARD = -100
+    ACC_VIOLATED_REWARD = -100
+    POST_CONDITION_FULFILLED_REWARD = 100
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
         self.agent = agent
@@ -163,6 +163,8 @@ class DefeatCow(DynamicBaselinesNode):
             MoveForward(agent),
             MoveBackward(agent),
             StopMoving(agent),
-            Attack(agent)
+            Attack(agent),
+            PitchUp(agent),
+            PitchDown(agent)
         ]
         super().__init__(agent, "DefeatSkeleton", children, model)

@@ -1,4 +1,8 @@
+import time
+
 import gym
+
+MAX_TIME_SECONDS = 10 * 60
 
 
 class BaselinesNodeTrainingEnv(gym.Env):
@@ -13,6 +17,8 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.action_space = gym.spaces.Discrete(len(self.node.children))
         self.observation_space = self.node.get_observation_space()
 
+        self.start_time = time.time()
+
     def step(self, action):
         self.node.set_tick_child(action)
         self.node.tick_once()
@@ -25,14 +31,18 @@ class BaselinesNodeTrainingEnv(gym.Env):
         is_mission_over = self.node.is_mission_over()
         is_acc_violated = self.node.is_acc_violated()
         is_post_conditions_fulfilled = self.node.is_post_conditions_fulfilled()
+        is_timed_out = time.time() > self.start_time + MAX_TIME_SECONDS
 
-        done = is_mission_over or is_acc_violated or is_post_conditions_fulfilled
+        done = is_mission_over or is_acc_violated or is_post_conditions_fulfilled or is_timed_out
         if is_mission_over:
             print("Mission is Over")
         elif is_acc_violated:
             print("Acc was violated")
         elif is_post_conditions_fulfilled:
             print("Post Condition was fulfilled")
+        elif is_timed_out:
+            print("Timed out")
+
         return ob, reward, done, {}
 
     def close(self):
@@ -46,6 +56,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.mission.mission_initialization()
         self.mission.run_mission()
 
+        self.start_time = time.time()
         return self.node.get_observation_array()
 
     def render(self, mode='human', close=False):

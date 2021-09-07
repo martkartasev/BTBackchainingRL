@@ -1,6 +1,7 @@
 import os
 
 from stable_baselines3 import DQN
+from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.monitor import Monitor
 
 from bt import conditions
@@ -60,5 +61,25 @@ def test_node():
         mission.run()
 
 
+def test_env():
+    mission_xml_path = get_absolute_path(MISSION_PATH)
+    log_dir = get_absolute_path("results/basicfighter3_good")
+
+    agent = BasicFighterNodeTrainingAgent()
+    goals = [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)]
+    tree = BackChainTree(agent, goals)
+
+    mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
+
+    save_tree_to_log(tree.root, "cow_tree.txt")
+
+    node = tree.baseline_nodes[0]
+
+    os.makedirs(log_dir, exist_ok=True)
+    env = BaselinesNodeTrainingEnv(node, mission)
+    env = Monitor(env, log_dir)
+
+    check_env(env)
+
 if __name__ == '__main__':
-    train_node()
+    test_env()

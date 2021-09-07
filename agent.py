@@ -50,9 +50,7 @@ class MalmoAgent(BaseAgent):
         super().__init__()
 
     def move_towards_flat_direction(self, wanted_flat_direction_vector):
-        direction_vector_start_index = self.observation.direction_vector_start_index
-        direction_vector_end_index = direction_vector_start_index + 3
-        direction_vector = self.observation.vector[direction_vector_start_index:direction_vector_end_index]
+        direction_vector = self.observation.dict["direction"]
         flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
         flat_direction_vector /= np.linalg.norm(flat_direction_vector)
         side_direction_vector = np.array([flat_direction_vector[1], -flat_direction_vector[0]])
@@ -150,7 +148,7 @@ class ObservationAgent(MalmoAgent):
         if self.latestObservations is None:
             return False
 
-        if self.latestObservations is not None and self.observation is None:
+        if self.observation is None:
             self.previousObservations = self.observation
             self.observation = self.latestObservations
             return True
@@ -163,4 +161,4 @@ class ObservationAgent(MalmoAgent):
         return True
 
     def is_agent_alive(self):
-        return self.observation.vector[self.observation.player_life_index] > 0
+        return self.observation.dict["health"] > 0

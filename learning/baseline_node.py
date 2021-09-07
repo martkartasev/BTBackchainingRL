@@ -103,7 +103,7 @@ class DynamicBaselinesNode(BaselinesNode):
     def get_observation_array(self):
         observation = self.agent.observation
 
-        return None if observation is None else observation.vector
+        return None if observation is None else observation.dict
 
     def calculate_rewards(self):
         reward = self.agent.rewards - 0.1

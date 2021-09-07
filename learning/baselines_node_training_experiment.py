@@ -82,4 +82,4 @@ def test_env():
     check_env(env)
 
 if __name__ == '__main__':
-    test_env()
+    train_node()

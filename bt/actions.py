@@ -41,8 +41,7 @@ class AvoidFire(Action):
         return Status.SUCCESS if grid[0, 0] == game_objects.index("air") else Status.FAILURE
 
     def grid_observation_from_list(self):
-        grid_observation_list = self.agent.observation.vector[self.agent.observation.surroundings_list_index:]
-
+        grid_observation_list = self.agent.observation.dict["surroundings"]
         grid = np.array(grid_observation_list).reshape((GRID_SIZE_AXIS[1], GRID_SIZE_AXIS[2], GRID_SIZE_AXIS[0]))
         grid = np.transpose(grid, (2, 0, 1))
         return grid
@@ -59,11 +58,10 @@ class Eat(Action):
         self.is_running = False
 
     def update(self):
-        player_food = self.agent.observation.vector[self.agent.observation.player_food_index]
-        if player_food == 1:
+        if self.agent.observation.dict["satiation"] == 1:
             return Status.SUCCESS
 
-        food_inventory_item = self.agent.observation.vector[self.agent.observation.food_inventory_index_index]
+        food_inventory_item = self.agent.observation.dict["food_inventory_item"]
         if food_inventory_item == 0:
             return Status.FAILURE
 
@@ -86,23 +84,20 @@ class PickUpEntity(Action):
         super().__init__(name, agent)
 
     def update(self):
-
-        distance_start_index = self.agent.observation.entity_relative_position_start_index
-        distance_end_index = self.agent.observation.entity_relative_position_start_index + 3
-
-        distance_vector = self.agent.observation.vector[distance_start_index:distance_end_index]
+        distance_vector = self.agent.observation.dict["entity_relative_position"]
         entity_direction_vector = np.array([distance_vector[0], distance_vector[2]])
-        entity_direction_vector = entity_direction_vector/np.linalg.norm(entity_direction_vector)
+        entity_direction_vector = entity_direction_vector / np.linalg.norm(entity_direction_vector)
 
         self.agent.move_towards_flat_direction(entity_direction_vector)
 
-        has_food =  self.agent.observation.vector[self.agent.observation.food_inventory_index_index] > 0
+        has_food = self.agent.observation.dict["food_inventory_index"]
         return Status.SUCCESS if has_food else Status.RUNNING
 
     def terminate(self, new_status):
         #   print("Forward 0")
         self.agent.continuous_move(0)
         self.agent.continuous_strafe(0)
+
 
 class MoveForward(Action):
     def __init__(self, agent, name="Move Forward"):

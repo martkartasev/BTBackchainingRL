@@ -1,7 +1,7 @@
 import json
 
 import numpy as np
-from gym.spaces import Box
+from gym.spaces import Box, Dict, Discrete, MultiDiscrete
 
 CIRCLE_DEGREES = 360
 
@@ -94,7 +94,7 @@ def get_standardized_relative_position(entity_info, player_position):
         relative_position = entity_position - player_position
         relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
     else:
-        relative_position = RELATIVE_DISTANCE_AXIS_MAX*np.ones(3)
+        relative_position = RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
 
     standardized_relative_position = relative_position / RELATIVE_DISTANCE_AXIS_MAX
 
@@ -131,95 +131,48 @@ class Observation:
 
         info = json.loads(info_json)
 
-        current_index = 0
+        self.dict = {}
 
         player_position = get_player_position(info)
+        standardized_position = np.zeros(3) if player_position is None else player_position / ARENA_SIZE
+        standardized_position = np.clip(standardized_position, -1, 1)
+        self.dict["position"] = standardized_position
 
         food_info = get_entity_info(info, FOOD_TYPES)
         entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
+        self.dict["entity_relative_position"] = get_standardized_relative_position(entity_info, player_position)
 
-        self.entity_relative_position_start_index = current_index
-        entity_relative_position = get_standardized_relative_position(entity_info, player_position)
-        current_index += 3
+        self.dict["direction"] = get_direction_vector(info)
 
-        self.direction_vector_start_index = current_index
-        direction_vector = get_direction_vector(info)
-        current_index += 3
+        self.dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
+        self.dict["satiation"] = np.array([info.get("Food", 0) / PLAYER_MAX_FOOD])
 
-        self.player_life_index = current_index
-        player_life = info.get("Life", 0)
-        player_life = player_life / PLAYER_MAX_LIFE
-        current_index += 1
-
-        self.player_food_index = current_index
-        player_food = info.get("Food", 0)
-        player_food = player_food / PLAYER_MAX_FOOD
-        current_index += 1
-
-        self.entity_life_index = current_index
         entity_life = 0 if entity_info is None else entity_info.get("life", 0)
-        entity_life = entity_life / ENEMY_MAX_LIFE
-        current_index += 1
+        self.dict["entity_health"] = np.array([entity_life / ENEMY_MAX_LIFE])
 
-        self.is_entity_pickable_index = current_index
-        is_entity_pickable = food_info is not None
-        current_index += 1
+        self.dict["is_entity_pickable"] = 1 if food_info is not None else 0
 
-        self.food_inventory_index_index = current_index
-        food_inventory_index = get_item_inventory_index(info, FOOD_TYPES)
-        current_index += 1
+        self.dict["food_inventory_index"] = get_item_inventory_index(info, FOOD_TYPES)
 
-        self.surroundings_list_index = current_index
         surroundings_list = info.get("Surroundings")
-        current_index += 1
-
         if surroundings_list is not None:
             surroundings = get_grid_obs_vector(surroundings_list)
         else:
             surroundings = np.zeros(GRID_SIZE)
-
-        self.vector = np.hstack((
-            entity_relative_position,
-            direction_vector,
-            player_life,
-            player_food,
-            entity_life,
-            is_entity_pickable,
-            food_inventory_index,
-            surroundings
-        ))
+        self.dict["surroundings"] = surroundings
 
     @staticmethod
     def get_observation_space():
-        relative_position_range = (-np.ones(3), np.ones(3))
-        direction_range = (-np.ones(3), np.ones(3))
-        player_life_range = (0, 1)
-        player_food_range = (0, 1)
-        entity_life_range = (0, 1)
-        is_entity_pickable_range = (0, 1)
-        food_inventory_index_range = (0, INVENTORY_SIZE + 1)
-        surroundings_range = (np.zeros(GRID_SIZE), len(game_objects) * np.ones(GRID_SIZE))
-
-        low = np.hstack((
-            relative_position_range[0],
-            direction_range[0],
-            player_life_range[0],
-            player_food_range[0],
-            entity_life_range[0],
-            is_entity_pickable_range[0],
-            food_inventory_index_range[0],
-            surroundings_range[0]
-        ))
-
-        high = np.hstack((
-            relative_position_range[1],
-            direction_range[1],
-            player_life_range[1],
-            player_food_range[1],
-            entity_life_range[1],
-            is_entity_pickable_range[1],
-            food_inventory_index_range[1],
-            surroundings_range[1]
-        ))
-
-        return Box(low, high)
+        return Dict(
+            spaces={
+                "position": Box(-1, 1, (3,)),
+                "entity_relative_position": Box(-1, 1, (3,)),
+                "direction": Box(-1, 1, (3,)),
+                "health": Box(0, 1, (1,)),
+                "satiation": Box(0, 1, (1,)),
+                "entity_health": Box(0, 1, (1,)),
+                "is_entity_pickable": Discrete(2),
+                "food_inventory_index": Discrete(INVENTORY_SIZE + 2),
+                "surroundings": MultiDiscrete(GRID_SIZE * [len(game_objects) + 1])
+            }
+        )

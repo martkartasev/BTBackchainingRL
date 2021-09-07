@@ -21,7 +21,7 @@ GRID_SIZE_AXIS = [5, 1, 5]
 GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
 # Always append at the end of this list
-game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block"]
+game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]
 
 
 def get_entity_info(info, entity_names):
@@ -133,11 +133,7 @@ class Observation:
 
         current_index = 0
 
-        self.player_position_start_index = current_index
         player_position = get_player_position(info)
-        standardized_position = np.zeros(3) if player_position is None else player_position / ARENA_SIZE
-        standardized_position = np.clip(standardized_position, -1, 1)
-        current_index += 3
 
         food_info = get_entity_info(info, FOOD_TYPES)
         entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
@@ -183,7 +179,6 @@ class Observation:
             surroundings = np.zeros(GRID_SIZE)
 
         self.vector = np.hstack((
-            standardized_position,
             entity_relative_position,
             direction_vector,
             player_life,
@@ -196,7 +191,6 @@ class Observation:
 
     @staticmethod
     def get_observation_space():
-        position_range = (-np.ones(3), np.ones(3))
         relative_position_range = (-np.ones(3), np.ones(3))
         direction_range = (-np.ones(3), np.ones(3))
         player_life_range = (0, 1)
@@ -207,7 +201,6 @@ class Observation:
         surroundings_range = (np.zeros(GRID_SIZE), len(game_objects) * np.ones(GRID_SIZE))
 
         low = np.hstack((
-            position_range[0],
             relative_position_range[0],
             direction_range[0],
             player_life_range[0],
@@ -219,7 +212,6 @@ class Observation:
         ))
 
         high = np.hstack((
-            position_range[1],
             relative_position_range[1],
             direction_range[1],
             player_life_range[1],

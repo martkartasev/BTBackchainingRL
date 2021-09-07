@@ -27,6 +27,8 @@
                 <DrawCuboid type="air" x1="-5" y1="4" z1="-5" x2="5" y2="6" z2="5"/>
 
                 <DrawCuboid type="netherrack" x1="-5" y1="3" z1="-5" x2="5" y2="3" z2="5"/>
+                <DrawCuboid type="obsidian" x1="-5" y1="2" z1="-5" x2="5" y2="2" z2="5"/>
+
 
                 <DrawCuboid type="fire" x1="-1" y1="4" z1="0" x2="1" y2="4" z2="0"/>
                 <DrawCuboid type="fire" x1="0" y1="4" z1="-1" x2="0" y2="4" z2="1"/>

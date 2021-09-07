@@ -1,6 +1,6 @@
 from py_trees.common import Status
 
-from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown
+from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown, Jump
 from bt.sequence import Sequence
 from observation import Observation
 
@@ -165,6 +165,7 @@ class DefeatCow(DynamicBaselinesNode):
             StopMoving(agent),
             Attack(agent),
             PitchUp(agent),
-            PitchDown(agent)
+            PitchDown(agent),
+            Jump(agent)
         ]
         super().__init__(agent, "DefeatSkeleton", children, model)

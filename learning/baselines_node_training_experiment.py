@@ -38,7 +38,7 @@ def train_node():
     env = Monitor(env, log_dir)
 
     model = DQN(
-        'MlpPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"), exploration_fraction=0.05
+        'MultiInputPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"), exploration_fraction=0.05
     )
     model.learn(total_timesteps=TOTAL_TIMESTEPS, callback=SaveOnBestTrainingRewardCallback(5000, log_dir=log_dir))
     model.save(log_dir + "/finalbasicfarmer.mdl")

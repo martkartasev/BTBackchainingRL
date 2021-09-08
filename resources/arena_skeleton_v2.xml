@@ -48,7 +48,6 @@
                 <DrawBlock type="fire" x="-15" y="4" z="15"/>
                 <DrawBlock type="fire" x="15" y="4" z="15"/>
 
-
                 <DrawEntity x="0" y="6" z="5" yaw="-180" type="Skeleton"/>
 
             </DrawingDecorator>

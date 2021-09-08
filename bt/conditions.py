@@ -1,4 +1,3 @@
-import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 

@@ -117,6 +117,7 @@ def get_item_inventory_index(info, items):
         return 0
 
 
+
 class Observation:
 
     def __init__(self, observations):
@@ -154,6 +155,7 @@ class Observation:
 
         self.dict["food_inventory_index"] = get_item_inventory_index(info, FOOD_TYPES)
 
+
         surroundings_list = info.get("Surroundings")
         if surroundings_list is not None:
             surroundings = get_grid_obs_vector(surroundings_list)
@@ -176,3 +178,4 @@ class Observation:
                 "surroundings": Box(0, len(game_objects) + 1, (GRID_SIZE,), dtype=np.uint8)
             }
         )
+

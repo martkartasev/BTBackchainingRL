@@ -34,6 +34,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
         is_timed_out = time.time() > self.start_time + MAX_TIME_SECONDS
 
         done = is_mission_over or is_acc_violated or is_post_conditions_fulfilled or is_timed_out
+
         if is_mission_over:
             print("Mission is Over")
         elif is_acc_violated:
@@ -44,6 +45,8 @@ class BaselinesNodeTrainingEnv(gym.Env):
             print("Timed out")
 
         return ob, reward, done, {}
+
+
 
     def close(self):
         self.agent.quit()

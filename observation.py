@@ -1,7 +1,7 @@
 import json
 
 import numpy as np
-from gym.spaces import Box, Dict, Discrete, MultiDiscrete
+from gym.spaces import Box, Dict, Discrete
 
 CIRCLE_DEGREES = 360
 
@@ -173,6 +173,6 @@ class Observation:
                 "entity_health": Box(0, 1, (1,)),
                 "is_entity_pickable": Discrete(2),
                 "food_inventory_index": Discrete(INVENTORY_SIZE + 2),
-                "surroundings": MultiDiscrete(GRID_SIZE * [len(game_objects) + 1])
+                "surroundings": Box(0, len(game_objects) + 1, (GRID_SIZE,), dtype=np.uint8)
             }
         )

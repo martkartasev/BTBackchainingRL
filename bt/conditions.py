@@ -1,8 +1,9 @@
+import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
 import observation
-from observation import game_objects, GRID_SIZE_AXIS
+from observation import GRID_SIZE_AXIS
 
 
 class Condition(Behaviour):
@@ -18,7 +19,7 @@ class IsNotInFire(Condition):
     def update(self):
         grid_list = self.agent.observation.dict["surroundings"]
         me_position_index = int((GRID_SIZE_AXIS[0] * GRID_SIZE_AXIS[2] - 1) / 2)
-        return Status.SUCCESS if grid_list[me_position_index] != (game_objects.index("fire") + 1) else Status.FAILURE
+        return Status.SUCCESS if grid_list[me_position_index] != 1 else Status.FAILURE
 
 
 class IsEnemyDefeated(Condition):
@@ -56,7 +57,7 @@ class HasFood(Condition):
         super(HasFood, self).__init__(f"Has food", agent)
 
     def update(self):
-        return Status.SUCCESS if self.agent.observation.dict["food_inventory_index"] > 0 else Status.FAILURE
+        return Status.SUCCESS if self.agent.observation.dict["has_food"] > 0 else Status.FAILURE
 
 
 class IsEntityPickable(Condition):

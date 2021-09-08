@@ -67,7 +67,7 @@ def degrees_to_radians(deg):
     return deg * np.pi / half_circle
 
 
-def get_grid_obs_vector(grid):
+def get_surroundings(grid):
     grid_ordinals = [get_game_object_ordinal(block) for block in grid]
     return np.array(grid_ordinals, dtype=np.float32)
 
@@ -80,6 +80,22 @@ def get_game_object_ordinal(game_object):
         return 0
     else:
         return game_objects.index(game_object) + 1
+
+
+def get_simplified_surroundings(grid):
+    grid_ordinals = [get_simplified_game_object_ordinal(block) for block in grid]
+    return np.array(grid_ordinals, dtype=np.float32)
+
+
+def get_simplified_game_object_ordinal(game_object):
+    if game_object is None:
+        return 0
+    elif game_object == "air":
+        return 0
+    elif game_object == "fire":
+        return 1
+    else:
+        return 2
 
 
 def get_standardized_relative_position(entity_info, player_position):
@@ -117,7 +133,6 @@ def get_item_inventory_index(info, items):
         return 0
 
 
-
 class Observation:
 
     def __init__(self, observations):
@@ -135,9 +150,6 @@ class Observation:
         self.dict = {}
 
         player_position = get_player_position(info)
-        standardized_position = np.zeros(3) if player_position is None else player_position / ARENA_SIZE
-        standardized_position = np.clip(standardized_position, -1, 1)
-        self.dict["position"] = standardized_position
 
         food_info = get_entity_info(info, FOOD_TYPES)
         entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
@@ -153,12 +165,11 @@ class Observation:
 
         self.dict["is_entity_pickable"] = 1 if food_info is not None else 0
 
-        self.dict["food_inventory_index"] = get_item_inventory_index(info, FOOD_TYPES)
-
+        self.dict["has_food"] = get_item_inventory_index(info, FOOD_TYPES) > 0
 
         surroundings_list = info.get("Surroundings")
         if surroundings_list is not None:
-            surroundings = get_grid_obs_vector(surroundings_list)
+            surroundings = get_simplified_surroundings(surroundings_list)
         else:
             surroundings = np.zeros(GRID_SIZE)
         self.dict["surroundings"] = surroundings
@@ -167,15 +178,13 @@ class Observation:
     def get_observation_space():
         return Dict(
             spaces={
-                "position": Box(-1, 1, (3,)),
                 "entity_relative_position": Box(-1, 1, (3,)),
                 "direction": Box(-1, 1, (3,)),
                 "health": Box(0, 1, (1,)),
                 "satiation": Box(0, 1, (1,)),
                 "entity_health": Box(0, 1, (1,)),
                 "is_entity_pickable": Discrete(2),
-                "food_inventory_index": Discrete(INVENTORY_SIZE + 2),
-                "surroundings": Box(0, len(game_objects) + 1, (GRID_SIZE,), dtype=np.uint8)
+                "has_food": Discrete(2),
+                "surroundings": Box(0, 2, (GRID_SIZE,), dtype=np.uint8)
             }
         )
-

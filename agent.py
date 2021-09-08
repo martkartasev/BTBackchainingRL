@@ -37,6 +37,9 @@ class BaseAgent:
     def activate_night_vision(self):
         self.agent_host.sendCommand("chat /effect @p night_vision 99999 255")
 
+    def set_fire_eternal(self):
+        self.agent_host.sendCommand("chat /gamerule doFireTick false")
+
     def make_hungry(self):
         self.agent_host.sendCommand("chat /effect @p hunger 5 255")
 

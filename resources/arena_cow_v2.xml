@@ -21,12 +21,12 @@
             <FlatWorldGenerator forceReset="true"/>
             <DrawingDecorator>
 
-                <DrawCuboid type="brick_block" x1="-6" y1="4" z1="-6" x2="6" y2="6" z2="6"/>
+                <DrawCuboid type="diamond_block" x1="-6" y1="4" z1="-6" x2="6" y2="6" z2="6"/>
 
 
                 <DrawCuboid type="air" x1="-5" y1="4" z1="-5" x2="5" y2="6" z2="5"/>
 
-                <DrawCuboid type="netherrack" x1="-5" y1="3" z1="-5" x2="5" y2="3" z2="5"/>
+                <DrawCuboid type="obsidian" x1="-5" y1="3" z1="-5" x2="5" y2="3" z2="5"/>
                 <DrawCuboid type="obsidian" x1="-5" y1="2" z1="-5" x2="5" y2="2" z2="5"/>
 
 

@@ -1,29 +1,33 @@
 import json
 
 import numpy as np
-from gym.spaces import Box
+from gym.spaces import Box, Dict, Discrete
 
 CIRCLE_DEGREES = 360
 
-RELATIVE_DISTANCE_AXIS_MAX = 1000
+ARENA_SIZE = 16
+RELATIVE_DISTANCE_AXIS_MAX = 50
+INVENTORY_SIZE = 41
 
 PLAYER_MAX_LIFE = 100
+PLAYER_MAX_FOOD = 20
 
 ENEMY_TYPE = "Skeleton"
+ANIMAL_TYPE = "Cow"
+FOOD_TYPES = ["beef", "cooked_beef"]
 ENEMY_MAX_LIFE = 24
 
-# TODO: This shouldn't be hard-coded
-GRID_SIZE = 3 * 3 * 2
-GRID_SIZE_AXIS = [3, 2, 3]
+GRID_SIZE_AXIS = [5, 1, 5]
+GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
 # Always append at the end of this list
-game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block"]
+game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]
 
 
-def get_skeleton_info(info):
+def get_entity_info(info, entity_names):
     if "Entities" in info:
         for entity in info["Entities"]:
-            if entity.get("name") == ENEMY_TYPE:
+            if entity.get("name") in entity_names:
                 return entity
 
 
@@ -78,26 +82,40 @@ def get_game_object_ordinal(game_object):
         return game_objects.index(game_object) + 1
 
 
-def get_relative_position(skeleton_info, info):
-    if skeleton_info is not None:
-        skeleton_position_list = [skeleton_info.get("x"), skeleton_info.get("y"), skeleton_info.get("z")]
+def get_standardized_relative_position(entity_info, player_position):
+    if entity_info is not None:
+        entity_position_list = [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
     else:
-        skeleton_position_list = [None, None, None]
+        entity_position_list = [None, None, None]
 
-    skeleton_position = None if None in skeleton_position_list else np.array(skeleton_position_list)
+    entity_position = None if None in entity_position_list else np.array(entity_position_list)
 
-    player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
-    player_position = None if None in player_position_list else np.array(player_position_list)
-
-    if player_position is not None and skeleton_position is not None:
-        relative_position = skeleton_position - player_position
+    if player_position is not None and entity_position is not None:
+        relative_position = entity_position - player_position
         relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
     else:
-        relative_position = np.zeros(3)
+        relative_position = RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
 
-    standardized_relative_position = relative_position/RELATIVE_DISTANCE_AXIS_MAX
+    standardized_relative_position = relative_position / RELATIVE_DISTANCE_AXIS_MAX
 
     return standardized_relative_position
+
+
+def get_player_position(info):
+    player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
+    player_position = None if None in player_position_list else np.array(player_position_list)
+    return player_position
+
+
+def get_item_inventory_index(info, items):
+    if "inventory" in info:
+        for inventory_slot in info["inventory"]:
+            if inventory_slot.get("type") in items:
+                return inventory_slot.get("index", -1) + 1
+        return 0
+    else:
+        return 0
+
 
 
 class Observation:
@@ -114,71 +132,50 @@ class Observation:
 
         info = json.loads(info_json)
 
-        current_index = 0
+        self.dict = {}
 
-        skeleton_info = get_skeleton_info(info)
+        player_position = get_player_position(info)
+        standardized_position = np.zeros(3) if player_position is None else player_position / ARENA_SIZE
+        standardized_position = np.clip(standardized_position, -1, 1)
+        self.dict["position"] = standardized_position
 
-        self.relative_position_start_index = current_index
-        relative_position = get_relative_position(skeleton_info, info)
-        current_index += 3
+        food_info = get_entity_info(info, FOOD_TYPES)
+        entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
+        self.dict["entity_relative_position"] = get_standardized_relative_position(entity_info, player_position)
 
-        self.direction_vector_start_index = current_index
-        direction_vector = get_direction_vector(info)
-        current_index += 3
+        self.dict["direction"] = get_direction_vector(info)
 
-        self.player_life_index = current_index
-        player_life = info.get("Life", 0)
-        player_life = player_life / PLAYER_MAX_LIFE
-        current_index += 1
+        self.dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
+        self.dict["satiation"] = np.array([info.get("Food", 0) / PLAYER_MAX_FOOD])
 
-        self.skeleton_life_index = current_index
-        skeleton_life = 0 if skeleton_info is None else skeleton_info.get("life", 0)
-        skeleton_life = skeleton_life / ENEMY_MAX_LIFE
-        current_index += 1
+        entity_life = 0 if entity_info is None else entity_info.get("life", 0)
+        self.dict["entity_health"] = np.array([entity_life / ENEMY_MAX_LIFE])
 
-        self.surroundings_list_index = current_index
+        self.dict["is_entity_pickable"] = 1 if food_info is not None else 0
+
+        self.dict["food_inventory_index"] = get_item_inventory_index(info, FOOD_TYPES)
+
+
         surroundings_list = info.get("Surroundings")
-        current_index += 1
-
         if surroundings_list is not None:
             surroundings = get_grid_obs_vector(surroundings_list)
         else:
             surroundings = np.zeros(GRID_SIZE)
-
-        self.vector = np.hstack((
-            relative_position,
-            direction_vector,
-            player_life,
-            skeleton_life,
-            surroundings
-        ))
+        self.dict["surroundings"] = surroundings
 
     @staticmethod
     def get_observation_space():
-        low_position = -1 * np.ones(3)
-        low_direction = -1 * np.ones(3)
-        low_player_life = 0
-        low_skeleton_life = 0
-        low_surroundings = np.zeros(GRID_SIZE)
-        low = np.hstack((
-            low_position,
-            low_direction,
-            low_player_life,
-            low_skeleton_life,
-            low_surroundings
-        ))
+        return Dict(
+            spaces={
+                "position": Box(-1, 1, (3,)),
+                "entity_relative_position": Box(-1, 1, (3,)),
+                "direction": Box(-1, 1, (3,)),
+                "health": Box(0, 1, (1,)),
+                "satiation": Box(0, 1, (1,)),
+                "entity_health": Box(0, 1, (1,)),
+                "is_entity_pickable": Discrete(2),
+                "food_inventory_index": Discrete(INVENTORY_SIZE + 2),
+                "surroundings": Box(0, len(game_objects) + 1, (GRID_SIZE,), dtype=np.uint8)
+            }
+        )
 
-        high_position = np.ones(3)
-        high_direction = np.ones(3)
-        high_player_life = 1
-        high_skeleton_life = 1
-        high_surroundings = len(game_objects) * np.ones(GRID_SIZE)
-        high = np.hstack((
-            high_position,
-            high_direction,
-            high_player_life,
-            high_skeleton_life,
-            high_surroundings
-        ))
-
-        return Box(low, high)

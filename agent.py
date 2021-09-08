@@ -1,5 +1,6 @@
 import time
 
+import numpy as np
 from malmo.MalmoPython import AgentHost
 
 
@@ -34,12 +35,31 @@ class BaseAgent:
         return observations, reward
 
     def activate_night_vision(self):
-        self.agent_host.sendCommand(f"chat /effect @p night_vision 99999 255")
+        self.agent_host.sendCommand("chat /effect @p night_vision 99999 255")
+
+    def make_hungry(self):
+        self.agent_host.sendCommand("chat /effect @p hunger 5 255")
+
+    def create_static_skeleton(self):
+        self.agent_host.sendCommand("chat /summon skeleton -5 4 5 {NoAI:1}")
+
 
 
 class MalmoAgent(BaseAgent):
     def __init__(self):
         super().__init__()
+
+    def move_towards_flat_direction(self, wanted_flat_direction_vector):
+        direction_vector = self.observation.dict["direction"]
+        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
+        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
+        side_direction_vector = np.array([flat_direction_vector[1], -flat_direction_vector[0]])
+
+        angle = np.arccos(np.dot(wanted_flat_direction_vector, flat_direction_vector))
+        sign = 1 if np.dot(wanted_flat_direction_vector, side_direction_vector) > 0 else -1
+
+        self.continuous_move(np.cos(angle))
+        self.continuous_strafe(-sign * np.sin(angle))
 
     def continuous_move(self, val):
         self.agent_host.sendCommand("move " + str(val))
@@ -68,6 +88,14 @@ class MalmoAgent(BaseAgent):
     def crouch(self, toggle):
         self.agent_host.sendCommand("crouch " + str(toggle))
 
+    def swap_items(self, position1, position2):
+        self.agent_host.sendCommand("swapInventoryItems {0} {1}".format(position1, position2))
+
+    def select_on_hotbar(self, position):
+        self.agent_host.sendCommand(f"hotbar.{position + 1} 1")  # press
+        self.agent_host.sendCommand(f"hotbar.{position + 1} 0")  # release
+        time.sleep(0.1)  # Stupid but necessary
+
     def use(self, toggle=None):
         if toggle is None:
             self.agent_host.sendCommand("use")
@@ -78,6 +106,10 @@ class MalmoAgent(BaseAgent):
             time.sleep(0.001)
             self.agent_host.sendCommand("use 0")
             time.sleep(0.5)  # Stupid but necessary
+
+    def continuous_use(self, toggle):
+        self.agent_host.sendCommand("use " + str(toggle))
+
 
     def quit(self):
         self.agent_host.sendCommand("quit")
@@ -116,7 +148,7 @@ class ObservationAgent(MalmoAgent):
         if self.latestObservations is None:
             return False
 
-        if self.latestObservations is not None and self.observation is None:
+        if self.observation is None:
             self.previousObservations = self.observation
             self.observation = self.latestObservations
             return True
@@ -129,4 +161,4 @@ class ObservationAgent(MalmoAgent):
         return True
 
     def is_agent_alive(self):
-        return self.observation.vector[self.observation.player_life_index] > 0
+        return self.observation.dict["health"] > 0

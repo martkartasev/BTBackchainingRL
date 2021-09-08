@@ -1,18 +1,13 @@
-import time
-
-import numpy as np
-from gym import spaces
 from py_trees.common import Status
 
-from bt.accs import find_accs
-from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving
+from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown
 from bt.sequence import Sequence
 from observation import Observation
 
 
 class BaselinesNode(Sequence):
-    AGENT_DEAD_REWARD = -500
-    ACC_VIOLATED_REWARD = -1000
+    AGENT_DEAD_REWARD = -1000
+    ACC_VIOLATED_REWARD = -100
     POST_CONDITION_FULFILLED_REWARD = 1000
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
@@ -108,7 +103,7 @@ class DynamicBaselinesNode(BaselinesNode):
     def get_observation_array(self):
         observation = self.agent.observation
 
-        return None if observation is None else observation.vector
+        return None if observation is None else observation.dict
 
     def calculate_rewards(self):
         reward = self.agent.rewards - 0.1
@@ -155,5 +150,21 @@ class DefeatSkeleton(DynamicBaselinesNode):
             MoveBackward(agent),
             StopMoving(agent),
             Attack(agent)
+        ]
+        super().__init__(agent, "DefeatSkeleton", children, model)
+
+
+class DefeatCow(DynamicBaselinesNode):
+
+    def __init__(self, agent, model=None):
+        children = [
+            TurnLeft(agent),
+            TurnRight(agent),
+            MoveForward(agent),
+            MoveBackward(agent),
+            StopMoving(agent),
+            Attack(agent),
+            PitchUp(agent),
+            PitchDown(agent)
         ]
         super().__init__(agent, "DefeatSkeleton", children, model)

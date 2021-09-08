@@ -48,7 +48,8 @@
                 <DrawBlock type="fire" x="-15" y="4" z="15"/>
                 <DrawBlock type="fire" x="15" y="4" z="15"/>
 
-                <DrawEntity x="0" y="6" z="5" yaw="-180" type="Skeleton"/>
+
+                <DrawEntity x="0" y="6" z="5" yaw="-180" type="Cow"/>
 
             </DrawingDecorator>
         </ServerHandlers>
@@ -60,6 +61,10 @@
             <Placement x="0" y="6" z="-5" yaw="0"/>
             <Inventory>
                 <InventoryItem type="diamond_sword" slot="0"/>
+                <InventoryItem type="diamond_boots" slot="36"/>
+                <InventoryItem type="diamond_leggings" slot="37"/>
+                <InventoryItem type="diamond_chestplate" slot="38"/>
+                <InventoryItem type="diamond_helmet" slot="39"/>
             </Inventory>
         </AgentStart>
         <AgentHandlers>
@@ -83,7 +88,7 @@
             <ChatCommands/>
             <MissionQuitCommands quitDescription="give_up"/>
             <RewardForDamagingEntity>
-                <Mob type="Skeleton" reward="20"/>
+                <Mob type="Cow" reward="20"/>
             </RewardForDamagingEntity>
         </AgentHandlers>
     </AgentSection>

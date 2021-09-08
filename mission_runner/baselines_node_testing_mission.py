@@ -4,7 +4,11 @@ from mission_runner.abstract_mission import AbstractMission
 from observation import Observation
 
 
-class NormalMission(AbstractMission):
+class BaselinesNodeTestingMission(AbstractMission):
+
+    def __init__(self, agent, tree, filename=None):
+        super().__init__(agent, filename)
+        self.tree = tree
 
     def run_mission(self):
         world_state = self.agent.get_world_state()
@@ -19,7 +23,7 @@ class NormalMission(AbstractMission):
                 self.agent.quit()
                 break
 
-            self.agent.control_loop()
+            self.tree.tick_once()
 
     def run(self):
         self.mission_initialization()

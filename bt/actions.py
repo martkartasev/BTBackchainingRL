@@ -35,25 +35,66 @@ class AvoidFire(Action):
 
         min_distance_vector = distances_vector[min_dist_arg]
         distance_vector_direction = min_distance_vector / np.linalg.norm(min_distance_vector)
-        direction_vector = self.agent.observation.vector[3:6]
-        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
-        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
 
-        angle = np.arccos(np.dot(distance_vector_direction, flat_direction_vector))
-
-        self.agent.continuous_move(np.cos(angle))
-        self.agent.continuous_strafe(-np.sin(angle))
+        self.agent.move_towards_flat_direction(distance_vector_direction)
 
         return Status.SUCCESS if grid[0, 0] == game_objects.index("air") else Status.FAILURE
 
     def grid_observation_from_list(self):
-        grid_observation_list = self.agent.observation.vector[7:]
-
+        grid_observation_list = self.agent.observation.dict["surroundings"]
         grid = np.array(grid_observation_list).reshape((GRID_SIZE_AXIS[1], GRID_SIZE_AXIS[2], GRID_SIZE_AXIS[0]))
         grid = np.transpose(grid, (2, 0, 1))
         return grid
 
     def terminate(self, new_status):
+        self.agent.continuous_move(0)
+        self.agent.continuous_strafe(0)
+
+
+class Eat(Action):
+
+    def __init__(self, agent, name="Eat"):
+        super().__init__(name, agent)
+        self.is_running = False
+
+    def update(self):
+        if self.agent.observation.dict["satiation"] == 1:
+            return Status.SUCCESS
+
+        food_inventory_item = self.agent.observation.dict["food_inventory_item"]
+        if food_inventory_item == 0:
+            return Status.FAILURE
+
+        if not self.is_running:
+            self.agent.select_on_hotbar(int(food_inventory_item) - 1)
+            self.is_running = True
+
+        self.agent.continuous_use(1)
+        return Status.RUNNING
+
+    def terminate(self, new_status):
+        self.is_running = False
+        self.agent.continuous_use(0)
+        self.agent.select_on_hotbar(0)
+
+
+class PickUpEntity(Action):
+
+    def __init__(self, agent, name="Pick up Entity"):
+        super().__init__(name, agent)
+
+    def update(self):
+        distance_vector = self.agent.observation.dict["entity_relative_position"]
+        entity_direction_vector = np.array([distance_vector[0], distance_vector[2]])
+        entity_direction_vector = entity_direction_vector / np.linalg.norm(entity_direction_vector)
+
+        self.agent.move_towards_flat_direction(entity_direction_vector)
+
+        has_food = self.agent.observation.dict["food_inventory_index"]
+        return Status.SUCCESS if has_food else Status.RUNNING
+
+    def terminate(self, new_status):
+        #   print("Forward 0")
         self.agent.continuous_move(0)
         self.agent.continuous_strafe(0)
 
@@ -214,10 +255,6 @@ class StopMoving(Action):
         self.agent.continuous_turn(0)
         self.agent.continuous_pitch(0)
         return Status.RUNNING
-
-    def terminate(self, new_status):
-        #   print("Strafe 0")
-        self.agent.continuous_strafe(0)
 
 
 class Use(Action):

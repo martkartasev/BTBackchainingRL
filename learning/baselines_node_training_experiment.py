@@ -17,7 +17,7 @@ from utils.visualisation import save_tree_to_log
 
 TOTAL_TIMESTEPS = 3000000
 
-MISSION_PATH = "resources/arena_cow_v2.xml"
+MISSION_PATH = "resources/arena_cow_skeleton.xml"
 
 def train_node():
     mission_xml_path = get_absolute_path(MISSION_PATH)

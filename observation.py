@@ -5,7 +5,6 @@ from gym.spaces import Box, Dict, Discrete
 
 CIRCLE_DEGREES = 360
 
-ARENA_SIZE = 16
 RELATIVE_DISTANCE_AXIS_MAX = 50
 INVENTORY_SIZE = 41
 
@@ -151,9 +150,6 @@ class Observation:
 
         player_position = get_player_position(info)
 
-        enemy_info = get_entity_info(info, [ENEMY_TYPE])
-        self.dict["enemy_relative_position"] = get_standardized_relative_position(enemy_info, player_position)
-
         food_info = get_entity_info(info, FOOD_TYPES)
         entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
         self.dict["entity_relative_position"] = get_standardized_relative_position(entity_info, player_position)
@@ -182,7 +178,6 @@ class Observation:
         return Dict(
             spaces={
                 "entity_relative_position": Box(-1, 1, (3,)),
-                "enemy_relative_position": Box(-1, 1, (3,)),
                 "direction": Box(-1, 1, (3,)),
                 "health": Box(0, 1, (1,)),
                 "satiation": Box(0, 1, (1,)),

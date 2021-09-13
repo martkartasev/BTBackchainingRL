@@ -32,16 +32,31 @@ class IsEnemyDefeated(Condition):
 
 
 class IsNotAttackedByEnemy(Condition):
+    ENEMY_AGGRO_RANGE = 5
+
     def __init__(self, agent):
         super(IsNotAttackedByEnemy, self).__init__(f"Is not attacked by enemy", agent)
 
     def update(self):
-        enemy_distance = self.agent.observation.dict["entity_relative_position"]
+        enemy_distance = self.agent.observation.dict["enemy_relative_position"]
 
         non_standardized_distance = enemy_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return Status.SUCCESS if distance >= 2 else Status.FAILURE
+        return Status.SUCCESS if distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE else Status.FAILURE
+
+
+class IsCloseToEntity(Condition):
+    def __init__(self, agent):
+        super(IsCloseToEntity, self).__init__(f"Is Close To Entity", agent)
+
+    def update(self):
+        entity_distance = self.agent.observation.dict["entity_relative_position"]
+
+        non_standardized_distance = entity_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
+        distance = np.linalg.norm(non_standardized_distance)
+
+        return Status.SUCCESS if distance <= 2 else Status.FAILURE
 
 
 class IsNotHungry(Condition):

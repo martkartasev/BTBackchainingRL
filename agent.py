@@ -44,7 +44,7 @@ class BaseAgent:
         self.agent_host.sendCommand("chat /effect @p hunger 5 255")
 
     def create_static_skeleton(self):
-        self.agent_host.sendCommand("chat /summon skeleton -5 4 5 {NoAI:1}")
+        self.agent_host.sendCommand("chat /summon skeleton -14 4 0 {NoAI:1}")
 
 
 

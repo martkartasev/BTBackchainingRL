@@ -87,6 +87,7 @@ class AbstractMission:
         self.agent.activate_night_vision()
         self.agent.set_fire_eternal()
         self.agent.make_hungry()
+        self.agent.create_static_skeleton()
 
         return world_state
 

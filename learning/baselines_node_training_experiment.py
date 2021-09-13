@@ -15,16 +15,16 @@ from mission_runner.baselines_node_training_mission import BaselinesNodeTraining
 from utils.file import get_absolute_path, get_project_root
 from utils.visualisation import save_tree_to_log
 
-TOTAL_TIMESTEPS = 1500000
+TOTAL_TIMESTEPS = 3000000
 
-MISSION_PATH = "resources/arena_cow_v2.xml"
+MISSION_PATH = "resources/arena_cow_skeleton.xml"
 
 def train_node():
     mission_xml_path = get_absolute_path(MISSION_PATH)
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
-    goals = [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)]
+    goals = [conditions.IsCloseToEntity(agent)]
     tree = BackChainTree(agent, goals)
 
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
@@ -66,7 +66,7 @@ def test_env():
     log_dir = get_absolute_path("results/basicfighter3_good")
 
     agent = BasicFighterNodeTrainingAgent()
-    goals = [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)]
+    goals = [conditions.IsCloseToEntity(agent)]
     tree = BackChainTree(agent, goals)
 
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)

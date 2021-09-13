@@ -1,6 +1,6 @@
 import gym
 
-EP_MAX_TIME_STEPS = 5000
+EP_MAX_TIME_STEPS = 15000
 
 
 class BaselinesNodeTrainingEnv(gym.Env):

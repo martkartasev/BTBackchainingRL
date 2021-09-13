@@ -168,3 +168,16 @@ class DefeatCow(DynamicBaselinesNode):
             PitchDown(agent)
         ]
         super().__init__(agent, "DefeatSkeleton", children, model)
+
+
+class ChaseEntity(DynamicBaselinesNode):
+
+    def __init__(self, agent, model=None):
+        children = [
+            TurnLeft(agent),
+            TurnRight(agent),
+            MoveForward(agent),
+            MoveBackward(agent),
+            StopMoving(agent)
+        ]
+        super().__init__(agent, "DefeatSkeleton", children, model)

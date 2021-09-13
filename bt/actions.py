@@ -265,3 +265,12 @@ class Use(Action):
     def update(self):
         self.agent.use()
         return Status.RUNNING
+
+
+#TODO: Remove
+class ActionPlaceholder(Action):
+    def __init__(self, agent, name="Placeholder"):
+        super().__init__(name, agent)
+
+    def update(self):
+        return Status.SUCCESS

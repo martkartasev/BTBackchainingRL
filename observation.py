@@ -98,23 +98,36 @@ def get_simplified_game_object_ordinal(game_object):
         return 2
 
 
-def get_standardized_relative_position(entity_info, player_position):
-    if entity_info is not None:
-        entity_position_list = [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
-    else:
-        entity_position_list = [None, None, None]
+def get_relative_position(entity_info, player_position):
+    if player_position is None:
+        return RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
+    if entity_info is None:
+        return RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
 
-    entity_position = None if None in entity_position_list else np.array(entity_position_list)
+    entity_position_list = [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
+    if None in entity_position_list:
+        return RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
 
-    if player_position is not None and entity_position is not None:
-        relative_position = entity_position - player_position
-        relative_position = np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
-    else:
-        relative_position = RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
+    entity_position = np.array(entity_position_list)
+    relative_position = entity_position - player_position
+    return np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
 
-    standardized_relative_position = relative_position / RELATIVE_DISTANCE_AXIS_MAX
 
-    return standardized_relative_position
+def get_standardized_rotated_position(entity_info, player_position, direction):
+    relative_position = get_relative_position(entity_info, player_position)
+
+    flat_direction_vector = np.delete(direction, 1)
+    flat_direction_vector /= np.linalg.norm(flat_direction_vector)
+    side_direction_vector = np.array([flat_direction_vector[1], -flat_direction_vector[0]])
+
+    flat_relative_position = np.delete(relative_position, 1)
+    relative_position_length = np.linalg.norm(flat_relative_position)
+    relative_position_normalized = flat_relative_position / relative_position_length
+
+    angle = np.arccos(np.dot(relative_position_normalized, flat_direction_vector))
+    sign = 1 if np.dot(relative_position_normalized, side_direction_vector) > 0 else -1
+    rotated_position = relative_position_length * np.array([np.cos(angle), 0, -sign * np.sin(angle)])
+    return rotated_position / RELATIVE_DISTANCE_AXIS_MAX
 
 
 def get_player_position(info):
@@ -149,19 +162,21 @@ class Observation:
 
         self.dict = {}
 
-        player_position = get_player_position(info)
+        position = get_player_position(info)
+        direction = get_direction_vector(info)
+        self.dict["direction"] = direction
 
         enemy_info = get_entity_info(info, [ENEMY_TYPE])
-        self.dict["enemy_relative_position"] = get_standardized_relative_position(enemy_info, player_position)
+        self.dict["enemy_relative_position"] = get_standardized_rotated_position(enemy_info, position, direction)
 
         entity_info = get_entity_info(info, [ANIMAL_TYPE])
-        self.dict["entity_relative_position"] = get_standardized_relative_position(entity_info, player_position)
-
-        self.dict["direction"] = get_direction_vector(info)
+        self.dict["entity_relative_position"] = get_standardized_rotated_position(entity_info, position, direction)
+        print(self.dict["entity_relative_position"])
 
         self.dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
 
-        self.dict["entity_visible"] = np.array([1]) if entity_info is not None else np.array([0])
+        entity_visible = 1 if entity_info is not None else 0
+        self.dict["entity_visible"] = np.array([entity_visible])
 
         surroundings_list = info.get("Surroundings")
         if surroundings_list is not None:

@@ -46,6 +46,14 @@ class IsNotAttackedByEnemy(Condition):
         return Status.SUCCESS if distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE else Status.FAILURE
 
 
+class IsEntityVisible(Condition):
+    def __init__(self, agent):
+        super(IsEntityVisible, self).__init__(f"Is Entity Visible", agent)
+
+    def update(self):
+        return Status.SUCCESS if self.agent.observation.dict["entity_visible"] == 1 else Status.FAILURE
+
+
 class IsCloseToEntity(Condition):
     def __init__(self, agent):
         super(IsCloseToEntity, self).__init__(f"Is Close To Entity", agent)

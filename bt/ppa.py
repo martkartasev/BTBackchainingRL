@@ -2,7 +2,7 @@ from py_trees.composites import Selector
 
 from bt import conditions, actions
 from bt.sequence import Sequence
-from learning.baseline_node import DefeatSkeleton, DefeatCow, ChaseEntity
+from learning.baseline_node import DefeatCow, ChaseEntity
 
 
 class PPA:
@@ -72,7 +72,11 @@ class ChaseEntityPPA(PPA):
         super(ChaseEntityPPA, self).__init__()
         self.name = "Is not Attacked by Enemy PPA"
         self.post_condition = conditions.IsCloseToEntity(agent)
-        self.pre_conditions = [conditions.IsNotAttackedByEnemy(agent), conditions.IsNotInFire(agent)]
+        self.pre_conditions = [
+            conditions.IsEntityVisible(agent),
+            conditions.IsNotAttackedByEnemy(agent),
+            conditions.IsNotInFire(agent)
+        ]
         self.action = ChaseEntity(agent)
 
 

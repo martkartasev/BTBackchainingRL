@@ -1,7 +1,7 @@
 import json
 
 import numpy as np
-from gym.spaces import Box, Dict, Discrete
+from gym.spaces import Box, Dict
 
 CIRCLE_DEGREES = 360
 
@@ -154,21 +154,14 @@ class Observation:
         enemy_info = get_entity_info(info, [ENEMY_TYPE])
         self.dict["enemy_relative_position"] = get_standardized_relative_position(enemy_info, player_position)
 
-        food_info = get_entity_info(info, FOOD_TYPES)
-        entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
+        entity_info = get_entity_info(info, [ANIMAL_TYPE])
         self.dict["entity_relative_position"] = get_standardized_relative_position(entity_info, player_position)
 
         self.dict["direction"] = get_direction_vector(info)
 
         self.dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
-        self.dict["satiation"] = np.array([info.get("Food", 0) / PLAYER_MAX_FOOD])
 
-        entity_life = 0 if entity_info is None else entity_info.get("life", 0)
-        self.dict["entity_health"] = np.array([entity_life / ENEMY_MAX_LIFE])
-
-        self.dict["is_entity_pickable"] = 1 if food_info is not None else 0
-
-        self.dict["has_food"] = get_item_inventory_index(info, FOOD_TYPES) > 0
+        self.dict["entity_visible"] = np.array([1]) if entity_info is not None else np.array([0])
 
         surroundings_list = info.get("Surroundings")
         if surroundings_list is not None:
@@ -185,10 +178,7 @@ class Observation:
                 "enemy_relative_position": Box(-1, 1, (3,)),
                 "direction": Box(-1, 1, (3,)),
                 "health": Box(0, 1, (1,)),
-                "satiation": Box(0, 1, (1,)),
-                "entity_health": Box(0, 1, (1,)),
-                "is_entity_pickable": Discrete(2),
-                "has_food": Discrete(2),
+                "entity_visible": Box(0, 1, (1,), dtype=np.uint8),
                 "surroundings": Box(0, 2, (GRID_SIZE,), dtype=np.uint8)
             }
         )

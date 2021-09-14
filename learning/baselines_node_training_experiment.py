@@ -46,8 +46,8 @@ def train_node():
 
 def test_node():
     agent = BaselinesNodeTestingAgent()
-    goals = [conditions.IsNotInFire(agent), conditions.IsNotHungry(agent)]
-    model_path = "results/basicfighter3_good/best_model_2"
+    goals = [conditions.IsCloseToEntity(agent)]
+    model_path = "results/basicfighter3_good/best_model_32"
 
     tree = BackChainTree(agent, goals)
 
@@ -82,4 +82,4 @@ def test_env():
     check_env(env)
 
 if __name__ == '__main__':
-    train_node()
+    test_node()

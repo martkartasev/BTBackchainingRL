@@ -171,7 +171,6 @@ class Observation:
 
         entity_info = get_entity_info(info, [ANIMAL_TYPE])
         self.dict["entity_relative_position"] = get_standardized_rotated_position(entity_info, position, direction)
-        print(self.dict["entity_relative_position"])
 
         self.dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
 

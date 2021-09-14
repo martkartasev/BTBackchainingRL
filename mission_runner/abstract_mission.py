@@ -86,10 +86,19 @@ class AbstractMission:
 
         self.agent.activate_night_vision()
         self.agent.set_fire_eternal()
-        self.agent.make_hungry()
-        self.agent.create_static_skeleton()
 
         return world_state
+
+    # Wait for valid state instead...
+    def soft_reset(self):
+        self.agent.go_to_spawn()
+        self.agent.destroy_all_entities()
+        time.sleep(2)
+        self.agent.get_next_observations_and_reward()
+        self.agent.create_static_skeleton()
+        self.agent.create_cow()
+        time.sleep(2)
+        self.agent.get_next_observations_and_reward()
 
     def run_mission(self):
         raise NotImplementedError()

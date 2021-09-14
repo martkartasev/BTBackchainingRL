@@ -46,6 +46,16 @@ class BaseAgent:
     def create_static_skeleton(self):
         self.agent_host.sendCommand("chat /summon skeleton -14 4 0 {NoAI:1}")
 
+    def create_cow(self):
+        self.agent_host.sendCommand("chat /summon cow 14 4 0 {NoAI:1}")
+
+    def destroy_all_entities(self):
+        self.agent_host.sendCommand("chat /kill @e[type=skeleton]")
+        self.agent_host.sendCommand("chat /kill @e[type=cow]")
+        self.agent_host.sendCommand("chat /kill @e[type=item]")  # Do this last to remove drops from the mobs
+
+    def go_to_spawn(self):
+        self.agent_host.sendCommand("chat /tp 0 4 0")
 
 
 class MalmoAgent(BaseAgent):
@@ -112,7 +122,6 @@ class MalmoAgent(BaseAgent):
 
     def continuous_use(self, toggle):
         self.agent_host.sendCommand("use " + str(toggle))
-
 
     def quit(self):
         self.agent_host.sendCommand("quit")

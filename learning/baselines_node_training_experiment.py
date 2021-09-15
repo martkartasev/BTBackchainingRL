@@ -70,6 +70,7 @@ def test_env():
     tree = BackChainTree(agent, goals)
 
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
+    mission.soft_reset()
 
     save_tree_to_log(tree.root, "cow_tree.txt")
 
@@ -82,4 +83,4 @@ def test_env():
     check_env(env)
 
 if __name__ == '__main__':
-    train_node()
+    test_node()

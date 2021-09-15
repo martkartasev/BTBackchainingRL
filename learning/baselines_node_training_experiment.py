@@ -47,7 +47,7 @@ def train_node():
 def test_node():
     agent = BaselinesNodeTestingAgent()
     goals = [conditions.IsCloseToEntity(agent)]
-    model_path = "results/basicfighter3_good/best_model_32"
+    model_path = "results/basicfighter3_good/best_model_53"
 
     tree = BackChainTree(agent, goals)
 
@@ -57,6 +57,7 @@ def test_node():
 
     mission_xml_path = get_absolute_path(MISSION_PATH)
     mission = BaselinesNodeTestingMission(agent, tree.root, mission_xml_path)
+
     while True:
         mission.run()
 
@@ -70,7 +71,6 @@ def test_env():
     tree = BackChainTree(agent, goals)
 
     mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
-    mission.soft_reset()
 
     save_tree_to_log(tree.root, "cow_tree.txt")
 

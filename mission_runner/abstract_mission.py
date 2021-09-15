@@ -5,6 +5,8 @@ from builtins import range
 
 from malmo import MalmoPython
 
+from observation import Observation
+
 if sys.version_info[0] == 2:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
 else:
@@ -93,12 +95,21 @@ class AbstractMission:
     def soft_reset(self):
         self.agent.go_to_spawn()
         self.agent.destroy_all_entities()
-        time.sleep(2)
+        self.wait_for_entity(False)
         self.agent.get_next_observations_and_reward()
         self.agent.create_static_skeleton()
         self.agent.create_cow()
-        time.sleep(2)
+        self.wait_for_entity(True)
         self.agent.get_next_observations_and_reward()
+
+    def wait_for_entity(self, expect_entity):
+        while True:
+            observations, _ = self.agent.get_next_observations_and_reward()
+            observation = Observation(observations)
+            if expect_entity and observation.dict["entity_visible"] == 1:
+                break
+            elif not expect_entity and observation.dict["entity_visible"] == 0:
+                break
 
     def run_mission(self):
         raise NotImplementedError()

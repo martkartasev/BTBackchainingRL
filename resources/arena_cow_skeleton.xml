@@ -6,7 +6,7 @@
     </About>
 
     <ModSettings>
-        <MsPerTick>20</MsPerTick>
+        <MsPerTick>50</MsPerTick>
         <PrioritiseOffscreenRendering>false</PrioritiseOffscreenRendering>
     </ModSettings>
 
@@ -37,7 +37,7 @@
     <AgentSection mode="Survival">
         <Name>Rover</Name>
         <AgentStart>
-            <Placement x="0" y="6" z="0" yaw="0"/>
+            <Placement x="0" y="6" z="0" yaw="90"/>
             <Inventory>
                 <InventoryItem type="iron_sword" slot="0"/>
             </Inventory>

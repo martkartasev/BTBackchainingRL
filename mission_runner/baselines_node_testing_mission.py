@@ -27,6 +27,7 @@ class BaselinesNodeTestingMission(AbstractMission):
 
     def run(self):
         self.mission_initialization()
+        self.soft_reset()
 
         start = time.time()
         self.run_mission()

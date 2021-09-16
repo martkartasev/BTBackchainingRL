@@ -1,9 +1,9 @@
 from agent import ObservationAgent
 
 
-class BaselinesNodeTestingAgent(ObservationAgent):
+class BaselinesNodeAgent(ObservationAgent):
 
-    def __init__(self, name="execution/manual_skeleton"):
+    def __init__(self, name="execution/node_skeleton"):
         super().__init__()
         self.name = name
 

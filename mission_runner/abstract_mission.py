@@ -18,7 +18,7 @@ else:
 class AbstractMission:
     def __init__(self, agent_host, filename=None):
         self.agent = agent_host
-        self.agentExited = False
+        self.agent_exited = False
         self.timesteps = 0
         if filename is not None:
             if isinstance(filename, list):
@@ -39,9 +39,9 @@ class AbstractMission:
             data = myfile.read().replace('\n', '')
         return data
 
-    def create_mission(self, missionString=None):
-        if missionString is not None:
-            mission = MalmoPython.MissionSpec(missionString, True)
+    def create_mission(self, mission_string=None):
+        if mission_string is not None:
+            mission = MalmoPython.MissionSpec(mission_string, True)
         else:
             mission = MalmoPython.MissionSpec()
 
@@ -54,7 +54,7 @@ class AbstractMission:
 
     def mission_initialization(self):
         # Attempt to start a mission:
-        self.agentExited = False
+        self.agent_exited = False
         self.agent.reset_agent()
         max_retries = 25
         for retry in range(max_retries):
@@ -106,9 +106,7 @@ class AbstractMission:
         while True:
             observations, _ = self.agent.get_next_observations_and_reward()
             observation = Observation(observations)
-            if expect_entity and observation.dict["entity_visible"] == 1:
-                break
-            elif not expect_entity and observation.dict["entity_visible"] == 0:
+            if expect_entity == observation.dict["entity_visible"]:
                 break
 
     def run_mission(self):

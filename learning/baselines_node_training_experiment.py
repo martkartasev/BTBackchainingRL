@@ -6,8 +6,7 @@ from stable_baselines3.common.monitor import Monitor
 
 from bt import conditions
 from bt.back_chain_tree import BackChainTree
-from learning.agents.baselines_node_testing_agent import BaselinesNodeTestingAgent
-from learning.agents.baselines_node_training_agent import BasicFighterNodeTrainingAgent
+from learning.agents.baselines_node_agent import BaselinesNodeAgent
 from learning.baselines_node_training_env import BaselinesNodeTrainingEnv
 from learning.save_best_model_callback import SaveOnBestTrainingRewardCallback
 from mission_runner.baselines_node_testing_mission import BaselinesNodeTestingMission
@@ -15,15 +14,17 @@ from mission_runner.baselines_node_training_mission import BaselinesNodeTraining
 from utils.file import get_absolute_path, get_project_root
 from utils.visualisation import save_tree_to_log
 
+IS_TRAINING = True
 TOTAL_TIMESTEPS = 3000000
 
 MISSION_PATH = "resources/arena_cow_skeleton.xml"
+
 
 def train_node():
     mission_xml_path = get_absolute_path(MISSION_PATH)
     log_dir = get_absolute_path("results/basicfighter3_good")
 
-    agent = BasicFighterNodeTrainingAgent()
+    agent = BaselinesNodeAgent()
     goals = [conditions.IsCloseToEntity(agent)]
     tree = BackChainTree(agent, goals)
 
@@ -45,10 +46,10 @@ def train_node():
 
 
 def test_node():
-    agent = BaselinesNodeTestingAgent()
-    goals = [conditions.IsCloseToEntity(agent)]
     model_path = "results/basicfighter3_good/best_model_53"
 
+    agent = BaselinesNodeAgent()
+    goals = [conditions.IsCloseToEntity(agent)]
     tree = BackChainTree(agent, goals)
 
     node = tree.baseline_nodes[0]
@@ -66,7 +67,7 @@ def test_env():
     mission_xml_path = get_absolute_path(MISSION_PATH)
     log_dir = get_absolute_path("results/basicfighter3_good")
 
-    agent = BasicFighterNodeTrainingAgent()
+    agent = BaselinesNodeAgent()
     goals = [conditions.IsCloseToEntity(agent)]
     tree = BackChainTree(agent, goals)
 

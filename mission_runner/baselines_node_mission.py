@@ -3,9 +3,8 @@ from mission_runner.abstract_mission import AbstractMission
 
 class BaselinesNodeMission(AbstractMission):
 
-    def __init__(self, agent, tree, filename=None, hard_reset=True):
+    def __init__(self, agent, filename=None, hard_reset=True):
         super().__init__(agent, filename)
-        self.tree = tree
         self.hard_reset = hard_reset
 
     def soft_reset(self):

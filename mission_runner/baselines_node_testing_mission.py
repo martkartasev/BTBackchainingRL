@@ -6,7 +6,8 @@ from mission_runner.baselines_node_mission import BaselinesNodeMission
 class BaselinesNodeTestingMission(BaselinesNodeMission):
 
     def __init__(self, agent, tree, filename=None, hard_reset=True):
-        super().__init__(agent, tree, filename, hard_reset)
+        super().__init__(agent, filename, hard_reset)
+        self.tree = tree
 
     def run_mission(self):
         world_state = self.agent.get_world_state()

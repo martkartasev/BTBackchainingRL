@@ -5,8 +5,6 @@ from builtins import range
 
 from malmo import MalmoPython
 
-from observation import Observation
-
 if sys.version_info[0] == 2:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
 else:
@@ -15,42 +13,44 @@ else:
     print = functools.partial(print, flush=True)
 
 
+def read_mission(filename):
+    with open(filename, 'r') as file:
+        data = file.read().replace('\n', '')
+    return data
+
+
+def create_mission(mission_string=None):
+    if mission_string is not None:
+        mission = MalmoPython.MissionSpec(mission_string, True)
+    else:
+        mission = MalmoPython.MissionSpec()
+
+    record = MalmoPython.MissionRecordSpec()
+    #  mission.forceWorldReset()
+    mission.allowAllInventoryCommands()
+    # mission.observeFullInventory()
+
+    return mission, record
+
+
 class AbstractMission:
     def __init__(self, agent_host, filename=None):
         self.agent = agent_host
         self.agent_exited = False
-        self.timesteps = 0
+        self.time_steps = 0
         if filename is not None:
             if isinstance(filename, list):
                 missions = list()
                 records = list()
                 for name in filename:
-                    mission, record = self.create_mission(self.read_mission(name))
+                    mission, record = create_mission(read_mission(name))
                     missions.append(mission)
                     records.append(record)
                 self.mission = missions
                 self.mission_record = records
             else:
-                self.mission, self.mission_record = self.create_mission(self.read_mission(filename))
+                self.mission, self.mission_record = create_mission(read_mission(filename))
         self.counter = 0
-
-    def read_mission(self, filename):
-        with open(filename, 'r') as myfile:
-            data = myfile.read().replace('\n', '')
-        return data
-
-    def create_mission(self, mission_string=None):
-        if mission_string is not None:
-            mission = MalmoPython.MissionSpec(mission_string, True)
-        else:
-            mission = MalmoPython.MissionSpec()
-
-        record = MalmoPython.MissionRecordSpec()
-        #  mission.forceWorldReset()
-        mission.allowAllInventoryCommands()
-        # mission.observeFullInventory()
-
-        return mission, record
 
     def mission_initialization(self):
         # Attempt to start a mission:
@@ -90,24 +90,3 @@ class AbstractMission:
         self.agent.set_fire_eternal()
 
         return world_state
-
-    # Wait for valid state instead...
-    def soft_reset(self):
-        self.agent.go_to_spawn()
-        self.agent.destroy_all_entities()
-        self.wait_for_entity(False)
-        self.agent.get_next_observations_and_reward()
-        self.agent.create_static_skeleton()
-        self.agent.create_cow()
-        self.wait_for_entity(True)
-        self.agent.get_next_observations_and_reward()
-
-    def wait_for_entity(self, expect_entity):
-        while True:
-            observations, _ = self.agent.get_next_observations_and_reward()
-            observation = Observation(observations)
-            if expect_entity == observation.dict["entity_visible"]:
-                break
-
-    def run_mission(self):
-        raise NotImplementedError()

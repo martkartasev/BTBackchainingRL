@@ -1,14 +1,15 @@
 import time
 
-from mission_runner.abstract_mission import AbstractMission
+from mission_runner.baselines_node_mission import BaselinesNodeMission
 from observation import Observation
 
 
-class BaselinesNodeTestingMission(AbstractMission):
+class BaselinesNodeTestingMission(BaselinesNodeMission):
 
-    def __init__(self, agent, tree, filename=None):
+    def __init__(self, agent, tree, filename=None, hard_reset=True):
         super().__init__(agent, filename)
         self.tree = tree
+        self.hard_reset = hard_reset
 
     def run_mission(self):
         world_state = self.agent.get_world_state()
@@ -27,7 +28,8 @@ class BaselinesNodeTestingMission(AbstractMission):
 
     def run(self):
         self.mission_initialization()
-        self.soft_reset()
+        if not self.hard_reset:
+            self.soft_reset()
 
         start = time.time()
         self.run_mission()

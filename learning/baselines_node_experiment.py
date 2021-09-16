@@ -21,11 +21,11 @@ FINAL_MODEL_PATH = MODEL_LOG_DIR + "/finalbasicfarmer.mdl"
 
 class BaselinesNodeExperiment:
 
-    def __init__(self, goals, mission, tree_log="", hard_reset=True, baseline_node_type=None):
+    def __init__(self, goals, mission, tree_log="", hard_reset=True, baseline_node_type=None, observation_filter=None):
         self.mission_path = mission
         self.hard_reset = hard_reset
 
-        self.agent = BaselinesNodeAgent()
+        self.agent = BaselinesNodeAgent(observation_filter)
         self.goals = [goal(self.agent) for goal in goals]
         self.tree = BackChainTree(self.agent, self.goals)
 

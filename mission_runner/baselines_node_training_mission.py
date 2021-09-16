@@ -1,11 +1,10 @@
 from mission_runner.baselines_node_mission import BaselinesNodeMission
-from observation import Observation
 
 
 class BaselinesNodeTrainingMission(BaselinesNodeMission):
 
-    def update_observations_and_reward(self):
-        observations, reward = self.agent.get_next_observations_and_reward()
-        observation = Observation(observations)
-        self.agent.set_observation(observation)
-        self.agent.set_rewards(reward)
+    def __init__(self, agent, tree, filename=None, hard_reset=True):
+        super().__init__(agent, tree, filename, hard_reset)
+
+    def run_mission(self):
+        self.agent.update_observations_and_reward()

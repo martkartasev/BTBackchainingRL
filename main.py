@@ -7,7 +7,10 @@ cow_skeleton_experiment = {
     "mission": "resources/arena_cow_skeleton.xml",
     "tree_log": "cow_tree.txt",
     "hard_reset": False,
-    "baseline_node_type": ChaseEntity
+    "baseline_node_type": ChaseEntity,
+    "observation_filter": [
+        "entity_relative_position", "enemy_relative_position", "direction", "health", "entity_visible", "surroundings"
+    ]
 }
 
 skeleton_fire_experiment = {
@@ -41,6 +44,6 @@ def experiment_check_env(specs):
 
 
 if __name__ == '__main__':
-    experiment_train(cow_skeleton_experiment)
-    # experiment_test(cow_skeleton_experiment, "best_model_53")
+    # experiment_train(skeleton_fire_experiment)
+    experiment_test(cow_skeleton_experiment, "best_model_53")
     # experiment_check_env(cow_skeleton_experiment)

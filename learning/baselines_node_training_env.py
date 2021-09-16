@@ -23,7 +23,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.node.set_tick_child(action)
         self.node.tick_once()
 
-        self.mission.update_observations_and_reward()
+        self.mission.run_mission()
 
         reward = self.node.calculate_rewards()
         ob = self.node.get_observation_array()
@@ -56,13 +56,13 @@ class BaselinesNodeTrainingEnv(gym.Env):
             if self.agent.get_world_state().is_mission_running:
                 self.agent.quit()
             self.mission.mission_initialization()
-            self.mission.update_observations_and_reward()
+            self.mission.run_mission()
         else:
             if self.agent.get_world_state().is_mission_running:
                 self.mission.soft_reset()
             else:
                 self.mission.mission_initialization()
-                self.mission.update_observations_and_reward()
+                self.mission.run_mission()
                 self.mission.soft_reset()
 
         return self.node.get_observation_array()

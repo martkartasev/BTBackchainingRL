@@ -127,7 +127,8 @@ def get_standardized_rotated_position(entity_info, player_position, direction):
     angle = np.arccos(np.dot(relative_position_normalized, flat_direction_vector))
     sign = 1 if np.dot(relative_position_normalized, side_direction_vector) > 0 else -1
     rotated_position = relative_position_length * np.array([np.cos(angle), 0, -sign * np.sin(angle)])
-    return rotated_position / RELATIVE_DISTANCE_AXIS_MAX
+    
+    return np.clip(rotated_position / RELATIVE_DISTANCE_AXIS_MAX, -1, 1)
 
 
 def get_player_position(info):

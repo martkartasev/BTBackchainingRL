@@ -21,7 +21,7 @@ FINAL_MODEL_PATH = MODEL_LOG_DIR + "/finalbasicfarmer.mdl"
 
 class BaselinesNodeExperiment:
 
-    def __init__(self, goals, mission, tree_log="", hard_reset=True):
+    def __init__(self, goals, mission, tree_log="", hard_reset=True, baseline_node_type=None):
         self.mission_path = mission
         self.hard_reset = hard_reset
 
@@ -32,7 +32,21 @@ class BaselinesNodeExperiment:
         if tree_log != "":
             save_tree_to_log(self.tree.root, tree_log)
 
+        if len(self.tree.baseline_nodes) == 0:
+            raise ValueError("The tree doesn't have a baseline node")
+        elif len(self.tree.baseline_nodes) > 1:
+            if baseline_node_type is None:
+                raise ValueError("The tree has two or more baseline nodes. Specify a baseline node type.")
+            for baseline_node in self.tree.baseline_nodes:
+                if isinstance(baseline_node, baseline_node_type):
+                    self.baseline_node = baseline_node
+                    break
+            else:
+                raise ValueError("The tree does not contain the baseline node type.")
+
         self.baseline_node = self.tree.baseline_nodes[0]
+        if baseline_node_type is not None and not isinstance(self.baseline_node, baseline_node_type):
+            raise ValueError("The tree does not contain the baseline node type.")
 
     def test_node(self, model):
         fighter_model = DQN.load(get_project_root() / MODEL_LOG_DIR / model)

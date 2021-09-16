@@ -1,11 +1,13 @@
 from bt import conditions
+from learning.baseline_node import ChaseEntity
 from learning.baselines_node_experiment import BaselinesNodeExperiment
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
     "mission": "resources/arena_cow_skeleton.xml",
     "tree_log": "cow_tree.txt",
-    "hard_reset": False
+    "hard_reset": False,
+    "baseline_node_type": ChaseEntity
 }
 
 skeleton_fire_experiment = {
@@ -39,6 +41,6 @@ def experiment_check_env(specs):
 
 
 if __name__ == '__main__':
-    experiment_train(skeleton_fire_experiment)
+    experiment_train(cow_skeleton_experiment)
     # experiment_test(cow_skeleton_experiment, "best_model_53")
     # experiment_check_env(cow_skeleton_experiment)

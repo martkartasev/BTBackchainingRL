@@ -2,7 +2,6 @@ from py_trees.common import Status
 
 from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown
 from bt.sequence import Sequence
-from observation import Observation
 
 
 class BaselinesNode(Sequence):
@@ -99,7 +98,7 @@ class DynamicBaselinesNode(BaselinesNode):
         self.total_reward = 0
 
     def get_observation_space(self):
-        return Observation.get_observation_space()
+        return self.agent.get_observation_space()
 
     def get_observation_array(self):
         observation = self.agent.observation

@@ -3,6 +3,8 @@ import time
 import numpy as np
 from malmo.MalmoPython import AgentHost
 
+from observation import Observation
+
 
 class BaseAgent:
     def __init__(self):
@@ -108,34 +110,26 @@ class MalmoAgent(BaseAgent):
     def quit(self):
         self.agent_host.sendCommand("quit")
 
-    def reset_agent(self):
+    def reset(self):
         raise NotImplementedError()
 
     def is_mission_over(self):
         raise NotImplementedError()
 
-    def control_loop(self):
-        raise NotImplementedError()
-
 
 class ObservationAgent(MalmoAgent):
 
-    def __init__(self):
+    def __init__(self, observation_filter=None):
         super(ObservationAgent, self).__init__()
         self.tree = None
         self.index = 0
+        self.observation_filter = observation_filter
 
     def is_agent_alive(self):
         return self.observation.dict["health"] > 0
 
     def get_world_state(self):
         return self.agent_host.getWorldState()
-
-    def set_observation(self, observation):
-        self.observation = observation
-
-    def set_rewards(self, rewards):
-        self.rewards = rewards
 
     def get_next_observations_and_reward(self):
         observations = None
@@ -145,3 +139,25 @@ class ObservationAgent(MalmoAgent):
             observations = world_state.observations
             reward += sum(reward.getValue() for reward in world_state.rewards)
         return observations, reward
+
+    def update_observations_and_reward(self):
+        observations, reward = self.get_next_observations_and_reward()
+        observation = Observation(observations, self.observation_filter)
+        self.observation = observation
+        self.rewards = reward
+
+    def wait_for_entity(self, expect_entity):
+        while True:
+            observations, _ = self.get_next_observations_and_reward()
+            observation = Observation(observations, self.observation_filter)
+            if expect_entity == observation.dict["entity_visible"]:
+                break
+
+    def get_observation_space(self):
+        return Observation.get_observation_space(self.observation_filter)
+
+    def reset(self):
+        raise NotImplementedError()
+
+    def is_mission_over(self):
+        raise NotImplementedError()

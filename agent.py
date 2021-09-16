@@ -154,7 +154,7 @@ class ObservationAgent(MalmoAgent):
                 break
 
     def get_observation_space(self):
-        Observation.get_observation_space(self.observation_filter)
+        return Observation.get_observation_space(self.observation_filter)
 
     def reset(self):
         raise NotImplementedError()

@@ -2,17 +2,16 @@ import gym
 
 EP_MAX_TIME_STEPS = 15000
 
-HARD_RESET = False
-
 
 class BaselinesNodeTrainingEnv(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, learning_node, mission):
+    def __init__(self, learning_node, mission, hard_reset=True):
         self.node = learning_node
         self.agent = self.node.agent
         self.mission = mission
+        self.hard_reset = hard_reset
 
         self.action_space = gym.spaces.Discrete(len(self.node.children))
         self.observation_space = self.node.get_observation_space()
@@ -53,7 +52,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
     def reset(self):
         self.steps = 0
         self.node.reset_node()
-        if HARD_RESET:
+        if self.hard_reset:
             if self.agent.get_world_state().is_mission_running:
                 self.agent.quit()
             self.mission.mission_initialization()

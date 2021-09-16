@@ -1,7 +1,7 @@
 import json
 
 import numpy as np
-from gym.spaces import Box, Dict
+from gym.spaces import Box, Dict, Discrete
 
 CIRCLE_DEGREES = 360
 
@@ -170,16 +170,22 @@ class Observation:
         enemy_info = get_entity_info(info, [ENEMY_TYPE])
         observation_dict["enemy_relative_position"] = get_standardized_rotated_position(enemy_info, position, direction)
 
-        entity_info = get_entity_info(info, [ANIMAL_TYPE])
+        food_info = get_entity_info(info, FOOD_TYPES)
+        entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
         observation_dict["entity_relative_position"] = get_standardized_rotated_position(entity_info, position,
                                                                                          direction)
 
         observation_dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
+        observation_dict["satiation"] = np.array([info.get("Food", 0) / PLAYER_MAX_FOOD])
+
         enemy_health = enemy_info.get("life", 0) / ENEMY_MAX_LIFE if enemy_info is not None else 0
         observation_dict["enemy_health"] = np.array([enemy_health])
 
         entity_visible = 1 if entity_info is not None else 0
         observation_dict["entity_visible"] = np.array([entity_visible])
+
+        observation_dict["is_entity_pickable"] = 1 if food_info is not None else 0
+        observation_dict["has_food"] = get_item_inventory_index(info, FOOD_TYPES) > 0
 
         surroundings_list = info.get("Surroundings")
         if surroundings_list is not None:
@@ -200,8 +206,11 @@ class Observation:
             "enemy_relative_position": Box(-1, 1, (3,)),
             "direction": Box(-1, 1, (3,)),
             "health": Box(0, 1, (1,)),
+            "satiation": Box(0, 1, (1,)),
             "enemy_health": Box(0, 1, (1,)),
             "entity_visible": Box(0, 1, (1,), dtype=np.uint8),
+            "is_entity_pickable": Discrete(2),
+            "has_food": Discrete(2),
             "surroundings": Box(0, 2, (GRID_SIZE,), dtype=np.uint8)
         }
         if observation_filter is None:

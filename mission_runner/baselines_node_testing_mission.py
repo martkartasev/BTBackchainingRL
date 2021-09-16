@@ -18,6 +18,9 @@ class BaselinesNodeTestingMission(BaselinesNodeMission):
                 break
 
             self.tree.tick_once()
+            tip = self.tree.tip()
+            if tip is not None:
+                print(tip.name)
 
     def run(self):
         self.mission_initialization()

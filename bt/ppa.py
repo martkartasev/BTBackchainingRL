@@ -2,7 +2,7 @@ from py_trees.composites import Selector
 
 from bt import conditions, actions
 from bt.sequence import Sequence
-from learning.baseline_node import DefeatCow, ChaseEntity
+from learning.baseline_node import DefeatCow, ChaseEntity, DefeatSkeleton
 
 
 class PPA:
@@ -52,12 +52,9 @@ class DefeatSkeletonPPA(PPA):
         self.name = "Defeat Skeleton"
         self.post_condition = conditions.IsEnemyDefeated(agent)
         self.pre_conditions = [conditions.IsNotInFire(agent)]
-        self.action = actions.ActionPlaceholder(agent)
+        self.action = DefeatSkeleton(agent)
 
 
-"""
-TODO: We don't really support choosing which baseline node to train so it will always take the first.
-"""
 class IsNotAttackedByEnemyPPA(PPA):
     def __init__(self, agent):
         super(IsNotAttackedByEnemyPPA, self).__init__()

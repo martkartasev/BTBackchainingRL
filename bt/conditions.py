@@ -27,7 +27,7 @@ class IsEnemyDefeated(Condition):
         super(IsEnemyDefeated, self).__init__(f"Is enemy defeated", agent)
 
     def update(self):
-        enemy_life = self.agent.observation.dict["entity_health"]
+        enemy_life = self.agent.observation.dict["enemy_health"]
         return Status.SUCCESS if enemy_life == 0 else Status.FAILURE
 
 

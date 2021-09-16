@@ -173,6 +173,7 @@ class Observation:
         self.dict["entity_relative_position"] = get_standardized_rotated_position(entity_info, position, direction)
 
         self.dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
+        self.dict["enemy_health"] = np.array([enemy_info.get("life", 0) / ENEMY_MAX_LIFE])
 
         entity_visible = 1 if entity_info is not None else 0
         self.dict["entity_visible"] = np.array([entity_visible])
@@ -192,6 +193,7 @@ class Observation:
                 "enemy_relative_position": Box(-1, 1, (3,)),
                 "direction": Box(-1, 1, (3,)),
                 "health": Box(0, 1, (1,)),
+                "enemy_health": Box(0, 1, (1,)),
                 "entity_visible": Box(0, 1, (1,), dtype=np.uint8),
                 "surroundings": Box(0, 2, (GRID_SIZE,), dtype=np.uint8)
             }

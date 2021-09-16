@@ -127,7 +127,7 @@ def get_standardized_rotated_position(entity_info, player_position, direction):
     angle = np.arccos(np.dot(relative_position_normalized, flat_direction_vector))
     sign = 1 if np.dot(relative_position_normalized, side_direction_vector) > 0 else -1
     rotated_position = relative_position_length * np.array([np.cos(angle), 0, -sign * np.sin(angle)])
-    
+
     return np.clip(rotated_position / RELATIVE_DISTANCE_AXIS_MAX, -1, 1)
 
 
@@ -149,7 +149,7 @@ def get_item_inventory_index(info, items):
 
 class Observation:
 
-    def __init__(self, observations):
+    def __init__(self, observations, observation_filter=None):
         if observations is None or len(observations) == 0:
             print("Observations is null or empty")
             return
@@ -161,42 +161,51 @@ class Observation:
 
         info = json.loads(info_json)
 
-        self.dict = {}
+        observation_dict = {}
 
         position = get_player_position(info)
         direction = get_direction_vector(info)
-        self.dict["direction"] = direction
+        observation_dict["direction"] = direction
 
         enemy_info = get_entity_info(info, [ENEMY_TYPE])
-        self.dict["enemy_relative_position"] = get_standardized_rotated_position(enemy_info, position, direction)
+        observation_dict["enemy_relative_position"] = get_standardized_rotated_position(enemy_info, position, direction)
 
         entity_info = get_entity_info(info, [ANIMAL_TYPE])
-        self.dict["entity_relative_position"] = get_standardized_rotated_position(entity_info, position, direction)
+        observation_dict["entity_relative_position"] = get_standardized_rotated_position(entity_info, position,
+                                                                                         direction)
 
-        self.dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
+        observation_dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
         enemy_health = enemy_info.get("life", 0) / ENEMY_MAX_LIFE if enemy_info is not None else 0
-        self.dict["enemy_health"] = np.array([enemy_health])
+        observation_dict["enemy_health"] = np.array([enemy_health])
 
         entity_visible = 1 if entity_info is not None else 0
-        self.dict["entity_visible"] = np.array([entity_visible])
+        observation_dict["entity_visible"] = np.array([entity_visible])
 
         surroundings_list = info.get("Surroundings")
         if surroundings_list is not None:
             surroundings = get_simplified_surroundings(surroundings_list)
         else:
             surroundings = np.zeros(GRID_SIZE)
-        self.dict["surroundings"] = surroundings
+        observation_dict["surroundings"] = surroundings
+
+        if observation_filter is None:
+            self.dict = observation_dict
+        else:
+            self.dict = {key: value for key, value in observation_dict.items() if key in observation_filter}
 
     @staticmethod
-    def get_observation_space():
-        return Dict(
-            spaces={
-                "entity_relative_position": Box(-1, 1, (3,)),
-                "enemy_relative_position": Box(-1, 1, (3,)),
-                "direction": Box(-1, 1, (3,)),
-                "health": Box(0, 1, (1,)),
-                "enemy_health": Box(0, 1, (1,)),
-                "entity_visible": Box(0, 1, (1,), dtype=np.uint8),
-                "surroundings": Box(0, 2, (GRID_SIZE,), dtype=np.uint8)
-            }
-        )
+    def get_observation_space(observation_filter=None):
+        full_space = {
+            "entity_relative_position": Box(-1, 1, (3,)),
+            "enemy_relative_position": Box(-1, 1, (3,)),
+            "direction": Box(-1, 1, (3,)),
+            "health": Box(0, 1, (1,)),
+            "enemy_health": Box(0, 1, (1,)),
+            "entity_visible": Box(0, 1, (1,), dtype=np.uint8),
+            "surroundings": Box(0, 2, (GRID_SIZE,), dtype=np.uint8)
+        }
+        if observation_filter is None:
+            return Dict(spaces=full_space)
+        else:
+            reduced_space = {key: value for key, value in full_space.items() if key in observation_filter}
+            return Dict(spaces=reduced_space)

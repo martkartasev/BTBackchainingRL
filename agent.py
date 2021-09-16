@@ -16,33 +16,28 @@ class BaseAgent:
     def start_mission_with_pool(self, mission, pool, mission_record, experiment_id):
         self.agent_host.startMission(mission, pool, mission_record, 0, experiment_id)
 
-    def get_world_state(self):
-        return self.agent_host.getWorldState()
-
-    def set_observation(self, observation):
-        self.observation = observation
-
-    def set_rewards(self, rewards):
-        self.rewards = rewards
-
-    def get_next_observations_and_reward(self):
-        observations = None
-        reward = 0
-        while observations is None or len(observations) == 0:
-            world_state = self.get_world_state()
-            observations = world_state.observations
-            reward += sum(reward.getValue() for reward in world_state.rewards)
-        return observations, reward
-
     def activate_night_vision(self):
         self.agent_host.sendCommand("chat /effect @p night_vision 99999 255")
+
+    def set_fire_eternal(self):
+        self.agent_host.sendCommand("chat /gamerule doFireTick false")
 
     def make_hungry(self):
         self.agent_host.sendCommand("chat /effect @p hunger 5 255")
 
     def create_static_skeleton(self):
-        self.agent_host.sendCommand("chat /summon skeleton -5 4 5 {NoAI:1}")
+        self.agent_host.sendCommand("chat /summon skeleton -14 4 0 {NoAI:1}")
 
+    def create_cow(self):
+        self.agent_host.sendCommand("chat /summon cow 14 4 0 {NoAI:1}")
+
+    def destroy_all_entities(self):
+        self.agent_host.sendCommand("chat /kill @e[type=skeleton]")
+        self.agent_host.sendCommand("chat /kill @e[type=cow]")
+        self.agent_host.sendCommand("chat /kill @e[type=item]")  # Do this last to remove drops from the mobs
+
+    def go_to_spawn(self):
+        self.agent_host.sendCommand("chat /tp 0 4 0")
 
 
 class MalmoAgent(BaseAgent):
@@ -110,7 +105,6 @@ class MalmoAgent(BaseAgent):
     def continuous_use(self, toggle):
         self.agent_host.sendCommand("use " + str(toggle))
 
-
     def quit(self):
         self.agent_host.sendCommand("quit")
 
@@ -123,42 +117,31 @@ class MalmoAgent(BaseAgent):
     def control_loop(self):
         raise NotImplementedError()
 
-    def store_observations(self, observations):
-        raise NotImplementedError()
-
 
 class ObservationAgent(MalmoAgent):
 
     def __init__(self):
         super(ObservationAgent, self).__init__()
         self.tree = None
-        self.latestObservations = None
-        self.previousObservations = None
         self.index = 0
-
-    def store_observations(self, observation, rewards=None):
-        if observation is not None:
-            self.index = self.index + 1
-            observation.index = self.index
-            if rewards is not None:
-                self.rewards = rewards
-            self.latestObservations = observation
-
-    def next_observations(self):
-        if self.latestObservations is None:
-            return False
-
-        if self.observation is None:
-            self.previousObservations = self.observation
-            self.observation = self.latestObservations
-            return True
-
-        while self.observation.index >= self.latestObservations.index:
-            pass
-
-        self.previousObservations = self.observation
-        self.observation = self.latestObservations
-        return True
 
     def is_agent_alive(self):
         return self.observation.dict["health"] > 0
+
+    def get_world_state(self):
+        return self.agent_host.getWorldState()
+
+    def set_observation(self, observation):
+        self.observation = observation
+
+    def set_rewards(self, rewards):
+        self.rewards = rewards
+
+    def get_next_observations_and_reward(self):
+        observations = None
+        reward = 0
+        while observations is None or len(observations) == 0:
+            world_state = self.get_world_state()
+            observations = world_state.observations
+            reward += sum(reward.getValue() for reward in world_state.rewards)
+        return observations, reward

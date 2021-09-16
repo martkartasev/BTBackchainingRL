@@ -38,7 +38,7 @@ class AvoidFire(Action):
 
         self.agent.move_towards_flat_direction(distance_vector_direction)
 
-        return Status.SUCCESS if grid[0, 0] == game_objects.index("air") else Status.FAILURE
+        return Status.SUCCESS if grid[0, 0] == 0 else Status.FAILURE
 
     def grid_observation_from_list(self):
         grid_observation_list = self.agent.observation.dict["surroundings"]
@@ -52,6 +52,7 @@ class AvoidFire(Action):
 
 
 class Eat(Action):
+    FOOD_INDEX = 1
 
     def __init__(self, agent, name="Eat"):
         super().__init__(name, agent)
@@ -61,12 +62,12 @@ class Eat(Action):
         if self.agent.observation.dict["satiation"] == 1:
             return Status.SUCCESS
 
-        food_inventory_item = self.agent.observation.dict["food_inventory_item"]
+        food_inventory_item = self.agent.observation.dict["has_food"]
         if food_inventory_item == 0:
             return Status.FAILURE
 
         if not self.is_running:
-            self.agent.select_on_hotbar(int(food_inventory_item) - 1)
+            self.agent.select_on_hotbar(Eat.FOOD_INDEX)
             self.is_running = True
 
         self.agent.continuous_use(1)
@@ -90,7 +91,7 @@ class PickUpEntity(Action):
 
         self.agent.move_towards_flat_direction(entity_direction_vector)
 
-        has_food = self.agent.observation.dict["food_inventory_index"]
+        has_food = self.agent.observation.dict["has_food"] > 0
         return Status.SUCCESS if has_food else Status.RUNNING
 
     def terminate(self, new_status):
@@ -264,3 +265,12 @@ class Use(Action):
     def update(self):
         self.agent.use()
         return Status.RUNNING
+
+
+#TODO: Remove
+class ActionPlaceholder(Action):
+    def __init__(self, agent, name="Placeholder"):
+        super().__init__(name, agent)
+
+    def update(self):
+        return Status.SUCCESS

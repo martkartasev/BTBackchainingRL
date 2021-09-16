@@ -5,6 +5,8 @@ from builtins import range
 
 from malmo import MalmoPython
 
+from observation import Observation
+
 if sys.version_info[0] == 2:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
 else:
@@ -16,7 +18,7 @@ else:
 class AbstractMission:
     def __init__(self, agent_host, filename=None):
         self.agent = agent_host
-        self.agentExited = False
+        self.agent_exited = False
         self.timesteps = 0
         if filename is not None:
             if isinstance(filename, list):
@@ -37,9 +39,9 @@ class AbstractMission:
             data = myfile.read().replace('\n', '')
         return data
 
-    def create_mission(self, missionString=None):
-        if missionString is not None:
-            mission = MalmoPython.MissionSpec(missionString, True)
+    def create_mission(self, mission_string=None):
+        if mission_string is not None:
+            mission = MalmoPython.MissionSpec(mission_string, True)
         else:
             mission = MalmoPython.MissionSpec()
 
@@ -52,7 +54,7 @@ class AbstractMission:
 
     def mission_initialization(self):
         # Attempt to start a mission:
-        self.agentExited = False
+        self.agent_exited = False
         self.agent.reset_agent()
         max_retries = 25
         for retry in range(max_retries):
@@ -85,9 +87,27 @@ class AbstractMission:
         print("Running mission", end=' ')
 
         self.agent.activate_night_vision()
-        self.agent.make_hungry()
+        self.agent.set_fire_eternal()
 
         return world_state
+
+    # Wait for valid state instead...
+    def soft_reset(self):
+        self.agent.go_to_spawn()
+        self.agent.destroy_all_entities()
+        self.wait_for_entity(False)
+        self.agent.get_next_observations_and_reward()
+        self.agent.create_static_skeleton()
+        self.agent.create_cow()
+        self.wait_for_entity(True)
+        self.agent.get_next_observations_and_reward()
+
+    def wait_for_entity(self, expect_entity):
+        while True:
+            observations, _ = self.agent.get_next_observations_and_reward()
+            observation = Observation(observations)
+            if expect_entity == observation.dict["entity_visible"]:
+                break
 
     def run_mission(self):
         raise NotImplementedError()

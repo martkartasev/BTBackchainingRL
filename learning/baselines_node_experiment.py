@@ -1,5 +1,4 @@
 import os
-from enum import Enum
 
 from stable_baselines3 import DQN
 from stable_baselines3.common.env_checker import check_env
@@ -15,13 +14,6 @@ from mission_runner.baselines_node_training_mission import BaselinesNodeTraining
 from utils.file import get_absolute_path, get_project_root
 from utils.visualisation import save_tree_to_log
 
-
-class RunType(Enum):
-    TRAIN_NODE = 0
-    TEST_NODE = 1
-    TEST_ENV = 2
-
-
 TOTAL_TIME_STEPS = 3000000
 
 MISSION_PATH = "resources/arena_cow_skeleton.xml"
@@ -33,9 +25,7 @@ FINAL_MODEL_PATH = MODEL_LOG_DIR + "/finalbasicfarmer.mdl"
 
 class BaselinesNodeExperiment:
 
-    def __init__(self, run_type):
-        self.run_type = run_type
-
+    def __init__(self):
         self.agent = BaselinesNodeAgent()
         self.goals = [conditions.IsCloseToEntity(self.agent)]
         self.tree = BackChainTree(self.agent, self.goals)
@@ -44,33 +34,38 @@ class BaselinesNodeExperiment:
 
         self.baseline_node = self.tree.baseline_nodes[0]
 
-    def run(self):
-        if self.run_type == RunType.TEST_NODE:
-            fighter_model = DQN.load(get_project_root() / MODEL_PATH)
-            self.baseline_node.set_model(fighter_model)
-            mission = BaselinesNodeTestingMission(self.agent, self.tree.root, get_absolute_path(MISSION_PATH))
+    def test_node(self):
+        fighter_model = DQN.load(get_project_root() / MODEL_PATH)
+        self.baseline_node.set_model(fighter_model)
+        mission = BaselinesNodeTestingMission(self.agent, self.tree.root, get_absolute_path(MISSION_PATH))
 
-            while True:
-                mission.run()
-        else:
-            mission = BaselinesNodeTrainingMission(self.agent, get_absolute_path(MISSION_PATH))
+        while True:
+            mission.run()
 
-            os.makedirs(get_absolute_path(MODEL_LOG_DIR), exist_ok=True)
-            env = BaselinesNodeTrainingEnv(self.baseline_node, mission)
-            env = Monitor(env, get_absolute_path(MODEL_LOG_DIR))
+    def setup_training_environment(self):
+        mission = BaselinesNodeTrainingMission(self.agent, get_absolute_path(MISSION_PATH))
 
-            if self.run_type == RunType.TEST_ENV:
-                check_env(env)
-            else:
-                model = DQN(
-                    'MultiInputPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"),
-                    exploration_fraction=0.05
-                )
-                model.learn(total_timesteps=TOTAL_TIME_STEPS,
-                            callback=SaveOnBestTrainingRewardCallback(5000, log_dir=get_absolute_path(MODEL_LOG_DIR)))
-                model.save(FINAL_MODEL_PATH)
+        os.makedirs(get_absolute_path(MODEL_LOG_DIR), exist_ok=True)
+        env = BaselinesNodeTrainingEnv(self.baseline_node, mission)
+        env = Monitor(env, get_absolute_path(MODEL_LOG_DIR))
+        return env
+
+    def train_node(self):
+        env = self.setup_training_environment()
+
+        model = DQN(
+            'MultiInputPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"),
+            exploration_fraction=0.05
+        )
+        model.learn(total_timesteps=TOTAL_TIME_STEPS,
+                    callback=SaveOnBestTrainingRewardCallback(5000, log_dir=get_absolute_path(MODEL_LOG_DIR)))
+        model.save(FINAL_MODEL_PATH)
+
+    def test_env(self):
+        env = self.setup_training_environment()
+        check_env(env)
 
 
 if __name__ == '__main__':
-    experiment = BaselinesNodeExperiment(RunType.TRAIN_NODE)
-    experiment.run()
+    experiment = BaselinesNodeExperiment()
+    experiment.train_node()

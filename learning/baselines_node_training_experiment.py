@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 from stable_baselines3 import DQN
 from stable_baselines3.common.env_checker import check_env
@@ -14,74 +15,60 @@ from mission_runner.baselines_node_training_mission import BaselinesNodeTraining
 from utils.file import get_absolute_path, get_project_root
 from utils.visualisation import save_tree_to_log
 
-IS_TRAINING = True
+
+class RunType(Enum):
+    TRAIN_NODE = 0
+    TEST_NODE = 1
+    TEST_ENV = 2
+
+
+RUN_TYPE = RunType.TEST_NODE
 TOTAL_TIMESTEPS = 3000000
 
 MISSION_PATH = "resources/arena_cow_skeleton.xml"
+MODEL_LOG_DIR = "results/basicfighter3_good"
+TREE_LOG_DIR = "cow_tree.txt"
+MODEL_PATH = MODEL_LOG_DIR + "/best_model_53"
+FINAL_MODEL_PATH = MODEL_LOG_DIR + "/finalbasicfarmer.mdl"
 
 
-def train_node():
+def main():
     mission_xml_path = get_absolute_path(MISSION_PATH)
-    log_dir = get_absolute_path("results/basicfighter3_good")
+    log_dir = get_absolute_path(MODEL_LOG_DIR)
 
     agent = BaselinesNodeAgent()
     goals = [conditions.IsCloseToEntity(agent)]
     tree = BackChainTree(agent, goals)
+    if TREE_LOG_DIR != "":
+        save_tree_to_log(tree.root, TREE_LOG_DIR)
 
-    mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
+    baseline_node = tree.baseline_nodes[0]
 
-    save_tree_to_log(tree.root, "cow_tree.txt")
+    if RUN_TYPE == RunType.TEST_NODE:
+        fighter_model = DQN.load(get_project_root() / MODEL_PATH)
+        baseline_node.set_model(fighter_model)
+        mission = BaselinesNodeTestingMission(agent, tree.root, mission_xml_path)
 
-    node = tree.baseline_nodes[0]
+        while True:
+            mission.run()
+    else:
+        mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
 
-    os.makedirs(log_dir, exist_ok=True)
-    env = BaselinesNodeTrainingEnv(node, mission)
-    env = Monitor(env, log_dir)
+        os.makedirs(log_dir, exist_ok=True)
+        env = BaselinesNodeTrainingEnv(baseline_node, mission)
+        env = Monitor(env, log_dir)
 
-    model = DQN(
-        'MultiInputPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"), exploration_fraction=0.05
-    )
-    model.learn(total_timesteps=TOTAL_TIMESTEPS, callback=SaveOnBestTrainingRewardCallback(5000, log_dir=log_dir))
-    model.save(log_dir + "/finalbasicfarmer.mdl")
+        if RUN_TYPE == RunType.TEST_ENV:
+            check_env(env)
+        else:
+            model = DQN(
+                'MultiInputPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"),
+                exploration_fraction=0.05
+            )
+            model.learn(total_timesteps=TOTAL_TIMESTEPS,
+                        callback=SaveOnBestTrainingRewardCallback(5000, log_dir=log_dir))
+            model.save(FINAL_MODEL_PATH)
 
-
-def test_node():
-    model_path = "results/basicfighter3_good/best_model_53"
-
-    agent = BaselinesNodeAgent()
-    goals = [conditions.IsCloseToEntity(agent)]
-    tree = BackChainTree(agent, goals)
-
-    node = tree.baseline_nodes[0]
-    fighter_model = DQN.load(get_project_root() / model_path)
-    node.set_model(fighter_model)
-
-    mission_xml_path = get_absolute_path(MISSION_PATH)
-    mission = BaselinesNodeTestingMission(agent, tree.root, mission_xml_path)
-
-    while True:
-        mission.run()
-
-
-def test_env():
-    mission_xml_path = get_absolute_path(MISSION_PATH)
-    log_dir = get_absolute_path("results/basicfighter3_good")
-
-    agent = BaselinesNodeAgent()
-    goals = [conditions.IsCloseToEntity(agent)]
-    tree = BackChainTree(agent, goals)
-
-    mission = BaselinesNodeTrainingMission(agent, mission_xml_path)
-
-    save_tree_to_log(tree.root, "cow_tree.txt")
-
-    node = tree.baseline_nodes[0]
-
-    os.makedirs(log_dir, exist_ok=True)
-    env = BaselinesNodeTrainingEnv(node, mission)
-    env = Monitor(env, log_dir)
-
-    check_env(env)
 
 if __name__ == '__main__':
-    test_node()
+    main()

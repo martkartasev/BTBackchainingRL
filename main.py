@@ -1,6 +1,6 @@
 from bt import conditions
 from learning.baseline_node import ChaseEntity
-from learning.baselines_node_experiment import BaselinesNodeExperiment
+from baselines_node_experiment import BaselinesNodeExperiment
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],

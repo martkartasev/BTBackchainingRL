@@ -1,6 +1,6 @@
 import time
 
-from mission_runner.mission_manager import MissionManager
+from mission.mission_manager import MissionManager
 
 
 class BaselinesNodeMission:
@@ -27,6 +27,10 @@ class BaselinesNodeMission:
         return world_state
 
     def run_mission(self):
+        self.mission_manager.mission_initialization()
+        if not self.hard_reset:
+            self.soft_reset()
+
         world_state = self.tick_mission()
         while world_state.is_mission_running:
             for error in world_state.errors:
@@ -42,10 +46,6 @@ class BaselinesNodeMission:
 
     def run(self):
         while True:
-            self.mission_manager.mission_initialization()
-            if not self.hard_reset:
-                self.soft_reset()
-
             start = time.time()
             self.run_mission()
             end = time.time()

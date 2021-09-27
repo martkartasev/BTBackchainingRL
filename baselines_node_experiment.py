@@ -9,7 +9,7 @@ from bt.back_chain_tree import BackChainTree
 from learning.agents.baselines_node_agent import BaselinesNodeAgent
 from learning.baselines_node_training_env import BaselinesNodeTrainingEnv
 from learning.save_best_model_callback import SaveOnBestTrainingRewardCallback
-from mission_runner.baselines_node_mission import BaselinesNodeMission
+from mission.baselines_node_mission import BaselinesNodeMission
 from observation import ObservationManager
 from utils.file import get_absolute_path, get_project_root
 from utils.visualisation import save_tree_to_log

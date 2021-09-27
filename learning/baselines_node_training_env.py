@@ -11,8 +11,9 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.node = learning_node
         self.agent = self.node.agent
         self.mission = mission
-        self.hard_reset = True
-        self.constraint_violated = False
+        self.hard_reset = hard_reset
+
+        self.is_acc_violated = False
 
         self.action_space = gym.spaces.Discrete(len(self.node.children))
         self.observation_space = self.node.get_observation_space()
@@ -24,29 +25,32 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.node.tick_once()
 
         self.mission.tick_mission()
-
-        self.constraint_violated = self.node.constraints is not None and False in self.check_constraints()
         is_timed_out = self.steps > EP_MAX_TIME_STEPS
 
         reward = self.node.calculate_rewards()
         ob = self.node.get_observation_array()
-        done = self.constraint_violated or self.agent.is_mission_over() or is_timed_out
-        return ob, reward, done, {}
 
-    def check_constraints(self):
-        return [constraint.evaluate(self.agent) for constraint in self.node.constraints]
+        is_mission_over = self.node.is_mission_over()
+        self.is_acc_violated = self.node.is_acc_violated()
+        is_post_conditions_fulfilled = self.node.is_post_conditions_fulfilled()
+        is_timed_out = self.steps > EP_MAX_TIME_STEPS
+
+        done = is_mission_over or self.is_acc_violated or is_post_conditions_fulfilled or is_timed_out
+
+        return ob, reward, done, {}
 
     def close(self):
         self.agent.quit()
-    #TODO: More melding of code here
+
     def reset(self):
         self.steps = 0
-        if self.constraint_violated:
-            while False in self.check_constraints() and not self.agent.is_mission_over():
+        if self.is_acc_violated:
+            while False in self.node.is_acc_violated() and not self.agent.is_mission_over():
                 print("moving out")
                 self.agent.control_loop()
-                self.mission.run_mission()
-            self.constraint_violated = False
+                self.mission.tick_mission()
+            self.is_acc_violated = False
+
             if self.agent.is_mission_over():
                 self.restart_mission()
         else:
@@ -55,10 +59,22 @@ class BaselinesNodeTrainingEnv(gym.Env):
         return self.node.get_observation_array()
 
     def restart_mission(self):
-        if self.agent.getWorldState().is_mission_running:
-            self.agent.sendCommand("quit")
-        self.mission.mission_initialization()
-        self.mission.run_mission()
+        self.steps = 0
+        self.node.reset_node()
+        if self.hard_reset:
+            if self.agent.get_world_state().is_mission_running:
+                self.mission.mission_manager.quit()
+            self.mission.mission_initialization()
+            self.mission.tick_mission()
+        else:
+            if self.agent.get_world_state().is_mission_running:
+                self.mission.soft_reset()
+            else:
+                self.mission.mission_initialization()
+                self.mission.tick_mission()
+                self.mission.soft_reset()
+
+        return self.node.get_observation_array()
 
     def render(self, mode='human', close=False):
         """ Minecraft is started separately. """

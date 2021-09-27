@@ -60,6 +60,8 @@ class MissionManager:
     def mission_initialization(self):
         # Attempt to start a mission:
         max_retries = 25
+        world_state = None
+
         for retry in range(max_retries):
             try:
                 if isinstance(self.mission, list):

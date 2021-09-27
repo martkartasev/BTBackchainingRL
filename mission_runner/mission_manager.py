@@ -35,6 +35,7 @@ def create_mission(mission_string=None):
     return mission, record
 
 
+MAX_RETRIES = 25
 WAIT_FOR_SECONDS = 10
 WAIT_INTERVAL = 0.1
 
@@ -59,10 +60,10 @@ class MissionManager:
 
     def mission_initialization(self):
         # Attempt to start a mission:
-        max_retries = 25
-        world_state = None
+        max_retries = MAX_RETRIES
 
-        for retry in range(max_retries):
+        world_state = None
+        for retry in range(MAX_RETRIES):
             try:
                 if isinstance(self.mission, list):
                     i = self.counter % len(self.mission)

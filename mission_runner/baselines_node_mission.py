@@ -64,6 +64,7 @@ class BaselinesNodeMission:
 
     def wait_for_entity(self, expect_entity):
         while True:
-            observation, _ = self.tick_mission()
+            self.tick_mission()
+            observation = self.observation_manager.observation
             if expect_entity == observation.dict["entity_visible"]:
                 break

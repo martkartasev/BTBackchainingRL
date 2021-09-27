@@ -35,6 +35,10 @@ def create_mission(mission_string=None):
     return mission, record
 
 
+WAIT_FOR_SECONDS = 10
+WAIT_INTERVAL = 0.1
+
+
 class MissionManager:
     def __init__(self, agent_host: MalmoPython.AgentHost, filename=None):
         self.agent_host = agent_host
@@ -73,14 +77,20 @@ class MissionManager:
                     print("Failed to connect to mission, retrying after 5 seconds: ", e)
                     time.sleep(5)
 
-        print("Waiting for the mission to start ", end=' ')
-        world_state = self.agent_host.get_world_state()
-        while not world_state.has_mission_begun:
-            print(".", end="")
-            time.sleep(0.1)
+            print("Waiting for the mission to start ", end=' ')
             world_state = self.agent_host.get_world_state()
-            for error in world_state.errors:
-                print("Error:", error.text)
+
+            wait_counter = 0
+            while not world_state.has_mission_begun:
+                print(".", end="")
+                wait_counter += 1
+                time.sleep(WAIT_INTERVAL)
+                world_state = self.agent_host.get_world_state()
+                for error in world_state.errors:
+                    print("Error:", error.text)
+
+                if wait_counter > WAIT_FOR_SECONDS / WAIT_INTERVAL:
+                    break
 
         print()
         print("Running mission", end=' ')

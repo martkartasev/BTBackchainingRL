@@ -25,7 +25,6 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.node.tick_once()
 
         self.mission.tick_mission()
-        is_timed_out = self.steps > EP_MAX_TIME_STEPS
 
         reward = self.node.calculate_rewards()
         ob = self.node.get_observation_array()

@@ -98,15 +98,15 @@ class DynamicBaselinesNode(BaselinesNode):
         self.total_reward = 0
 
     def get_observation_space(self):
-        return self.agent.get_observation_space()
+        return self.agent.observation_manager.get_observation_space()
 
     def get_observation_array(self):
-        observation = self.agent.observation
+        observation = self.agent.observation_manager.observation
 
         return None if observation is None else observation.dict
 
     def calculate_rewards(self):
-        reward = self.agent.rewards - 0.1
+        reward = self.agent.observation_manager.rewards - 0.1
         if self.is_acc_violated():
             reward += BaselinesNode.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():

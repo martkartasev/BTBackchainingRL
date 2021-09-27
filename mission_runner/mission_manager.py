@@ -3,7 +3,9 @@ import sys
 import time
 from builtins import range
 
-from malmo import MalmoPython
+import MalmoPython
+import numpy
+import numpy as np
 
 if sys.version_info[0] == 2:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
@@ -33,11 +35,11 @@ def create_mission(mission_string=None):
     return mission, record
 
 
-class AbstractMission:
-    def __init__(self, agent_host, filename=None):
-        self.agent = agent_host
-        self.agent_exited = False
-        self.time_steps = 0
+class MissionManager:
+    def __init__(self, agent_host: MalmoPython.AgentHost, filename=None):
+        self.agent_host = agent_host
+        self.counter = 0
+
         if filename is not None:
             if isinstance(filename, list):
                 missions = list()
@@ -50,21 +52,18 @@ class AbstractMission:
                 self.mission_record = records
             else:
                 self.mission, self.mission_record = create_mission(read_mission(filename))
-        self.counter = 0
 
     def mission_initialization(self):
         # Attempt to start a mission:
-        self.agent_exited = False
-        self.agent.reset()
         max_retries = 25
         for retry in range(max_retries):
             try:
                 if isinstance(self.mission, list):
                     i = self.counter % len(self.mission)
-                    self.agent.startMission(self.mission[i], self.mission_record[i])
+                    self.agent_host.startMission(self.mission[i], self.mission_record[i])
                     self.counter = self.counter + 1
                 else:
-                    self.agent.start_mission(self.mission, self.mission_record)
+                    self.agent_host.start_mission(self.mission, self.mission_record)
                 break
             except RuntimeError as e:
                 if retry == max_retries - 1:
@@ -75,19 +74,45 @@ class AbstractMission:
                     time.sleep(5)
 
         print("Waiting for the mission to start ", end=' ')
-        world_state = self.agent.get_world_state()
+        world_state = self.agent_host.get_world_state()
         while not world_state.has_mission_begun:
             print(".", end="")
             time.sleep(0.1)
-            world_state = self.agent.get_world_state()
+            world_state = self.agent_host.get_world_state()
             for error in world_state.errors:
                 print("Error:", error.text)
 
         print()
         print("Running mission", end=' ')
 
-        self.agent.activate_night_vision()
-        self.agent.set_fire_eternal()
-        self.agent.make_hungry()
+        self.agent_host.activate_night_vision()
+        self.agent_host.set_fire_eternal()
+        self.agent_host.make_hungry()
 
         return world_state
+
+    def destroy_all_entities(self):
+        self.agent_host.sendCommand("chat /kill @e[type=skeleton]")
+        self.agent_host.sendCommand("chat /kill @e[type=cow]")
+        self.agent_host.sendCommand("chat /kill @e[type=item]")  # Do this last to remove drops from the mobs
+
+    def go_to_spawn(self, vec=numpy.array([0, 4, 0])):
+        self.agent_host.sendCommand("chat /tp " + np.array2string(vec, separator=" ", precision=1))
+
+    def activate_night_vision(self):
+        self.agent_host.sendCommand("chat /effect @p night_vision 99999 255")
+
+    def set_fire_eternal(self):
+        self.agent_host.sendCommand("chat /gamerule doFireTick false")
+
+    def make_hungry(self):
+        self.agent_host.sendCommand("chat /effect @p hunger 5 255")
+
+    def create_static_skeleton(self):
+        self.agent_host.sendCommand("chat /summon skeleton -14 4 0 {NoAI:1}")
+
+    def create_cow(self):
+        self.agent_host.sendCommand("chat /summon cow 14 4 0 {NoAI:1}")
+
+    def quit(self):
+        self.agent_host.sendCommand("quit")

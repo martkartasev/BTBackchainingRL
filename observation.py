@@ -147,6 +147,35 @@ def get_item_inventory_index(info, items):
         return 0
 
 
+class ObservationManager:
+
+    def __init__(self, observation_filter=None):
+        self.previous_observation = None
+        self.observation = None
+        self.reward = 0
+        self.index = 0
+
+        self.observation_filter = observation_filter
+
+    def update(self, observations, reward):
+        self.previous_observation = self.observation
+        self.observation = Observation(observations, self.observation_filter)
+
+        self.reward = reward
+
+        self.index += 1
+        return self.observation
+
+    def get_observation_space(self):
+        return Observation.get_observation_space(self.observation_filter)
+
+    def reset(self):
+        self.previous_observation = None
+        self.observation = None
+        self.reward = 0
+        self.index = 0
+
+
 class Observation:
 
     def __init__(self, observations, observation_filter=None):

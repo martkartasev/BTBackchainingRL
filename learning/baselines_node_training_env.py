@@ -60,15 +60,15 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.steps = 0
         self.node.reset_node()
         if self.hard_reset:
-            if self.agent.get_world_state().is_mission_running:
+            if self.mission.mission_manager.agent_host.getWorldState().is_mission_running:
                 self.mission.mission_manager.quit()
-            self.mission.mission_initialization()
+            self.mission.mission_manager.mission_initialization()
             self.mission.tick_mission()
         else:
-            if self.agent.get_world_state().is_mission_running:
+            if self.mission.mission_manager.agent_host.getWorldState().is_mission_running:
                 self.mission.soft_reset()
             else:
-                self.mission.mission_initialization()
+                self.mission.mission_manager.mission_initialization()
                 self.mission.tick_mission()
                 self.mission.soft_reset()
 

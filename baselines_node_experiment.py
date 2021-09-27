@@ -53,8 +53,9 @@ class BaselinesNodeExperiment:
     def test_node(self, model):
         fighter_model = DQN.load(get_project_root() / MODEL_LOG_DIR / model)
         self.baseline_node.set_model(fighter_model)
+        self.agent.tree = self.baseline_node
         mission = BaselinesNodeMission(
-            self.agent, self.tree.root, get_absolute_path(self.mission_path), self.hard_reset
+            self.agent, get_absolute_path(self.mission_path), self.hard_reset
         )
 
         mission.run()
@@ -71,7 +72,10 @@ class BaselinesNodeExperiment:
         env = self.setup_training_environment()
 
         model = DQN(
-            'MultiInputPolicy', env, verbose=1, tensorboard_log=get_absolute_path("tensorboard"),
+            'MultiInputPolicy',
+            env,
+            verbose=1,
+            tensorboard_log=get_absolute_path("tensorboard"),
             exploration_fraction=0.05
         )
         model.learn(total_timesteps=TOTAL_TIME_STEPS,

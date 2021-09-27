@@ -70,7 +70,7 @@ class MissionManager:
                     self.agent_host.startMission(self.mission[i], self.mission_record[i])
                     self.counter = self.counter + 1
                 else:
-                    self.agent_host.start_mission(self.mission, self.mission_record)
+                    self.agent_host.startMission(self.mission, self.mission_record)
                 break
             except RuntimeError as e:
                 if retry == max_retries - 1:
@@ -81,14 +81,14 @@ class MissionManager:
                     time.sleep(5)
 
             print("Waiting for the mission to start ", end=' ')
-            world_state = self.agent_host.get_world_state()
+            world_state = self.agent_host.getWorldState()
 
             wait_counter = 0
             while not world_state.has_mission_begun:
                 print(".", end="")
                 wait_counter += 1
                 time.sleep(WAIT_INTERVAL)
-                world_state = self.agent_host.get_world_state()
+                world_state = self.agent_host.getWorldState()
                 for error in world_state.errors:
                     print("Error:", error.text)
 
@@ -98,9 +98,9 @@ class MissionManager:
         print()
         print("Running mission", end=' ')
 
-        self.agent_host.activate_night_vision()
-        self.agent_host.set_fire_eternal()
-        self.agent_host.make_hungry()
+        self.activate_night_vision()
+        self.set_fire_eternal()
+        self.make_hungry()
 
         return world_state
 

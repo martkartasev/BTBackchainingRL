@@ -175,6 +175,9 @@ class ObservationManager:
         self.reward = 0
         self.index = 0
 
+    def is_agent_alive(self):
+        return self.observation.dict["health"] > 0
+
 
 class Observation:
 
@@ -247,3 +250,4 @@ class Observation:
         else:
             reduced_space = {key: value for key, value in full_space.items() if key in observation_filter}
             return Dict(spaces=reduced_space)
+

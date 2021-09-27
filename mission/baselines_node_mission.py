@@ -5,12 +5,11 @@ from mission.mission_manager import MissionManager
 
 class BaselinesNodeMission:
 
-    def __init__(self, agent, tree, filename=None, hard_reset=True):
+    def __init__(self, agent, filename=None, hard_reset=True):
         self.mission_manager = MissionManager(agent.agent_host, filename)
         self.agent = agent
         self.observation_manager = agent.observation_manager
         self.hard_reset = hard_reset
-        self.tree = tree
 
     def tick_mission(self):
         host = self.mission_manager.agent_host
@@ -19,7 +18,7 @@ class BaselinesNodeMission:
         reward = 0
 
         while observations is None or len(observations) == 0:
-            world_state = host.get_world_state()
+            world_state = host.getWorldState()
             observations = world_state.observations
             reward = sum(reward.getValue() for reward in world_state.rewards)
 

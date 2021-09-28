@@ -9,7 +9,12 @@ cow_skeleton_experiment = {
     "hard_reset": False,
     "baseline_node_type": ChaseEntity,
     "observation_filter": [
-        "entity_relative_position", "enemy_relative_position", "direction", "health", "entity_visible", "surroundings"
+        "entity_relative_position",
+        "enemy_relative_position",
+        "direction",
+        "health",
+        "entity_visible",
+        "surroundings"
     ]
 }
 
@@ -19,7 +24,11 @@ skeleton_fire_experiment = {
     "tree_log": "skeleton_tree.txt",
     "hard_reset": True,  # TODO: Add support for soft reset to experiments with fire
     "observation_filter": [
-        "entity_relative_position", "enemy_relative_position", "direction", "health", "enemy_health", "entity_visible",
+        "entity_relative_position",
+        "enemy_relative_position",
+        "direction", "health",
+        "enemy_health",
+        "entity_visible",
         "surroundings"
     ]
 }
@@ -30,8 +39,15 @@ cow_fire_experiment = {
     "tree_log": "cow_tree.txt",
     "hard_reset": True,  # TODO: Add support for soft reset to experiments with fire
     "observation_filter": [
-        "entity_relative_position", "enemy_relative_position", "direction", "health", "entity_visible", "surroundings",
-        "is_entity_pickable", "has_food", "satiation"
+        "entity_relative_position",
+        "enemy_relative_position",
+        "direction",
+        "health",
+        "entity_visible",
+        "surroundings",
+        "is_entity_pickable",
+        "has_food",
+        "satiation"
     ]
 }
 

@@ -34,7 +34,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
         is_post_conditions_fulfilled = self.node.is_post_conditions_fulfilled()
         is_timed_out = self.steps > EP_MAX_TIME_STEPS
 
-        done = is_mission_over or self.is_acc_violated or is_timed_out
+        done = is_mission_over or self.is_acc_violated or is_timed_out or is_post_conditions_fulfilled
 
         return ob, reward, done, {}
 

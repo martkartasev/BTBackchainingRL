@@ -43,9 +43,9 @@ class IsEnemyDefeated(Condition):
     def __init__(self, agent):
         super(IsEnemyDefeated, self).__init__(f"Is enemy defeated", agent)
 
-    def update(self):
+    def evaluate(self, agent) -> bool:
         enemy_life = self.agent.observation_manager.observation.dict["enemy_health"]
-        return Status.SUCCESS if enemy_life == 0 else Status.FAILURE
+        return True if enemy_life == 0 else False
 
 
 class IsNotAttackedByEnemy(Condition):
@@ -54,55 +54,55 @@ class IsNotAttackedByEnemy(Condition):
     def __init__(self, agent):
         super(IsNotAttackedByEnemy, self).__init__(f"Is not attacked by enemy", agent)
 
-    def update(self):
+    def evaluate(self, agent) -> bool:
         enemy_distance = self.agent.observation_manager.observation.dict["enemy_relative_position"]
 
         non_standardized_distance = enemy_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return Status.SUCCESS if distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE else Status.FAILURE
+        return True if distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE else False
 
 
 class IsEntityVisible(Condition):
     def __init__(self, agent):
         super(IsEntityVisible, self).__init__(f"Is Entity Visible", agent)
 
-    def update(self):
-        return Status.SUCCESS if self.agent.observation_manager.observation.dict["entity_visible"] == 1 else Status.FAILURE
+    def evaluate(self, agent) -> bool:
+        return True if self.agent.observation_manager.observation.dict["entity_visible"] == 1 else False
 
 
 class IsCloseToEntity(Condition):
     def __init__(self, agent):
         super(IsCloseToEntity, self).__init__(f"Is Close To Entity", agent)
 
-    def update(self):
+    def evaluate(self, agent) -> bool:
         entity_distance = self.agent.observation_manager.observation.dict["entity_relative_position"]
 
         non_standardized_distance = entity_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return Status.SUCCESS if distance <= 2 else Status.FAILURE
+        return True if distance <= 2 else False
 
 
 class IsNotHungry(Condition):
     def __init__(self, agent):
         super(IsNotHungry, self).__init__(f"Is not hungry", agent)
 
-    def update(self):
-        return Status.SUCCESS if self.agent.observation_manager.observation.dict["satiation"] == 1 else Status.FAILURE
+    def evaluate(self, agent) -> bool:
+        return True if self.agent.observation_manager.observation.dict["satiation"] == 1 else False
 
 
 class HasFood(Condition):
     def __init__(self, agent):
         super(HasFood, self).__init__(f"Has food", agent)
 
-    def update(self):
-        return Status.SUCCESS if self.agent.observation_manager.observation.dict["has_food"] > 0 else Status.FAILURE
+    def evaluate(self, agent) -> bool:
+        return True if self.agent.observation_manager.observation.dict["has_food"] > 0 else False
 
 
 class IsEntityPickable(Condition):
     def __init__(self, agent):
         super(IsEntityPickable, self).__init__(f"Is entity pickable", agent)
 
-    def update(self):
-        return Status.SUCCESS if self.agent.observation_manager.observation.dict["is_entity_pickable"] == 1 else Status.FAILURE
+    def evaluate(self, agent) -> bool:
+        return True if self.agent.observation_manager.observation.dict["is_entity_pickable"] == 1 else False

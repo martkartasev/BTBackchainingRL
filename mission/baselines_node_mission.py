@@ -26,9 +26,7 @@ class BaselinesNodeMission:
         return world_state
 
     def run_mission(self):
-        self.mission_manager.mission_initialization()
-        if not self.hard_reset:
-            self.soft_reset()
+        self.reset()
 
         world_state = self.tick_mission()
         while world_state.is_mission_running:
@@ -51,6 +49,20 @@ class BaselinesNodeMission:
 
             print("took " + str((end - start) * 1000) + ' milliseconds')
             print("Mission ended")
+
+    def reset(self):
+        if self.hard_reset:
+            if self.mission_manager.agent_host.getWorldState().is_mission_running:
+                self.mission_manager.quit()
+            self.mission_manager.mission_initialization()
+            self.tick_mission()
+        else:
+            if self.mission_manager.agent_host.getWorldState().is_mission_running:
+                self.soft_reset()
+            else:
+                self.mission_manager.mission_initialization()
+                self.tick_mission()
+                self.soft_reset()
 
     def soft_reset(self):
         self.mission_manager.go_to_spawn()

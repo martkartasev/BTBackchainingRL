@@ -59,18 +59,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
     def restart_mission(self):
         self.steps = 0
         self.node.reset_node()
-        if self.hard_reset:
-            if self.mission.mission_manager.agent_host.getWorldState().is_mission_running:
-                self.mission.mission_manager.quit()
-            self.mission.mission_manager.mission_initialization()
-            self.mission.tick_mission()
-        else:
-            if self.mission.mission_manager.agent_host.getWorldState().is_mission_running:
-                self.mission.soft_reset()
-            else:
-                self.mission.mission_manager.mission_initialization()
-                self.mission.tick_mission()
-                self.mission.soft_reset()
+        self.mission.reset()
 
         return self.node.get_observation_array()
 

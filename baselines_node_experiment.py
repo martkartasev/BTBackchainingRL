@@ -62,7 +62,7 @@ class BaselinesNodeExperiment:
         mission.run()
 
     def setup_training_environment(self):
-        mission = BaselinesNodeMission(self.agent, get_absolute_path(self.mission_path))
+        mission = BaselinesNodeMission(self.agent, get_absolute_path(self.mission_path), self.hard_reset)
 
         os.makedirs(get_absolute_path(MODEL_LOG_DIR), exist_ok=True)
         env = BaselinesNodeTrainingEnv(self.baseline_node, mission, self.hard_reset)

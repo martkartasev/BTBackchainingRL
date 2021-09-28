@@ -3,7 +3,7 @@ import time
 from mission.mission_manager import MissionManager
 
 
-class BaselinesNodeMission:
+class MissionRunner:
 
     def __init__(self, agent, filename=None, hard_reset=True):
         self.mission_manager = MissionManager(agent.agent_host, filename)

@@ -30,7 +30,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
         ob = self.node.get_observation_array()
 
         is_mission_over = self.node.is_mission_over()
-        self.is_acc_violated = self.node.is_acc_violated()
+        self.is_acc_violated = True in self.node.is_acc_violated()
         is_post_conditions_fulfilled = self.node.is_post_conditions_fulfilled()
         is_timed_out = self.steps > EP_MAX_TIME_STEPS
 
@@ -44,7 +44,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
     def reset(self):
         self.steps = 0
         if self.is_acc_violated:
-            while self.node.is_acc_violated() and not self.agent.is_mission_over():
+            while True in self.node.is_acc_violated() and not self.agent.is_mission_over():
                 self.agent.control_loop()
                 self.mission.tick_mission()
             self.is_acc_violated = False

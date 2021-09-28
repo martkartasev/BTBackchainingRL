@@ -82,8 +82,3 @@ class MalmoAgent:
 
     def move_north(self):
         self.agent_host.sendCommand("movenorth 1")
-
-    def set_positon(self, coordinates):
-        replace_ = "tp " + str(coordinates[0]) + " " + str(coordinates[1]) + " " + str(coordinates[2])
-        time.sleep(0.01)
-        self.agent_host.sendCommand(replace_)

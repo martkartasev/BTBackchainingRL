@@ -107,6 +107,7 @@ class MissionManager:
     def destroy_all_entities(self):
         self.agent_host.sendCommand("chat /kill @e[type=skeleton]")
         self.agent_host.sendCommand("chat /kill @e[type=cow]")
+        time.sleep(0.01)
         self.agent_host.sendCommand("chat /kill @e[type=item]")  # Do this last to remove drops from the mobs
 
     def go_to_spawn(self, vec=numpy.array([0, 4, 0])):

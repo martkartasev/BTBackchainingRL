@@ -111,7 +111,7 @@ class MissionManager:
         self.agent_host.sendCommand("chat /kill @e[type=item]")  # Do this last to remove drops from the mobs
 
     def go_to_spawn(self, vec=numpy.array([0, 4, 0])):
-        self.agent_host.sendCommand("chat /tp " + np.array2string(vec, separator=" ", precision=1))
+        self.agent_host.sendCommand("chat /tp " + " ".join(vec))
 
     def activate_night_vision(self):
         self.agent_host.sendCommand("chat /effect @p night_vision 99999 255")

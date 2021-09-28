@@ -232,12 +232,16 @@ class Observation:
 
         surroundings_list = info.get("Surroundings")
         if surroundings_list is not None:
-            surroundings = get_simplified_surroundings(surroundings_list)
+            surroundings = get_simplified_surroundings(surroundings_list).reshape(GRID_SIZE_AXIS)
         else:
-            surroundings = np.zeros(GRID_SIZE)
+            surroundings = np.zeros(GRID_SIZE).reshape(GRID_SIZE_AXIS)
         observation_dict["surroundings"] = surroundings
 
         self.dict = observation_dict
+        if observation_filter is not None:
+            self.filtered = {key: value for key, value in observation_dict.items() if key in observation_filter}
+            surroundings = self.filtered["surroundings"]
+            self.filtered["surroundings"] = np.rot90(surroundings, int((euler_direction[0] + 45) / 90) + 2, axes=(1, 2)).ravel()
 
     @staticmethod
     def get_observation_space(observation_filter=None):

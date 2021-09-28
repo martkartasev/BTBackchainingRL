@@ -22,7 +22,7 @@ class IsSafeFromFire(Condition):
         fire_loc = np.where(self.agent.observation_manager.dict["surroundings"] == Block.fire.value)
         count = len(fire_loc)
         if count > 0:
-            fire_loc = fire_loc.reshape(GRID_SIZE_AXIS)
+
             for i in range(0, count):
                 delta_pos = np.array([-1 + fire_loc[2][i], -1 + fire_loc[0][i], -1 + fire_loc[1][i]])
                 loc = np.floor(agent.observations.position + delta_pos) + np.array([0.5, 0, 0.5])

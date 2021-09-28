@@ -24,7 +24,6 @@ class AvoidFire(Action):
         count = len(fire_loc)
         if count > 0:
             d_res = np.array([0.0, 0.0, 0.0])
-            fire_loc = fire_loc.reshape(GRID_SIZE_AXIS)
 
             for i in range(0, count):
                 delta_pos = np.array([-1 + fire_loc[2][i], -1 + fire_loc[0][i], -1 + fire_loc[1][i]])

@@ -8,9 +8,17 @@ from observation import GRID_SIZE_AXIS
 
 
 class Condition(Behaviour):
-    def __init__(self, name, agent=None):
+    def __init__(self, name, agent):
         super(Condition, self).__init__(name)
         self.agent = agent
+
+    def update(self):
+        if self.evaluate(self.agent):
+            return Status.SUCCESS
+        return Status.FAILURE
+
+    def evaluate(self, agent) -> bool:
+        raise NotImplementedError()
 
 
 class IsSafeFromFire(Condition):
@@ -19,14 +27,14 @@ class IsSafeFromFire(Condition):
         super(IsSafeFromFire, self).__init__(name, agent)
 
     def evaluate(self, agent) -> bool:
-        fire_loc = np.where(self.agent.observation_manager.dict["surroundings"] == Block.fire.value)
-        count = len(fire_loc)
+        fire_loc = np.where(self.agent.observation_manager.observation.dict["surroundings"][0:1, 2:5, 2:5] == Block.fire.value)
+        count = len(fire_loc[0])
         if count > 0:
-
             for i in range(0, count):
                 delta_pos = np.array([-1 + fire_loc[2][i], -1 + fire_loc[0][i], -1 + fire_loc[1][i]])
-                loc = np.floor(agent.observations.position + delta_pos) + np.array([0.5, 0, 0.5])
-                if np.max(np.abs(agent.observations.position - loc)) <= 1.2:
+                position = self.agent.observation_manager.observation.dict["position"]
+                loc = np.floor(position + delta_pos) + np.array([0.5, 0, 0.5])
+                if np.max(np.abs(position - loc)) <= 1.2:
                     return False
         return True
 

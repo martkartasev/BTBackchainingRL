@@ -19,20 +19,19 @@ class AvoidFire(Action):
         self.result = np.array([0.0, 0.0, 0.0])
 
     def update(self):
-        fire_loc = np.where(self.agent.observation_manager.dict["surroundings"] == Block.fire.value)
-
-        count = len(fire_loc)
+        fire_loc = np.where(self.agent.observation_manager.observation.dict["surroundings"][0:1, 2:5, 2:5] == Block.fire.value)
+        count = len(fire_loc[0])
         if count > 0:
             d_res = np.array([0.0, 0.0, 0.0])
 
             for i in range(0, count):
-                delta_pos = np.array([-1 + fire_loc[2][i], -1 + fire_loc[0][i], -1 + fire_loc[1][i]])
-                pos = self.agent.observation_manager.dict["position"]
+                pos = self.agent.observation_manager.observation.dict["position"]
 
+                delta_pos = np.array([-1 + fire_loc[2][i], -1 + fire_loc[0][i], -1 + fire_loc[1][i]])
                 loc = np.floor(pos + delta_pos) + np.array([0.5, 0, 0.5])
                 d_res += (pos - loc)
 
-            self.result = rotation_matrix_y(self.agent.observation_manager.dict["euler_direction"][0]).dot(d_res) * 2
+            self.result = rotation_matrix_y(self.agent.observation_manager.observation.dict["euler_direction"][0]).dot(d_res) * 2
 
         self.agent.continuous_move(self.result[2])
         self.agent.continuous_strafe(-self.result[0])

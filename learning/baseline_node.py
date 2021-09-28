@@ -117,7 +117,7 @@ class DynamicBaselinesNode(BaselinesNode):
         return reward
 
     def is_acc_violated(self):
-        return [not constraint.evaluate(self.agent) for constraint in self.accs]
+        return True in [not constraint.evaluate(self.agent) for constraint in self.accs]
 
     def is_post_conditions_fulfilled(self):
         for post_condition in self.post_conditions:

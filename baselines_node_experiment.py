@@ -30,6 +30,7 @@ class BaselinesNodeExperiment:
         self.agent = BaselinesNodeAgent(agent_host, ObservationManager(observation_filter))
         self.goals = [goal(self.agent) for goal in goals]
         self.tree = BackChainTree(self.agent, self.goals)
+        self.agent.tree = self.tree.root
 
         if tree_log != "":
             save_tree_to_log(self.tree.root, tree_log)

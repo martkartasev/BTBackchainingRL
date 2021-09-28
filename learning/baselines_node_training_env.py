@@ -44,7 +44,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
     def reset(self):
         self.steps = 0
         if self.is_acc_violated:
-            while False in self.node.is_acc_violated() and not self.agent.is_mission_over():
+            while self.node.is_acc_violated() and not self.agent.is_mission_over():
                 self.agent.control_loop()
                 self.mission.tick_mission()
             self.is_acc_violated = False

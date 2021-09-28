@@ -52,6 +52,6 @@ def experiment_check_env(specs):
 
 
 if __name__ == '__main__':
-    experiment_train(cow_fire_experiment)
+    experiment_train(cow_skeleton_experiment)
     # experiment_test(cow_fire_experiment, "best_model_53")
     # experiment_check_env(cow_skeleton_experiment)

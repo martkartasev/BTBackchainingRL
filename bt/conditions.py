@@ -27,7 +27,7 @@ class IsSafeFromFire(Condition):
         super(IsSafeFromFire, self).__init__(name, agent)
 
     def evaluate(self, agent) -> bool:
-        fire_loc = np.where(self.agent.observation_manager.observation.dict["surroundings"][0:1, 2:5, 2:5] == Block.fire.value)
+        fire_loc = np.where(self.agent.observation_manager.observation.dict["surroundings"][0:1, 2:5, 2:5] == Block.fire.value) #TODO: Need to calculate based on axis size
         count = len(fire_loc[0])
         if count > 0:
             for i in range(0, count):

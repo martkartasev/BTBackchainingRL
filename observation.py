@@ -258,3 +258,33 @@ class Observation:
         else:
             reduced_space = {key: value for key, value in full_space.items() if key in observation_filter}
             return Dict(spaces=reduced_space)
+
+#  Temp reference from my old repo
+
+#     def get_observation_space(self):
+#         return spaces.Dict(
+#             spaces={
+#                 "cont": spaces.Box(low=0, high=1, dtype=np.float32, shape=(7,)),
+#                 "disc": spaces.Box(low=0, high=2, dtype=np.uint8, shape=(49,))
+#             }
+#         )
+#
+#     def get_observation_array(self):
+#         if self.agent is not None and self.agent.observations is not None and self.agent.observations.lookToPosition is not None:
+#             delta = self.agent.observations.position - self.agent.observations.lookToPosition
+#             observations_yaw = self.agent.observations.yaw
+#             rot = np.radians(get_y_rotation_from(self.agent, self.agent.observations.lookToPosition) - observations_yaw)
+#             yaw = np.radians(observations_yaw)
+#             return {
+#                 "cont": np.array([
+#                     self.agent.observations.agentEntity.life / 20,
+#                     self.agent.observations.enemyEntity.life / 20,
+#                     np.linalg.norm(np.array(delta[0], delta[2])) / 60,
+#                     ((np.cos(rot) + 1) / 2),
+#                     ((np.sin(rot) + 1) / 2),
+#                     (self.agent.observations.pitch + 90) / 180,
+#                     self.agent.observations.LineOfSight is not None and Enemy.is_enemy(self.agent.observations.LineOfSight.type)]),
+#                 "disc": np.rot90(self.agent.observations.near, int((observations_yaw + 45) / 90) + 2, axes=(1, 2)).ravel()}
+#         else:
+#             return {"cont": np.array([0, 0, 0, 0, 0, 0, 0]),
+#                     "disc": np.full((1, 7, 7), 0).ravel()}

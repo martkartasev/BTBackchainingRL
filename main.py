@@ -14,7 +14,7 @@ cow_skeleton_experiment = {
 }
 
 skeleton_fire_experiment = {
-    "goals": [conditions.IsEnemyDefeated],
+    "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
     "tree_log": "skeleton_tree.txt",
     "hard_reset": True,  # TODO: Add support for soft reset to experiments with fire
@@ -25,7 +25,7 @@ skeleton_fire_experiment = {
 }
 
 cow_fire_experiment = {
-    "goals": [conditions.IsNotInFire, conditions.IsNotHungry],
+    "goals": [conditions.IsSafeFromFire, conditions.IsNotHungry],
     "mission": "resources/arena_cow_v2.xml",
     "tree_log": "cow_tree.txt",
     "hard_reset": True,  # TODO: Add support for soft reset to experiments with fire
@@ -52,6 +52,6 @@ def experiment_check_env(specs):
 
 
 if __name__ == '__main__':
-    experiment_train(cow_skeleton_experiment)
+    experiment_train(skeleton_fire_experiment)
     # experiment_test(cow_fire_experiment, "best_model_53")
     # experiment_check_env(cow_skeleton_experiment)

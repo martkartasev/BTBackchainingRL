@@ -237,10 +237,7 @@ class Observation:
             surroundings = np.zeros(GRID_SIZE)
         observation_dict["surroundings"] = surroundings
 
-        if observation_filter is None:
-            self.dict = observation_dict
-        else:
-            self.dict = {key: value for key, value in observation_dict.items() if key in observation_filter}
+        self.dict = observation_dict
 
     @staticmethod
     def get_observation_space(observation_filter=None):

@@ -75,7 +75,7 @@
             <ObservationFromGrid>
                 <Grid name="Surroundings">
                     <min x="-3" y="0" z="-3"/>
-                    <max x="3" y="1" z="3"/>
+                    <max x="3" y="0" z="3"/>
                 </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats/>

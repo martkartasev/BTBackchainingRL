@@ -41,7 +41,7 @@ class BackChainTree:
 
     def condition_to_ppa_tree(self, agent, condition):
         ppa = None
-        if isinstance(condition, conditions.IsNotInFire):
+        if isinstance(condition, conditions.IsSafeFromFire):
             ppa = AvoidFirePPA(agent)
         elif isinstance(condition, conditions.IsEnemyDefeated):
             ppa = DefeatSkeletonPPA(agent)

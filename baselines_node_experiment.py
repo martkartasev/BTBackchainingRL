@@ -54,7 +54,8 @@ class BaselinesNodeExperiment:
     def test_node(self, model):
         fighter_model = DQN.load(get_project_root() / MODEL_LOG_DIR / model)
         self.baseline_node.set_model(fighter_model)
-        self.agent.tree = self.baseline_node
+        self.agent.tree = self.tree.root
+
         mission = BaselinesNodeMission(
             self.agent, get_absolute_path(self.mission_path), self.hard_reset
         )

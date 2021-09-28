@@ -3,6 +3,8 @@ import json
 import numpy as np
 from gym.spaces import Box, Dict, Discrete
 
+from minecraft_types import Block
+
 CIRCLE_DEGREES = 360
 
 ARENA_SIZE = 16
@@ -17,11 +19,11 @@ ANIMAL_TYPE = "Cow"
 FOOD_TYPES = ["beef", "cooked_beef"]
 ENEMY_MAX_LIFE = 24
 
-GRID_SIZE_AXIS = [5, 1, 5]
+GRID_SIZE_AXIS = [1, 7, 7]
 GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
 # Always append at the end of this list
-game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]
+game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]  # TODO: I would prefer an enum
 
 
 def get_entity_info(info, entity_names):
@@ -33,11 +35,18 @@ def get_entity_info(info, entity_names):
 
 def get_yaw(info):
     if "Yaw" in info:
-        yaw = info["Yaw"]
-        if yaw <= 0:
-            yaw += CIRCLE_DEGREES
-        return yaw
+        return bound_degrees(info["Yaw"])
     return None
+
+
+def bound_degrees(yaw):
+    if 180 < yaw < -180:
+        yaw = yaw % CIRCLE_DEGREES
+
+    if yaw < 0:
+        yaw = CIRCLE_DEGREES + yaw
+
+    return yaw
 
 
 def get_pitch(info):
@@ -62,6 +71,16 @@ def get_direction_vector(info):
     return direction_vector
 
 
+def get_euler_direction(info):
+    yaw = get_yaw(info)
+    pitch = get_pitch(info)
+
+    if yaw is None or pitch is None:
+        return np.zeros(3)
+
+    return [yaw, pitch, 0]  # yaw, pitch, roll
+
+
 def degrees_to_radians(deg):
     half_circle = CIRCLE_DEGREES / 2
     return deg * np.pi / half_circle
@@ -83,19 +102,8 @@ def get_game_object_ordinal(game_object):
 
 
 def get_simplified_surroundings(grid):
-    grid_ordinals = [get_simplified_game_object_ordinal(block) for block in grid]
+    grid_ordinals = [Block.get_simplified_game_object_ordinal(block) for block in grid]
     return np.array(grid_ordinals, dtype=np.float32)
-
-
-def get_simplified_game_object_ordinal(game_object):
-    if game_object is None:
-        return 0
-    elif game_object == "air":
-        return 0
-    elif game_object == "fire":
-        return 1
-    else:
-        return 2
 
 
 def get_relative_position(entity_info, player_position):
@@ -197,7 +205,10 @@ class Observation:
 
         position = get_player_position(info)
         direction = get_direction_vector(info)
+        euler_direction = get_euler_direction(info)
+        observation_dict["position"] = position
         observation_dict["direction"] = direction
+        observation_dict["euler_direction"] = euler_direction
 
         enemy_info = get_entity_info(info, [ENEMY_TYPE])
         observation_dict["enemy_relative_position"] = get_standardized_rotated_position(enemy_info, position, direction)
@@ -250,4 +261,3 @@ class Observation:
         else:
             reduced_space = {key: value for key, value in full_space.items() if key in observation_filter}
             return Dict(spaces=reduced_space)
-

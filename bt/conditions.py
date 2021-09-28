@@ -3,6 +3,7 @@ from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
 import observation
+from minecraft_types import Block
 from observation import GRID_SIZE_AXIS
 
 
@@ -12,14 +13,22 @@ class Condition(Behaviour):
         self.agent = agent
 
 
-class IsNotInFire(Condition):
-    def __init__(self, agent):
-        super(IsNotInFire, self).__init__(f"Is not in fire", agent)
+class IsSafeFromFire(Condition):
 
-    def update(self):
-        grid_list = self.agent.observation_manager.observation.dict["surroundings"]
-        me_position_index = int((GRID_SIZE_AXIS[0] * GRID_SIZE_AXIS[2] - 1) / 2)
-        return Status.SUCCESS if grid_list[me_position_index] != 1 else Status.FAILURE
+    def __init__(self, agent, name=f"Is safe from fire"):
+        super(IsSafeFromFire, self).__init__(name, agent)
+
+    def evaluate(self, agent) -> bool:
+        fire_loc = np.where(self.agent.observation_manager.dict["surroundings"] == Block.fire.value)
+        count = len(fire_loc)
+        if count > 0:
+            fire_loc = fire_loc.reshape(GRID_SIZE_AXIS)
+            for i in range(0, count):
+                delta_pos = np.array([-1 + fire_loc[2][i], -1 + fire_loc[0][i], -1 + fire_loc[1][i]])
+                loc = np.floor(agent.observations.position + delta_pos) + np.array([0.5, 0, 0.5])
+                if np.max(np.abs(agent.observations.position - loc)) <= 1.2:
+                    return False
+        return True
 
 
 class IsEnemyDefeated(Condition):

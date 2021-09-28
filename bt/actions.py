@@ -19,7 +19,7 @@ class AvoidFire(Action):
         self.result = np.array([0.0, 0.0, 0.0])
 
     def update(self):
-        fire_loc = np.where(self.agent.observation_manager.observation.dict["surroundings"][0:1, 2:5, 2:5] == Block.fire.value) #TODO: Need to calculate based on axis size
+        fire_loc = np.where(self.agent.observation_manager.observation.dict["surroundings"][0:1, 2:5, 2:5] == Block.fire.value)  # TODO: Need to calculate based on axis size
         count = len(fire_loc[0])
         if count > 0:
             d_res = np.array([0.0, 0.0, 0.0])

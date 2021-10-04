@@ -18,7 +18,7 @@
             </Time>
         </ServerInitialConditions>
         <ServerHandlers>
-            <FlatWorldGenerator forceReset="true"/>
+            <FlatWorldGenerator forceReset="false"/>
             <DrawingDecorator>
 
                 <DrawCuboid type="brick_block" x1="-16" y1="4" z1="-16" x2="16" y2="6" z2="16"/>
@@ -74,8 +74,8 @@
             <ObservationFromRay/>
             <ObservationFromGrid>
                 <Grid name="Surroundings">
-                    <min x="-1" y="0" z="-1"/>
-                    <max x="1" y="1" z="1"/>
+                    <min x="-3" y="0" z="-3"/>
+                    <max x="3" y="0" z="3"/>
                 </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats/>

@@ -13,9 +13,10 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.mission = mission
         self.hard_reset = hard_reset
 
+        self.is_acc_violated = False
+
         self.action_space = gym.spaces.Discrete(len(self.node.children))
         self.observation_space = self.node.get_observation_space()
-
         self.steps = 0
 
     def step(self, action):
@@ -23,26 +24,17 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.node.set_tick_child(action)
         self.node.tick_once()
 
-        self.mission.run_mission()
+        self.mission.tick_mission()
 
         reward = self.node.calculate_rewards()
         ob = self.node.get_observation_array()
 
-        is_mission_over = self.node.is_mission_over()
-        is_acc_violated = self.node.is_acc_violated()
+        is_mission_over = self.agent.is_mission_over()
+        self.is_acc_violated = self.node.is_acc_violated()
         is_post_conditions_fulfilled = self.node.is_post_conditions_fulfilled()
         is_timed_out = self.steps > EP_MAX_TIME_STEPS
 
-        done = is_mission_over or is_acc_violated or is_post_conditions_fulfilled or is_timed_out
-
-        if is_mission_over:
-            print("Mission is Over")
-        elif is_acc_violated:
-            print("Acc was violated")
-        elif is_post_conditions_fulfilled:
-            print("Post Condition was fulfilled")
-        elif is_timed_out:
-            print("Timed out")
+        done = is_mission_over or self.is_acc_violated or is_timed_out or is_post_conditions_fulfilled
 
         return ob, reward, done, {}
 
@@ -51,19 +43,23 @@ class BaselinesNodeTrainingEnv(gym.Env):
 
     def reset(self):
         self.steps = 0
-        self.node.reset_node()
-        if self.hard_reset:
-            if self.agent.get_world_state().is_mission_running:
-                self.agent.quit()
-            self.mission.mission_initialization()
-            self.mission.run_mission()
+        if self.is_acc_violated:
+            while self.node.is_acc_violated() and not self.agent.is_mission_over():
+                self.agent.control_loop()
+                self.mission.tick_mission()
+            self.is_acc_violated = False
+
+            if self.agent.is_mission_over():
+                self.restart_mission()
         else:
-            if self.agent.get_world_state().is_mission_running:
-                self.mission.soft_reset()
-            else:
-                self.mission.mission_initialization()
-                self.mission.run_mission()
-                self.mission.soft_reset()
+            self.restart_mission()
+
+        return self.node.get_observation_array()
+
+    def restart_mission(self):
+        self.steps = 0
+        self.node.reset_node()
+        self.mission.reset()
 
         return self.node.get_observation_array()
 

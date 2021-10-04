@@ -1,89 +1,51 @@
 import time
 
-import numpy as np
-from malmo.MalmoPython import AgentHost
 
-from observation import Observation
-
-
-class BaseAgent:
-    def __init__(self):
-        self.agent_host = AgentHost()
-        self.observation = None
-        self.rewards = None
-
-    def start_mission(self, mission, mission_record):
-        self.agent_host.startMission(mission, mission_record)
-
-    def start_mission_with_pool(self, mission, pool, mission_record, experiment_id):
-        self.agent_host.startMission(mission, pool, mission_record, 0, experiment_id)
-
-    def activate_night_vision(self):
-        self.agent_host.sendCommand("chat /effect @p night_vision 99999 255")
-
-    def set_fire_eternal(self):
-        self.agent_host.sendCommand("chat /gamerule doFireTick false")
-
-    def make_hungry(self):
-        self.agent_host.sendCommand("chat /effect @p hunger 5 255")
-
-    def create_static_skeleton(self):
-        self.agent_host.sendCommand("chat /summon skeleton -14 4 0 {NoAI:1}")
-
-    def create_cow(self):
-        self.agent_host.sendCommand("chat /summon cow 14 4 0 {NoAI:1}")
-
-    def destroy_all_entities(self):
-        self.agent_host.sendCommand("chat /kill @e[type=skeleton]")
-        self.agent_host.sendCommand("chat /kill @e[type=cow]")
-        self.agent_host.sendCommand("chat /kill @e[type=item]")  # Do this last to remove drops from the mobs
-
-    def go_to_spawn(self):
-        self.agent_host.sendCommand("chat /tp 0 4 0")
-
-
-class MalmoAgent(BaseAgent):
-    def __init__(self):
-        super().__init__()
-
-    def move_towards_flat_direction(self, wanted_flat_direction_vector):
-        direction_vector = self.observation.dict["direction"]
-        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
-        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
-        side_direction_vector = np.array([flat_direction_vector[1], -flat_direction_vector[0]])
-
-        angle = np.arccos(np.dot(wanted_flat_direction_vector, flat_direction_vector))
-        sign = 1 if np.dot(wanted_flat_direction_vector, side_direction_vector) > 0 else -1
-
-        self.continuous_move(np.cos(angle))
-        self.continuous_strafe(-sign * np.sin(angle))
+class MalmoAgent:
+    def __init__(self, agent_host):
+        self.agent_host = agent_host
+        self.moving = 0
+        self.strafing = 0
+        self.turning = 0
+        self.pitching = 0
+        self.jumping = 0
+        self.attacking = 0
+        self.crouching = 0
+        self.using = 0
 
     def continuous_move(self, val):
         self.agent_host.sendCommand("move " + str(val))
+        self.moving = val
 
     def continuous_turn(self, val):
         self.agent_host.sendCommand("turn " + str(val))
+        self.turning = val
 
     def set_yaw(self, val):
         self.agent_host.sendCommand("setYaw " + str(val))
 
     def continuous_strafe(self, val):
         self.agent_host.sendCommand("strafe " + str(val))
+        self.strafing = val
 
     def continuous_pitch(self, val):
         self.agent_host.sendCommand("pitch " + str(val))
+        self.pitching = val
 
     def set_pitch(self, val):
         self.agent_host.sendCommand("setPitch " + str(val))
 
     def continuous_jump(self, toggle):
         self.agent_host.sendCommand("jump " + str(toggle))
+        self.jumping = toggle
 
     def attack(self, toggle):
         self.agent_host.sendCommand("attack " + str(toggle))
+        self.attacking = toggle
 
     def crouch(self, toggle):
         self.agent_host.sendCommand("crouch " + str(toggle))
+        self.crouching = toggle
 
     def swap_items(self, position1, position2):
         self.agent_host.sendCommand("swapInventoryItems {0} {1}".format(position1, position2))
@@ -103,61 +65,20 @@ class MalmoAgent(BaseAgent):
             time.sleep(0.001)
             self.agent_host.sendCommand("use 0")
             time.sleep(0.5)  # Stupid but necessary
+            self.using = toggle
 
-    def continuous_use(self, toggle):
-        self.agent_host.sendCommand("use " + str(toggle))
+    def craft(self, item):
+        self.agent_host.sendCommand("craft " + str(item))
+        time.sleep(0.004)
 
-    def quit(self):
-        self.agent_host.sendCommand("quit")
+    def move_west(self):
+        self.agent_host.sendCommand("movewest 1")
 
-    def reset(self):
-        raise NotImplementedError()
+    def move_south(self):
+        self.agent_host.sendCommand("movesouth 1")
 
-    def is_mission_over(self):
-        raise NotImplementedError()
+    def move_east(self):
+        self.agent_host.sendCommand("moveeast 1")
 
-
-class ObservationAgent(MalmoAgent):
-
-    def __init__(self, observation_filter=None):
-        super(ObservationAgent, self).__init__()
-        self.tree = None
-        self.index = 0
-        self.observation_filter = observation_filter
-
-    def is_agent_alive(self):
-        return self.observation.dict["health"] > 0
-
-    def get_world_state(self):
-        return self.agent_host.getWorldState()
-
-    def get_next_observations_and_reward(self):
-        observations = None
-        reward = 0
-        while observations is None or len(observations) == 0:
-            world_state = self.get_world_state()
-            observations = world_state.observations
-            reward += sum(reward.getValue() for reward in world_state.rewards)
-        return observations, reward
-
-    def update_observations_and_reward(self):
-        observations, reward = self.get_next_observations_and_reward()
-        observation = Observation(observations, self.observation_filter)
-        self.observation = observation
-        self.rewards = reward
-
-    def wait_for_entity(self, expect_entity):
-        while True:
-            observations, _ = self.get_next_observations_and_reward()
-            observation = Observation(observations, self.observation_filter)
-            if expect_entity == observation.dict["entity_visible"]:
-                break
-
-    def get_observation_space(self):
-        return Observation.get_observation_space(self.observation_filter)
-
-    def reset(self):
-        raise NotImplementedError()
-
-    def is_mission_over(self):
-        raise NotImplementedError()
+    def move_north(self):
+        self.agent_host.sendCommand("movenorth 1")

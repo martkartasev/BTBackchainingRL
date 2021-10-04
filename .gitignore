@@ -148,7 +148,8 @@ cython_debug/
 .idea/
 .vscode/
 
-./bootstrap/MalmoPlatform/
+/bootstrap/MalmoPlatform/
+/bootstrap/
 
 *.mdl
 

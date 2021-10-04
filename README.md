@@ -13,7 +13,7 @@ NB! This has been tested on Python 3.7 and Project Malmo 0.37.0. Please install 
 
 If you dont have a GPU available or want to use your CPU instead, modify the torch requirements from requirements.txt to '+cpu' or install torch with the following command instead.
 ```
-pip3 install torch==1.8.1+cpu torchvision==0.9.1+cpu torchaudio===0.8.1 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+pip3 install torch==1.8.2+cpu torchvision==0.9.1+cpu torchaudio===0.8.2 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html```
 ```
 
 # How to run

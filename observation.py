@@ -3,6 +3,8 @@ import json
 import numpy as np
 from gym.spaces import Box, Dict, Discrete
 
+from minecraft_types import Block
+
 CIRCLE_DEGREES = 360
 
 ARENA_SIZE = 16
@@ -17,11 +19,11 @@ ANIMAL_TYPE = "Cow"
 FOOD_TYPES = ["beef", "cooked_beef"]
 ENEMY_MAX_LIFE = 24
 
-GRID_SIZE_AXIS = [5, 1, 5]
+GRID_SIZE_AXIS = [1, 7, 7]
 GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
 # Always append at the end of this list
-game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]
+game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]  # TODO: I would prefer an enum. I brought in minecraft_types but its a little WIP
 
 
 def get_entity_info(info, entity_names):
@@ -33,11 +35,18 @@ def get_entity_info(info, entity_names):
 
 def get_yaw(info):
     if "Yaw" in info:
-        yaw = info["Yaw"]
-        if yaw <= 0:
-            yaw += CIRCLE_DEGREES
-        return yaw
+        return bound_degrees(info["Yaw"])
     return None
+
+
+def bound_degrees(yaw):
+    if 180 < yaw < -180:
+        yaw = yaw % CIRCLE_DEGREES
+
+    if yaw < 0:
+        yaw = CIRCLE_DEGREES + yaw
+
+    return yaw
 
 
 def get_pitch(info):
@@ -62,6 +71,16 @@ def get_direction_vector(info):
     return direction_vector
 
 
+def get_euler_direction(info):
+    yaw = get_yaw(info)
+    pitch = get_pitch(info)
+
+    if yaw is None or pitch is None:
+        return np.zeros(3)
+
+    return [yaw, pitch, 0]  # yaw, pitch, roll
+
+
 def degrees_to_radians(deg):
     half_circle = CIRCLE_DEGREES / 2
     return deg * np.pi / half_circle
@@ -83,19 +102,8 @@ def get_game_object_ordinal(game_object):
 
 
 def get_simplified_surroundings(grid):
-    grid_ordinals = [get_simplified_game_object_ordinal(block) for block in grid]
+    grid_ordinals = [Block.get_simplified_game_object_ordinal(block) for block in grid]
     return np.array(grid_ordinals, dtype=np.float32)
-
-
-def get_simplified_game_object_ordinal(game_object):
-    if game_object is None:
-        return 0
-    elif game_object == "air":
-        return 0
-    elif game_object == "fire":
-        return 1
-    else:
-        return 2
 
 
 def get_relative_position(entity_info, player_position):
@@ -147,6 +155,38 @@ def get_item_inventory_index(info, items):
         return 0
 
 
+class ObservationManager:
+
+    def __init__(self, observation_filter=None):
+        self.previous_observation = None
+        self.observation = None
+        self.reward = 0
+        self.index = 0
+
+        self.observation_filter = observation_filter
+
+    def update(self, observations, reward):
+        self.previous_observation = self.observation
+        self.observation = Observation(observations, self.observation_filter)
+
+        self.reward = reward
+
+        self.index += 1
+        return self.observation
+
+    def get_observation_space(self):
+        return Observation.get_observation_space(self.observation_filter)
+
+    def reset(self):
+        self.previous_observation = None
+        self.observation = None
+        self.reward = 0
+        self.index = 0
+
+    def is_agent_alive(self):
+        return self.observation.dict["health"] > 0
+
+
 class Observation:
 
     def __init__(self, observations, observation_filter=None):
@@ -165,7 +205,10 @@ class Observation:
 
         position = get_player_position(info)
         direction = get_direction_vector(info)
+        euler_direction = get_euler_direction(info)
+        observation_dict["position"] = position
         observation_dict["direction"] = direction
+        observation_dict["euler_direction"] = euler_direction
 
         enemy_info = get_entity_info(info, [ENEMY_TYPE])
         observation_dict["enemy_relative_position"] = get_standardized_rotated_position(enemy_info, position, direction)
@@ -189,15 +232,16 @@ class Observation:
 
         surroundings_list = info.get("Surroundings")
         if surroundings_list is not None:
-            surroundings = get_simplified_surroundings(surroundings_list)
+            surroundings = get_simplified_surroundings(surroundings_list).reshape(GRID_SIZE_AXIS)
         else:
-            surroundings = np.zeros(GRID_SIZE)
+            surroundings = np.zeros(GRID_SIZE).reshape(GRID_SIZE_AXIS)
         observation_dict["surroundings"] = surroundings
 
-        if observation_filter is None:
-            self.dict = observation_dict
-        else:
-            self.dict = {key: value for key, value in observation_dict.items() if key in observation_filter}
+        self.dict = observation_dict
+        if observation_filter is not None:
+            self.filtered = {key: value for key, value in observation_dict.items() if key in observation_filter}
+            surroundings = self.filtered["surroundings"]
+            self.filtered["surroundings"] = np.rot90(surroundings, int((euler_direction[0] + 45) / 90) + 2, axes=(1, 2)).ravel()
 
     @staticmethod
     def get_observation_space(observation_filter=None):
@@ -218,3 +262,33 @@ class Observation:
         else:
             reduced_space = {key: value for key, value in full_space.items() if key in observation_filter}
             return Dict(spaces=reduced_space)
+
+#  Temp reference from my old repo
+
+#     def get_observation_space(self):
+#         return spaces.Dict(
+#             spaces={
+#                 "cont": spaces.Box(low=0, high=1, dtype=np.float32, shape=(7,)),
+#                 "disc": spaces.Box(low=0, high=2, dtype=np.uint8, shape=(49,))
+#             }
+#         )
+#
+#     def get_observation_array(self):
+#         if self.agent is not None and self.agent.observations is not None and self.agent.observations.lookToPosition is not None:
+#             delta = self.agent.observations.position - self.agent.observations.lookToPosition
+#             observations_yaw = self.agent.observations.yaw
+#             rot = np.radians(get_y_rotation_from(self.agent, self.agent.observations.lookToPosition) - observations_yaw)
+#             yaw = np.radians(observations_yaw)
+#             return {
+#                 "cont": np.array([
+#                     self.agent.observations.agentEntity.life / 20,
+#                     self.agent.observations.enemyEntity.life / 20,
+#                     np.linalg.norm(np.array(delta[0], delta[2])) / 60,
+#                     ((np.cos(rot) + 1) / 2),
+#                     ((np.sin(rot) + 1) / 2),
+#                     (self.agent.observations.pitch + 90) / 180,
+#                     self.agent.observations.LineOfSight is not None and Enemy.is_enemy(self.agent.observations.LineOfSight.type)]),
+#                 "disc": np.rot90(self.agent.observations.near, int((observations_yaw + 45) / 90) + 2, axes=(1, 2)).ravel()}
+#         else:
+#             return {"cont": np.array([0, 0, 0, 0, 0, 0, 0]),
+#                     "disc": np.full((1, 7, 7), 0).ravel()}

@@ -5,6 +5,7 @@ from py_trees.composites import Selector
 from learning.baseline_node import BaselinesNode
 from utils.file import create_file_and_write
 
+
 # Separate implementation from the XML one
 def tree_to_drawio_csv(tree):
     graph_attributes = {

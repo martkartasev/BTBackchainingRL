@@ -18,7 +18,7 @@
             </Time>
         </ServerInitialConditions>
         <ServerHandlers>
-            <FlatWorldGenerator forceReset="true"/>
+            <FlatWorldGenerator forceReset="false"/>
             <DrawingDecorator>
 
                 <DrawCuboid type="brick_block" x1="-16" y1="4" z1="-16" x2="16" y2="6" z2="16"/>
@@ -43,10 +43,11 @@
                 <DrawCuboid type="fire" x1="7" y1="4" z1="8" x2="9" y2="4" z2="8"/>
                 <DrawCuboid type="fire" x1="8" y1="4" z1="7" x2="8" y2="4" z2="9"/>
 
-                <DrawBlock type="fire" x="-15" y="4" z="-15"/>
-                <DrawBlock type="fire" x="15" y="4" z="-15"/>
-                <DrawBlock type="fire" x="-15" y="4" z="15"/>
-                <DrawBlock type="fire" x="15" y="4" z="15"/>
+                <DrawCuboid type="fire" x1="-15" y1="4" z1="-15" x2="15" y2="4" z2="-15"/>
+                <DrawCuboid type="fire" x1="15" y1="4" z1="-15" x2="15" y2="4" z2="15"/>
+                <DrawCuboid type="fire" x1="15" y1="4" z1="15" x2="-15" y2="4" z2="15"/>
+                <DrawCuboid type="fire" x1="-15" y1="4" z1="15" x2="-15" y2="4" z2="-15"/>
+
 
                 <DrawEntity x="0" y="6" z="5" yaw="-180" type="Skeleton"/>
 
@@ -69,8 +70,8 @@
             <ObservationFromRay/>
             <ObservationFromGrid>
                 <Grid name="Surroundings">
-                    <min x="-2" y="0" z="-2"/>
-                    <max x="2" y="0" z="2"/>
+                    <min x="-3" y="0" z="-3"/>
+                    <max x="3" y="0" z="3"/>
                 </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats/>

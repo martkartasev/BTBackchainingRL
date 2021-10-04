@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 from stable_baselines3.common.callbacks import BaseCallback
+from stable_baselines3.common.off_policy_algorithm import OffPolicyAlgorithm
 from stable_baselines3.common.results_plotter import load_results, ts2xy
 
 
@@ -48,6 +49,8 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
                     if self.verbose > 0:
                         print("Saving new best model to {}".format(self.save_path))
                     self.model.save(self.save_path + "_" + str(self.index))
+                    if isinstance(self.model, OffPolicyAlgorithm):
+                        self.model.save_replay_buffer(self.save_path + "_" + str(self.index) + "_buffer")
                     self.index = self.index + 1
 
         return True

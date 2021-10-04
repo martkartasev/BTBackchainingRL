@@ -2,7 +2,9 @@ import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
+from minecraft_types import Block
 from observation import GRID_SIZE_AXIS, game_objects
+from utils.linalg import rotation_matrix_y
 
 
 class Action(Behaviour):
@@ -12,39 +14,29 @@ class Action(Behaviour):
 
 
 class AvoidFire(Action):
-    def __init__(self, agent, name="Avoid Fire"):
+    def __init__(self, agent, name="AvoidFire"):
         super().__init__(name, agent)
-        self.position_in_grid = np.array([int(axis / 2) for axis in GRID_SIZE_AXIS])
+        self.result = np.array([0.0, 0.0, 0.0])
 
     def update(self):
-        # Find closest not fire
-        grid = self.grid_observation_from_list()
-        grid = grid[:, 0, :]
+        fire_loc = np.where(self.agent.observation_manager.observation.dict["surroundings"][0:1, 2:5, 2:5] == Block.fire.value)  # TODO: Need to calculate based on axis size
+        count = len(fire_loc[0])
+        if count > 0:
+            d_res = np.array([0.0, 0.0, 0.0])
 
-        is_air = (grid == game_objects.index("air"))
-        positions = np.argwhere(is_air)
+            for i in range(0, count):
+                pos = self.agent.observation_manager.observation.dict["position"]
 
-        if len(positions) == 0:
-            return Status.FAILURE
-        distances_vector = positions - np.array([self.position_in_grid[0], self.position_in_grid[2]])
-        distances = np.linalg.norm(distances_vector, axis=1)
-        min_dist_arg = np.argmin(distances)
+                delta_pos = np.array([-1 + fire_loc[2][i], -1 + fire_loc[0][i], -1 + fire_loc[1][i]])
+                loc = np.floor(pos + delta_pos) + np.array([0.5, 0, 0.5])
+                d_res += (pos - loc)
 
-        if distances[min_dist_arg] == 0:
-            return Status.SUCCESS
+            self.result = rotation_matrix_y(self.agent.observation_manager.observation.dict["euler_direction"][0]).dot(d_res) * 2
 
-        min_distance_vector = distances_vector[min_dist_arg]
-        distance_vector_direction = min_distance_vector / np.linalg.norm(min_distance_vector)
+        self.agent.continuous_move(self.result[2])
+        self.agent.continuous_strafe(-self.result[0])
 
-        self.agent.move_towards_flat_direction(distance_vector_direction)
-
-        return Status.SUCCESS if grid[0, 0] == 0 else Status.FAILURE
-
-    def grid_observation_from_list(self):
-        grid_observation_list = self.agent.observation.dict["surroundings"]
-        grid = np.array(grid_observation_list).reshape((GRID_SIZE_AXIS[1], GRID_SIZE_AXIS[2], GRID_SIZE_AXIS[0]))
-        grid = np.transpose(grid, (2, 0, 1))
-        return grid
+        return Status.RUNNING
 
     def terminate(self, new_status):
         self.agent.continuous_move(0)
@@ -267,7 +259,7 @@ class Use(Action):
         return Status.RUNNING
 
 
-#TODO: Remove
+# TODO: Remove
 class ActionPlaceholder(Action):
     def __init__(self, agent, name="Placeholder"):
         super().__init__(name, agent)

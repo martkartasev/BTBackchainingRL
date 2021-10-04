@@ -41,7 +41,7 @@ class AvoidFirePPA(PPA):
     def __init__(self, agent):
         super(AvoidFirePPA, self).__init__()
         self.name = "Avoid Fire"
-        self.post_condition = conditions.IsNotInFire(agent)
+        self.post_condition = conditions.IsSafeFromFire(agent)
         self.pre_conditions = []
         self.action = actions.AvoidFire(agent)
 
@@ -51,7 +51,7 @@ class DefeatSkeletonPPA(PPA):
         super(DefeatSkeletonPPA, self).__init__()
         self.name = "Defeat Skeleton"
         self.post_condition = conditions.IsEnemyDefeated(agent)
-        self.pre_conditions = [conditions.IsNotInFire(agent)]
+        self.pre_conditions = [conditions.IsSafeFromFire(agent)]
         self.action = DefeatSkeleton(agent)
 
 
@@ -72,7 +72,7 @@ class ChaseEntityPPA(PPA):
         self.pre_conditions = [
             conditions.IsEntityVisible(agent),
             conditions.IsNotAttackedByEnemy(agent),
-            conditions.IsNotInFire(agent)
+            conditions.IsSafeFromFire(agent)
         ]
         self.action = ChaseEntity(agent)
 
@@ -100,5 +100,5 @@ class DefeatCowPPA(PPA):
         super(DefeatCowPPA, self).__init__()
         self.name = "Defeat Cow"
         self.post_condition = conditions.IsEntityPickable(agent)
-        self.pre_conditions = [ conditions.IsNotInFire(agent)]
+        self.pre_conditions = [ conditions.IsSafeFromFire(agent)]
         self.action = DefeatCow(agent)

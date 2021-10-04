@@ -98,31 +98,26 @@ class DynamicBaselinesNode(BaselinesNode):
         self.total_reward = 0
 
     def get_observation_space(self):
-        return self.agent.get_observation_space()
+        return self.agent.observation_manager.get_observation_space()
 
     def get_observation_array(self):
-        observation = self.agent.observation
+        observation = self.agent.observation_manager.observation
 
-        return None if observation is None else observation.dict
+        return None if observation is None else observation.filtered
 
     def calculate_rewards(self):
-        reward = self.agent.rewards - 0.1
+        reward = self.agent.observation_manager.reward - 0.1
         if self.is_acc_violated():
             reward += BaselinesNode.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():
             reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
-        if not self.agent.is_agent_alive():
+        if not self.agent.observation_manager.is_agent_alive():
             reward += BaselinesNode.AGENT_DEAD_REWARD
         self.total_reward += reward
         return reward
 
     def is_acc_violated(self):
-        for acc in self.accs:
-            acc.tick_once()
-            res = acc.status
-            if res == Status.FAILURE:
-                return True
-        return False
+        return True in [not constraint.evaluate(self.agent) for constraint in self.accs]
 
     def is_post_conditions_fulfilled(self):
         for post_condition in self.post_conditions:
@@ -131,9 +126,6 @@ class DynamicBaselinesNode(BaselinesNode):
             if res == Status.FAILURE:
                 return False
         return True
-
-    def is_mission_over(self):
-        return not self.agent.is_agent_alive()
 
     def reset_node(self):
         print("Total Reward of Episode", self.total_reward)

@@ -35,6 +35,7 @@ class Block(IntEnum):
     stone = 8
     bedrock = 9
     brick_block = 10
+    diamond_block = 11
 
     @staticmethod
     def get_simplified_game_object_ordinal(string):

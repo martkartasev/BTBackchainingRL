@@ -23,7 +23,7 @@ GRID_SIZE_AXIS = [1, 7, 7]
 GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
 # Always append at the end of this list
-game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]  # TODO: I would prefer an enum
+game_objects = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]  # TODO: I would prefer an enum. I brought in minecraft_types but its a little WIP
 
 
 def get_entity_info(info, entity_names):

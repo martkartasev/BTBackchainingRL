@@ -68,6 +68,6 @@ def experiment_check_env(specs):
 
 
 if __name__ == '__main__':
-    experiment_train(skeleton_fire_experiment)
-    # experiment_test(cow_fire_experiment, "best_model_53")
+     experiment_train(skeleton_fire_experiment)
+    # experiment_test(cow_fire_experiment, "best_model_0") #TODO: Might want to consider building the path to "folder / model_x" differently somehow. Right now we have to change it in two different places
     # experiment_check_env(cow_skeleton_experiment)

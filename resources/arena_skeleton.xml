@@ -18,7 +18,7 @@
             </Time>
         </ServerInitialConditions>
         <ServerHandlers>
-            <FlatWorldGenerator forceReset="true"/>
+            <FlatWorldGenerator forceReset="false"/>
             <DrawingDecorator>
                 <DrawCuboid type="grass" x1="78" y1="4" z1="63" x2="152" y2="4" z2="162"/>
                 <DrawCuboid type="grass" x1="79" y1="5" z1="64" x2="151" y2="5" z2="161"/>

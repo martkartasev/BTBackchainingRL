@@ -18,7 +18,7 @@
             </Time>
         </ServerInitialConditions>
         <ServerHandlers>
-            <FlatWorldGenerator forceReset="true"/>
+            <FlatWorldGenerator forceReset="false"/>
             <DrawingDecorator>
 
                 <DrawCuboid type="diamond_block" x1="-6" y1="4" z1="-6" x2="6" y2="6" z2="6"/>

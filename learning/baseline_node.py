@@ -127,9 +127,6 @@ class DynamicBaselinesNode(BaselinesNode):
                 return False
         return True
 
-    def is_mission_over(self):
-        return not self.agent.observation_manager.is_agent_alive()
-
     def reset_node(self):
         print("Total Reward of Episode", self.total_reward)
         self.total_reward = 0

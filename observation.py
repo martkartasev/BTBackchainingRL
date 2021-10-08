@@ -3,7 +3,7 @@ import json
 import numpy as np
 from gym.spaces import Box, Dict, Discrete
 
-from minecraft_types import Block
+from minecraft_types import Block, Enemy
 
 CIRCLE_DEGREES = 360
 
@@ -112,13 +112,17 @@ def get_relative_position(entity_info, player_position):
     if entity_info is None:
         return RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
 
-    entity_position_list = [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
+    entity_position_list = get_entity_position(entity_info)
     if None in entity_position_list:
         return RELATIVE_DISTANCE_AXIS_MAX * np.ones(3)
 
     entity_position = np.array(entity_position_list)
     relative_position = entity_position - player_position
     return np.clip(relative_position, -RELATIVE_DISTANCE_AXIS_MAX, RELATIVE_DISTANCE_AXIS_MAX)
+
+
+def get_entity_position(entity_info):
+    return [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
 
 
 def get_standardized_rotated_position(entity_info, player_position, direction):
@@ -153,6 +157,12 @@ def get_item_inventory_index(info, items):
         return 0
     else:
         return 0
+
+def get_y_rotation_from(a, b):
+    dx = b[0] - a[0]
+    dz = b[2] - a[2]
+    yaw = -180 * np.arctan2(dx, dz) / np.pi
+    return bound_degrees(yaw)
 
 
 class ObservationManager:
@@ -211,12 +221,19 @@ class Observation:
         observation_dict["euler_direction"] = euler_direction
 
         enemy_info = get_entity_info(info, [ENEMY_TYPE])
-        observation_dict["enemy_relative_position"] = get_standardized_rotated_position(enemy_info, position, direction)
+        rotated_position = get_standardized_rotated_position(enemy_info, position, direction)
+        observation_dict["enemy_relative_position"] = rotated_position
+
+        yaw = get_yaw(info)
+        delta = get_relative_position(enemy_info, position)
+        rot = np.radians(get_y_rotation_from(position, get_entity_position(enemy_info)) - yaw)
+        observation_dict["enemy_relative_distance"] = np.linalg.norm(np.array(delta[0], delta[2])) / RELATIVE_DISTANCE_AXIS_MAX
+        observation_dict["enemy_relative_direction"] = np.array([((np.cos(rot) + 1) / 2), ((np.sin(rot) + 1) / 2),])
+        observation_dict["enemy_targeted"] = observations.LineOfSight is not None and Enemy.is_enemy(observations.LineOfSight.type),
 
         food_info = get_entity_info(info, FOOD_TYPES)
         entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info
-        observation_dict["entity_relative_position"] = get_standardized_rotated_position(entity_info, position,
-                                                                                         direction)
+        observation_dict["entity_relative_position"] = get_standardized_rotated_position(entity_info, position, direction)
 
         observation_dict["health"] = np.array([info.get("Life", 0) / PLAYER_MAX_LIFE])
         observation_dict["satiation"] = np.array([info.get("Food", 0) / PLAYER_MAX_FOOD])
@@ -248,7 +265,12 @@ class Observation:
         full_space = {
             "entity_relative_position": Box(-1, 1, (3,)),
             "enemy_relative_position": Box(-1, 1, (3,)),
-            "direction": Box(-1, 1, (3,)),
+
+            "enemy_relative_distance": Box(0, 1, (1,)),
+            "enemy_targeted": Box(0, 1, (1,), dtype=np.uint8),
+            "enemy_relative_direction": Box(0, 1, (2,)),
+
+            "direction": Box(0, 1, (3,)),
             "health": Box(0, 1, (1,)),
             "satiation": Box(0, 1, (1,)),
             "enemy_health": Box(0, 1, (1,)),
@@ -265,14 +287,7 @@ class Observation:
 
 #  Temp reference from my old repo
 
-#     def get_observation_space(self):
-#         return spaces.Dict(
-#             spaces={
-#                 "cont": spaces.Box(low=0, high=1, dtype=np.float32, shape=(7,)),
-#                 "disc": spaces.Box(low=0, high=2, dtype=np.uint8, shape=(49,))
-#             }
-#         )
-#
+
 #     def get_observation_array(self):
 #         if self.agent is not None and self.agent.observations is not None and self.agent.observations.lookToPosition is not None:
 #             delta = self.agent.observations.position - self.agent.observations.lookToPosition

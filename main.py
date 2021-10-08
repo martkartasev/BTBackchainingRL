@@ -22,7 +22,7 @@ skeleton_fire_experiment = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
     "tree_log": "skeleton_tree.txt",
-    "hard_reset": True,  # TODO: Add support for soft reset to experiments with fire
+    "hard_reset": True,
     "observation_filter": [
         "entity_relative_position",
         "enemy_relative_position",
@@ -33,11 +33,27 @@ skeleton_fire_experiment = {
     ]
 }
 
+skeleton_fire_experiment_v2 = {
+    "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
+    "mission": "resources/arena_skeleton_v2.xml",
+    "tree_log": "skeleton_tree.txt",
+    "hard_reset": True,
+    "observation_filter": [
+        "enemy_relative_distance",
+        "enemy_relative_direction",
+        "direction",
+        "health",
+        "enemy_health",
+        "enemy_targeted",
+        "surroundings"
+    ]
+}
+
 cow_fire_experiment = {
     "goals": [conditions.IsSafeFromFire, conditions.IsNotHungry],
     "mission": "resources/arena_cow_v2.xml",
     "tree_log": "cow_tree.txt",
-    "hard_reset": True,  # TODO: Add support for soft reset to experiments with fire
+    "hard_reset": True,
     "observation_filter": [
         "entity_relative_position",
         "enemy_relative_position",
@@ -68,6 +84,6 @@ def experiment_check_env(specs):
 
 
 if __name__ == '__main__':
-     experiment_train(skeleton_fire_experiment)
+     experiment_train(skeleton_fire_experiment_v2)
     # experiment_test(cow_fire_experiment, "best_model_0") #TODO: Might want to consider building the path to "folder / model_x" differently somehow. Right now we have to change it in two different places
     # experiment_check_env(cow_skeleton_experiment)

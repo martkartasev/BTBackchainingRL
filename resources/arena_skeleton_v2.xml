@@ -65,7 +65,7 @@
         </AgentStart>
         <AgentHandlers>
             <ObservationFromNearbyEntities>
-                <Range name="Entities" xrange="100" yrange="100" zrange="100"/>
+                <Range name="Entities" xrange="100" yrange="4" zrange="100"/>
             </ObservationFromNearbyEntities>
             <ObservationFromRay/>
             <ObservationFromGrid>

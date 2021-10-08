@@ -12,7 +12,6 @@ class Enemy(Enum):
         for enemy in Enemy:
             if enemy.name == text:
                 return True
-
         return False
 
     @staticmethod

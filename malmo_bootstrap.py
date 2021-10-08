@@ -13,5 +13,5 @@ def run_malmo():
     malmo.minecraftbootstrap.set_malmo_xsd_path()
     malmo.minecraftbootstrap.launch_minecraft()
 
-
+#bootstrap_malmo()
 run_malmo()

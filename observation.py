@@ -36,7 +36,7 @@ def get_entity_info(info, entity_names):
 def get_yaw(info):
     if "Yaw" in info:
         return bound_degrees(info["Yaw"])
-    return None
+    return 0
 
 
 def bound_degrees(yaw):
@@ -145,7 +145,7 @@ def get_standardized_rotated_position(entity_info, player_position, direction):
 
 def get_player_position(info):
     player_position_list = [info.get("XPos"), info.get("YPos"), info.get("ZPos")]
-    player_position = None if None in player_position_list else np.array(player_position_list)
+    player_position = [0, 0, 0] if None in player_position_list else np.array(player_position_list)
     return player_position
 
 
@@ -233,7 +233,6 @@ class Observation:
         observation_dict["enemy_relative_distance"] = np.linalg.norm(np.array(delta[0], delta[2])) / RELATIVE_DISTANCE_AXIS_MAX
         observation_dict["enemy_relative_direction"] = np.array([((np.cos(rot) + 1) / 2), ((np.sin(rot) + 1) / 2), ])
         observation_dict["enemy_targeted"] = 'LineOfSight' in info.keys() and Enemy.is_enemy(info.get("LineOfSight").get("type"))
-
 
         food_info = get_entity_info(info, FOOD_TYPES)
         entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info

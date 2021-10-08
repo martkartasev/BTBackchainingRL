@@ -158,11 +158,14 @@ def get_item_inventory_index(info, items):
     else:
         return 0
 
+
 def get_y_rotation_from(a, b):
-    dx = b[0] - a[0]
-    dz = b[2] - a[2]
-    yaw = -180 * np.arctan2(dx, dz) / np.pi
-    return bound_degrees(yaw)
+    if a is not None and b is not None:
+        dx = b[0] - a[0]
+        dz = b[2] - a[2]
+        yaw = -180 * np.arctan2(dx, dz) / np.pi
+        return bound_degrees(yaw)
+    return 0
 
 
 class ObservationManager:
@@ -228,8 +231,9 @@ class Observation:
         delta = get_relative_position(enemy_info, position)
         rot = np.radians(get_y_rotation_from(position, get_entity_position(enemy_info)) - yaw)
         observation_dict["enemy_relative_distance"] = np.linalg.norm(np.array(delta[0], delta[2])) / RELATIVE_DISTANCE_AXIS_MAX
-        observation_dict["enemy_relative_direction"] = np.array([((np.cos(rot) + 1) / 2), ((np.sin(rot) + 1) / 2),])
-        observation_dict["enemy_targeted"] = observations.LineOfSight is not None and Enemy.is_enemy(observations.LineOfSight.type),
+        observation_dict["enemy_relative_direction"] = np.array([((np.cos(rot) + 1) / 2), ((np.sin(rot) + 1) / 2), ])
+        observation_dict["enemy_targeted"] = 'LineOfSight' in info.keys() and Enemy.is_enemy(info.get("LineOfSight").get("type"))
+
 
         food_info = get_entity_info(info, FOOD_TYPES)
         entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info

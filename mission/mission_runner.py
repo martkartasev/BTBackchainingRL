@@ -20,7 +20,7 @@ class MissionRunner:
         while observations is None or len(observations) == 0:
             world_state = host.getWorldState()
             observations = world_state.observations
-            reward = sum(reward.getValue() for reward in world_state.rewards)
+            reward += sum(reward.getValue() for reward in world_state.rewards)
 
         self.observation_manager.update(observations, reward)
         return world_state

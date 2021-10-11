@@ -38,7 +38,7 @@ skeleton_fire_experiment_v2 = {
     "mission": "resources/arena_skeleton_v2.xml",
     "tree_log": "skeleton_tree.txt",
     "hard_reset": True,
-    "observation_filter": [
+    "observation_filter": [  #TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
         "enemy_relative_distance",
         "enemy_relative_direction",
         "health",

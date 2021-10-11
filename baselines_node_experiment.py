@@ -16,7 +16,7 @@ from utils.visualisation import save_tree_to_log
 
 TOTAL_TIME_STEPS = 3000000
 
-MODEL_LOG_DIR = "results/basicfighter1_good"
+MODEL_LOG_DIR = "results/basicfighter2"
 FINAL_MODEL_PATH = MODEL_LOG_DIR + "/finalbasicfarmer.mdl"
 
 

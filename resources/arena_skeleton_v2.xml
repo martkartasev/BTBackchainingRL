@@ -6,7 +6,7 @@
     </About>
 
     <ModSettings>
-        <MsPerTick>20</MsPerTick>
+        <MsPerTick>100</MsPerTick>
         <PrioritiseOffscreenRendering>false</PrioritiseOffscreenRendering>
     </ModSettings>
 
@@ -60,7 +60,7 @@
         <AgentStart>
             <Placement x="0" y="6" z="-5" yaw="0"/>
             <Inventory>
-                <InventoryItem type="diamond_sword" slot="0"/>
+                <!--InventoryItem type="diamond_sword" slot="0"/-->
             </Inventory>
         </AgentStart>
         <AgentHandlers>

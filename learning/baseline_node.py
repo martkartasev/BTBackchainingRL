@@ -1,12 +1,12 @@
 from py_trees.common import Status
 
-from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown
+from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown, MoveLeft, MoveRight
 from bt.sequence import Sequence
 
 
 class BaselinesNode(Sequence):
     AGENT_DEAD_REWARD = -1000
-    ACC_VIOLATED_REWARD = -100
+    ACC_VIOLATED_REWARD = -1000
     POST_CONDITION_FULFILLED_REWARD = 1000
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):

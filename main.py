@@ -41,7 +41,6 @@ skeleton_fire_experiment_v2 = {
     "observation_filter": [
         "enemy_relative_distance",
         "enemy_relative_direction",
-        "direction",
         "health",
         "enemy_health",
         "enemy_targeted",

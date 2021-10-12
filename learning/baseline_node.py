@@ -6,7 +6,7 @@ from bt.sequence import Sequence
 
 class BaselinesNode(Sequence):
     AGENT_DEAD_REWARD = -1000
-    ACC_VIOLATED_REWARD = -1000
+    ACC_VIOLATED_REWARD = -500
     POST_CONDITION_FULFILLED_REWARD = 1000
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):

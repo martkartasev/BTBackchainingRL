@@ -122,7 +122,9 @@ def get_relative_position(entity_info, player_position):
 
 
 def get_entity_position(entity_info):
-    return [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
+    if entity_info is not None:
+        return [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
+    return [0, 0, 0]
 
 
 def get_standardized_rotated_position(entity_info, player_position, direction):

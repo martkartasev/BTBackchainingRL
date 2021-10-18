@@ -1,6 +1,10 @@
 import os
 
-from MalmoPython import AgentHost
+try:
+    from malmo.MalmoPython import AgentHost
+except ImportError:
+    from MalmoPython import AgentHost
+
 from stable_baselines3 import DQN
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.monitor import Monitor

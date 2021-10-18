@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://ProjectMalmo.microsoft.com file:///C:\MalmoPlatform\Schemas\mission.xsd">
+    <About>
+        <Summary>Test scenario</Summary>
+    </About>
+
+    <ModSettings>
+        <MsPerTick>50</MsPerTick>
+        <PrioritiseOffscreenRendering>false</PrioritiseOffscreenRendering>
+    </ModSettings>
+
+    <ServerSection>
+        <ServerInitialConditions>
+            <Time>
+                <StartTime>22000</StartTime>
+                <AllowPassageOfTime>false</AllowPassageOfTime>
+            </Time>
+        </ServerInitialConditions>
+        <ServerHandlers>
+            <FlatWorldGenerator forceReset="false"/>
+            <DrawingDecorator>
+
+                <DrawCuboid type="diamond_block" x1="-16" y1="4" z1="-16" x2="16" y2="6" z2="16"/>
+
+
+                <DrawCuboid type="air" x1="-15" y1="4" z1="-15" x2="15" y2="6" z2="15"/>
+
+                <DrawCuboid type="obsidian" x1="-15" y1="3" z1="-15" x2="15" y2="3" z2="15"/>
+
+                <DrawEntity x="14" y="6" z="0" yaw="-180" type="Cow"/>
+
+            </DrawingDecorator>
+        </ServerHandlers>
+    </ServerSection>
+
+    <AgentSection mode="Survival">
+        <Name>Rover</Name>
+        <AgentStart>
+            <Placement x="-14" y="6" z="0" yaw="90"/>
+            <Inventory>
+                <InventoryItem type="iron_sword" slot="0"/>
+            </Inventory>
+        </AgentStart>
+        <AgentHandlers>
+            <ObservationFromNearbyEntities>
+                <Range name="Entities" xrange="100" yrange="100" zrange="100"/>
+            </ObservationFromNearbyEntities>
+            <ObservationFromRay/>
+            <ObservationFromGrid>
+                <Grid name="Surroundings">
+                    <min x="-3" y="0" z="-3"/>
+                    <max x="3" y="0" z="3"/>
+                </Grid>
+            </ObservationFromGrid>
+            <ObservationFromFullStats/>
+            <ObservationFromFullInventory flat="false"/>
+            <SimpleCraftCommands/>
+            <InventoryCommands/>
+            <ObservationFromHotBar/>
+            <ContinuousMovementCommands/>
+            <AbsoluteMovementCommands/>
+            <ChatCommands/>
+            <MissionQuitCommands quitDescription="give_up"/>
+            <RewardForDamagingEntity>
+                <Mob type="Cow" reward="20"/>
+            </RewardForDamagingEntity>
+        </AgentHandlers>
+    </AgentSection>
+
+</Mission>

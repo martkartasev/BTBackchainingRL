@@ -48,17 +48,15 @@ class BaselinesNodeTrainingEnv(gym.Env):
                 self.agent.control_loop()
                 self.mission.tick_mission()
             self.is_acc_violated = False
-
             if self.agent.is_mission_over():
                 self.restart_mission()
         else:
             self.restart_mission()
-
+        self.node.reset_node()
         return self.node.get_observation_array()
 
     def restart_mission(self):
         self.steps = 0
-        self.node.reset_node()
         self.mission.reset()
 
         return self.node.get_observation_array()

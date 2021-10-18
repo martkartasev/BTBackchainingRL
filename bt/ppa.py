@@ -61,7 +61,7 @@ class IsNotAttackedByEnemyPPA(PPA):
         self.name = "Is not Attacked by Enemy PPA"
         self.post_condition = conditions.IsNotAttackedByEnemy(agent)
         self.pre_conditions = []
-        self.action = DefeatSkeleton(agent)
+        self.action = actions.DefeatSkeletonManual(agent)
 
 
 class ChaseEntityPPA(PPA):

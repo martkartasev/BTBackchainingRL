@@ -45,8 +45,8 @@ class BaselinesNodeTrainingEnv(gym.Env):
         self.steps = 0
         if self.is_acc_violated:
             while self.node.is_acc_violated() and not self.agent.is_mission_over():
-                self.agent.control_loop()
                 self.mission.tick_mission()
+                self.agent.control_loop()
             self.is_acc_violated = False
 
             if self.agent.is_mission_over():

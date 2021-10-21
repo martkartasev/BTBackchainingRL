@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass
 
 import numpy as np
 from gym.spaces import Box, Dict, Discrete
@@ -19,7 +20,7 @@ ANIMAL_TYPE = "Cow"
 FOOD_TYPES = ["beef", "cooked_beef"]
 ENEMY_MAX_LIFE = 24
 
-GRID_SIZE_AXIS = [1, 7, 7]
+GRID_SIZE_AXIS = [1, 11, 11]
 GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
 # Always append at the end of this list
@@ -170,14 +171,22 @@ def get_y_rotation_from(a, b):
     return 0
 
 
+@dataclass
+class RewardDefinition:
+    POST_CONDITION_FULFILLED_REWARD: int = 1000
+    AGENT_DEAD_REWARD: int = -1000
+    ACC_VIOLATED_REWARD: int = -1000
+    STEP_REWARD: int = -0.1
+
+
 class ObservationManager:
 
-    def __init__(self, observation_filter=None):
+    def __init__(self, observation_filter=None, reward_definition=RewardDefinition()):
         self.previous_observation = None
         self.observation = None
         self.reward = 0
         self.index = 0
-
+        self.reward_definition = reward_definition
         self.observation_filter = observation_filter
 
     def update(self, observations, reward):
@@ -289,26 +298,3 @@ class Observation:
         else:
             reduced_space = {key: value for key, value in full_space.items() if key in observation_filter}
             return Dict(spaces=reduced_space)
-
-#  Temp reference from my old repo
-
-
-#     def get_observation_array(self):
-#         if self.agent is not None and self.agent.observations is not None and self.agent.observations.lookToPosition is not None:
-#             delta = self.agent.observations.position - self.agent.observations.lookToPosition
-#             observations_yaw = self.agent.observations.yaw
-#             rot = np.radians(get_y_rotation_from(self.agent, self.agent.observations.lookToPosition) - observations_yaw)
-#             yaw = np.radians(observations_yaw)
-#             return {
-#                 "cont": np.array([
-#                     self.agent.observations.agentEntity.life / 20,
-#                     self.agent.observations.enemyEntity.life / 20,
-#                     np.linalg.norm(np.array(delta[0], delta[2])) / 60,
-#                     ((np.cos(rot) + 1) / 2),
-#                     ((np.sin(rot) + 1) / 2),
-#                     (self.agent.observations.pitch + 90) / 180,
-#                     self.agent.observations.LineOfSight is not None and Enemy.is_enemy(self.agent.observations.LineOfSight.type)]),
-#                 "disc": np.rot90(self.agent.observations.near, int((observations_yaw + 45) / 90) + 2, axes=(1, 2)).ravel()}
-#         else:
-#             return {"cont": np.array([0, 0, 0, 0, 0, 0, 0]),
-#                     "disc": np.full((1, 7, 7), 0).ravel()}

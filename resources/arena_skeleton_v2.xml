@@ -70,8 +70,8 @@
             <ObservationFromRay/>
             <ObservationFromGrid>
                 <Grid name="Surroundings">
-                    <min x="-3" y="0" z="-3"/>
-                    <max x="3" y="0" z="3"/>
+                    <min x="-5" y="0" z="-5"/>
+                    <max x="5" y="0" z="5"/>
                 </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats/>

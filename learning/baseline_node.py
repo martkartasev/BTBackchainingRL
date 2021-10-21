@@ -5,9 +5,6 @@ from bt.sequence import Sequence
 
 
 class BaselinesNode(Sequence):
-    AGENT_DEAD_REWARD = -1000
-    ACC_VIOLATED_REWARD = -500
-    POST_CONDITION_FULFILLED_REWARD = 1000
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
         self.agent = agent
@@ -106,13 +103,13 @@ class DynamicBaselinesNode(BaselinesNode):
         return None if observation is None else observation.filtered
 
     def calculate_rewards(self):
-        reward = self.agent.observation_manager.reward - 0.1
+        reward = self.agent.observation_manager.reward + self.agent.observation_manager.reward_definition.STEP_REWARD
         if self.is_acc_violated():
-            reward += BaselinesNode.ACC_VIOLATED_REWARD
+            reward += self.agent.observation_manager.reward_definition.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():
-            reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
+            reward += self.agent.observation_manager.reward_definition.POST_CONDITION_FULFILLED_REWARD
         if not self.agent.observation_manager.is_agent_alive():
-            reward += BaselinesNode.AGENT_DEAD_REWARD
+            reward += self.agent.observation_manager.reward_definition.AGENT_DEAD_REWARD
         self.total_reward += reward
         return reward
 

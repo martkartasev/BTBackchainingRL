@@ -77,8 +77,8 @@ class MissionManager:
                     print("Error starting mission:", e)
                     exit(1)
                 else:
-                    print("Failed to connect to mission, retrying after 500 milliseconds: ", e)
-                    time.sleep(0.5)
+                    print("Failed to connect to mission, retrying after 100 milliseconds: ", e)
+                    time.sleep(WAIT_INTERVAL)
 
             print("Waiting for the mission to start ", end=' ')
             world_state = self.agent_host.getWorldState()

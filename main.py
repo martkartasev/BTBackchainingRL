@@ -1,10 +1,10 @@
+from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
 from learning.baseline_node import ChaseEntity
-from baselines_node_experiment import BaselinesNodeExperiment
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
-    "mission": "resources/arena_cow_skeleton_v2.xml",
+    "mission": "resources/arena_cow_skeleton.xml",
     "tree_log": "cow_tree.txt",
     "hard_reset": False,
     "baseline_node_type": ChaseEntity,
@@ -68,6 +68,6 @@ def experiment_check_env(specs):
 
 
 if __name__ == '__main__':
-     experiment_train(cow_skeleton_experiment)
+    experiment_train(cow_skeleton_experiment)
     # experiment_test(cow_fire_experiment, "best_model_0") #TODO: Might want to consider building the path to "folder / model_x" differently somehow. Right now we have to change it in two different places
     # experiment_check_env(cow_skeleton_experiment)

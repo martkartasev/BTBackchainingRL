@@ -3,7 +3,7 @@ from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
 from minecraft_types import Block
-from observation import GRID_SIZE_AXIS, game_objects, RELATIVE_DISTANCE_AXIS_MAX
+from observation import RELATIVE_DISTANCE_AXIS_MAX
 from utils.linalg import rotation_matrix_y
 
 
@@ -291,7 +291,7 @@ class Crouch(Action):
 
 
 class StopMoving(Action):
-    def __init__(self, agent, name="Move Left"):
+    def __init__(self, agent, name="Stop Moving"):
         super().__init__(name, agent)
 
     def update(self):

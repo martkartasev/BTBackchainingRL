@@ -4,12 +4,11 @@ import time
 from builtins import range
 
 try:
-    import MalmoPython
-except ImportError:
     from malmo import MalmoPython
+except ImportError:
+    import MalmoPython
 
 import numpy
-import numpy as np
 
 if sys.version_info[0] == 2:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
@@ -114,8 +113,8 @@ class MissionManager:
         time.sleep(0.01)
         self.agent_host.sendCommand("chat /kill @e[type=item]")  # Do this last to remove drops from the mobs
 
-    def go_to_spawn(self, vec=numpy.array([-14, 4, 0])):
-        self.agent_host.sendCommand("chat /tp " + np.array2string(vec, separator=" ", precision=1).replace("[", "").replace("]", ""))
+    def go_to_spawn(self, vec=numpy.array([0, 4, 0])):
+        self.agent_host.sendCommand("chat /tp " + " ".join(vec.astype(str)))
 
     def activate_night_vision(self):
         self.agent_host.sendCommand("chat /effect @p night_vision 99999 255")
@@ -127,7 +126,7 @@ class MissionManager:
         self.agent_host.sendCommand("chat /effect @p hunger 5 255")
 
     def create_static_skeleton(self):
-        self.agent_host.sendCommand("chat /summon skeleton 0 4 0 {NoAI:1}")
+        self.agent_host.sendCommand("chat /summon skeleton -14 4 0 {NoAI:1}")
 
     def create_cow(self):
         self.agent_host.sendCommand("chat /summon cow 14 4 0 {NoAI:1}")

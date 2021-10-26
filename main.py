@@ -43,7 +43,7 @@ skeleton_fire_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter8",
+    "model_log_dir": "results/basicfighter3",
     "tree_log": "skeleton_tree_v2.txt",
     "hard_reset": True,
     "observation_manager": ObservationManager(observation_filter=[  # TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
@@ -60,7 +60,7 @@ skeleton_fire_experiment_v2 = {
             ACC_VIOLATED_REWARD=-1000
         )
     ),
-    "total_timesteps": 3100000,
+    "total_timesteps": 3000000,
 }
 
 cow_fire_experiment = {

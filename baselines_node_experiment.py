@@ -1,13 +1,14 @@
 import os
 
 from MalmoPython import AgentHost
-from stable_baselines3 import DQN
+from stable_baselines3 import DQN, SAC, PPO
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.monitor import Monitor
 
 from bt.back_chain_tree import BackChainTree
 from learning.agents.baselines_node_agent import BaselinesNodeAgent
 from learning.baselines_node_training_env import BaselinesNodeTrainingEnv
+from learning.disable_malmo_ai_for_training_callback import DisableMalmoAIForTrainingCallback
 from learning.save_best_model_callback import SaveOnBestTrainingRewardCallback
 from mission.mission_runner import MissionRunner
 from utils.file import get_absolute_path, get_project_root
@@ -64,15 +65,18 @@ class BaselinesNodeExperiment:
     def train_node(self):
         env = self.setup_training_environment()
 
-        model = DQN(
+        model = PPO(
             'MultiInputPolicy',
             env,
             verbose=1,
             tensorboard_log=get_absolute_path("tensorboard"),
-            exploration_fraction=0.05
+            # exploration_fraction=0.05
         )
         model.learn(total_timesteps=self.total_timesteps,
-                    callback=SaveOnBestTrainingRewardCallback(5000, log_dir=get_absolute_path(self.model_log_dir)))
+                    callback=[SaveOnBestTrainingRewardCallback(5000, log_dir=get_absolute_path(self.model_log_dir)),
+                              DisableMalmoAIForTrainingCallback(mission_manager=env.mission.mission_manager,
+                                                                agent=self.agent)]
+                    )
         model.save(self.model_log_dir + "/final.mdl")
 
     def check_env(self):

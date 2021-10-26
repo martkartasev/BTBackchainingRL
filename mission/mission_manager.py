@@ -104,6 +104,12 @@ class MissionManager:
 
         return world_state
 
+    def enable_ai(self):
+        self.agent_host.sendCommand("chat /entitydata @e {NoAI:0}")
+
+    def disable_ai(self):
+        self.agent_host.sendCommand("chat /entitydata @e {NoAI:1}")
+
     def destroy_all_entities(self):
         self.agent_host.sendCommand("chat /kill @e[type=skeleton]")
         self.agent_host.sendCommand("chat /kill @e[type=cow]")

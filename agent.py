@@ -13,6 +13,20 @@ class MalmoAgent:
         self.crouching = 0
         self.using = 0
 
+    def pause(self):
+        self.agent_host.sendCommand("move 0")
+        self.agent_host.sendCommand("turn 0")
+        self.agent_host.sendCommand("strafe 0")
+        self.agent_host.sendCommand("jump 0")
+        self.agent_host.sendCommand("attack 0")
+
+    def resume(self):
+        self.agent_host.sendCommand("move " + str(self.moving))
+        self.agent_host.sendCommand("turn " + str(self.turning))
+        self.agent_host.sendCommand("strafe " + str(self.strafing))
+        self.agent_host.sendCommand("jump " + str(self.jumping))
+        self.agent_host.sendCommand("attack " + str(self.attacking))
+
     def continuous_move(self, val):
         self.agent_host.sendCommand("move " + str(val))
         self.moving = val

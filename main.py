@@ -121,7 +121,7 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
-    experiment_train(skeleton_fire_experiment_v2)
-    # experiment_check_env(cow_skeleton_experiment)
+    # experiment_train(skeleton_fire_experiment_v2)
+    experiment_check_env(skeleton_fire_experiment_v2)
     # experiment_test("results/basicfighter3", "best_model_80")
     # experiment_evaluate("results/basicfighter4", "best_model_91")

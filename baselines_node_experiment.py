@@ -49,7 +49,7 @@ class BaselinesNodeExperiment:
             raise ValueError("The tree does not contain the baseline node type.")
 
     def test_node(self, model):
-        fighter_model = DQN.load(get_project_root() / self.model_log_dir / model)
+        fighter_model = PPO.load(get_project_root() / self.model_log_dir / model)
         self.baseline_node.set_model(fighter_model)
 
         mission = MissionRunner(

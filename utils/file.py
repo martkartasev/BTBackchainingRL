@@ -24,8 +24,8 @@ def create_file_and_write(file_name, function):
 
 
 def store_spec(spec):
-    copyfile(get_absolute_path(spec['mission']), get_absolute_path(spec['model_log_dir']) + "/mission.xml")
     create_file_and_write(spec['model_log_dir'] + "/spec.pkl", lambda file: file.write(jsonpickle.encode(spec)))
+    copyfile(get_absolute_path(spec['mission']), get_absolute_path(spec['model_log_dir']) + "/mission.xml")
 
 
 def load_spec(model_log_dir):

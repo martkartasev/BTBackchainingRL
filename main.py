@@ -1,7 +1,3 @@
-import json
-
-import jsonpickle
-
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
 from learning.baseline_node import ChaseEntity
@@ -88,9 +84,11 @@ cow_fire_experiment = {
 }
 
 
-def experiment_evaluate(log_dir):
+def experiment_evaluate(log_dir, model):
     spec = load_spec(log_dir)
     experiment = BaselinesNodeExperiment(**spec)
+
+    experiment.test_node(model)
 
 
 def experiment_train(spec):
@@ -100,11 +98,6 @@ def experiment_train(spec):
     experiment.train_node()
 
 
-def experiment_test(spec, model):
-    experiment = BaselinesNodeExperiment(**spec)
-    experiment.test_node(model)
-
-
 def experiment_check_env(spec):
     experiment = BaselinesNodeExperiment(**spec)
     experiment.check_env()
@@ -112,6 +105,5 @@ def experiment_check_env(spec):
 
 if __name__ == '__main__':
     experiment_train(skeleton_fire_experiment_v2)
-    # experiment_test(cow_fire_experiment, "best_model_0")
     # experiment_check_env(cow_skeleton_experiment)
-    # experiment_evaluate("results/basicfighter4")
+    # experiment_evaluate("results/basicfighter4", "best_model_91")

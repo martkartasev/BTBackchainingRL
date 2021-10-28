@@ -46,7 +46,7 @@ skeleton_fire_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter4",
+    "model_log_dir": "results/basicfighter5",
     "tree_log": "skeleton_tree_v2.txt",
     "hard_reset": True,
     "observation_manager": ObservationManager(observation_filter=[  # TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
@@ -54,7 +54,7 @@ skeleton_fire_experiment_v2 = {
         "enemy_relative_direction",
         "health",
         "enemy_health",
-   #     "enemy_targeted",
+        #     "enemy_targeted",
         "surroundings"
     ],
         reward_definition=RewardDefinition(
@@ -110,7 +110,7 @@ def experiment_train(spec):
     experiment = BaselinesNodeExperiment(**spec)
     store_spec(spec)
 
-    # experiment.train_node(spec['model_class'], spec['model_arguments'])
+    experiment.train_node(spec['model_class'], spec['model_arguments'])
 
 
 def experiment_check_env(spec):
@@ -119,7 +119,7 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
-    #experiment_train(skeleton_fire_experiment_v2)
+    experiment_train(skeleton_fire_experiment_v2)
     # experiment_check_env(cow_skeleton_experiment)
-     experiment_test("results/basicfighter3", "best_model_80")
-   #  experiment_evaluate("results/basicfighter4", "best_model_91")
+    # experiment_test("results/basicfighter3", "best_model_80")
+    #  experiment_evaluate("results/basicfighter4", "best_model_91")

@@ -28,7 +28,7 @@ class BaselinesNodeAgent(MalmoAgent):
         self.observation_manager.reset()
 
     def is_mission_over(self):
-        return not self.observation_manager.is_agent_alive() or not self.tree.status == Status.RUNNING
+        return not self.observation_manager.is_agent_alive() or self.tree.status == Status.SUCCESS or self.tree.status == Status.FAILURE
 
     def control_loop(self):
         self.tree.tick_once()

@@ -1,4 +1,3 @@
-from baselines_node_experiment import BaselinesNodeExperiment
 from stable_baselines3 import PPO, DQN
 
 from baselines_node_experiment import BaselinesNodeExperiment
@@ -10,7 +9,7 @@ from utils.file import store_spec, load_spec, get_absolute_path
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
     "mission": "resources/arena_cow_skeleton_v2.xml",
-    "model_log_dir": "",
+    "model_log_dir": "results/cow_skeleton_experiment",
     "model_class": DQN,
     "model_arguments": {
         "policy": 'MultiInputPolicy',

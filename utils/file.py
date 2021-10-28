@@ -1,7 +1,4 @@
 import codecs
-import json
-import pickle
-from os import path
 from pathlib import Path
 from shutil import copyfile
 
@@ -26,7 +23,7 @@ def create_file_and_write(file_name, function):
 
 def store_spec(spec):
     spec_pkl = str(Path(spec["model_log_dir"]) / "spec.pkl")
-    mission_xml = str(Path(spec["model_log_dir"]) / "mission_xml")
+    mission_xml = str(Path(spec["model_log_dir"]) / "mission.xml")
 
     create_file_and_write(spec_pkl, lambda file: file.write(jsonpickle.encode(spec)))
     copyfile(get_absolute_path(spec['mission']), mission_xml)

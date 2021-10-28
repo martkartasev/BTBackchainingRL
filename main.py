@@ -1,7 +1,12 @@
+import json
+
+import jsonpickle
+
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
 from learning.baseline_node import ChaseEntity
 from observation import ObservationManager, RewardDefinition
+from utils.file import store_spec, load_spec
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
@@ -43,7 +48,7 @@ skeleton_fire_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter3",
+    "model_log_dir": "results/basicfighter5",
     "tree_log": "skeleton_tree_v2.txt",
     "hard_reset": True,
     "observation_manager": ObservationManager(observation_filter=[  # TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
@@ -83,18 +88,25 @@ cow_fire_experiment = {
 }
 
 
-def experiment_train(specs):
-    experiment = BaselinesNodeExperiment(**specs)
+def experiment_evaluate(log_dir):
+    spec = load_spec(log_dir)
+    experiment = BaselinesNodeExperiment(**spec)
+
+
+def experiment_train(spec):
+    experiment = BaselinesNodeExperiment(**spec)
+    store_spec(spec)
+
     experiment.train_node()
 
 
-def experiment_test(specs, model):
-    experiment = BaselinesNodeExperiment(**specs)
+def experiment_test(spec, model):
+    experiment = BaselinesNodeExperiment(**spec)
     experiment.test_node(model)
 
 
-def experiment_check_env(specs):
-    experiment = BaselinesNodeExperiment(**specs)
+def experiment_check_env(spec):
+    experiment = BaselinesNodeExperiment(**spec)
     experiment.check_env()
 
 
@@ -102,3 +114,4 @@ if __name__ == '__main__':
     experiment_train(skeleton_fire_experiment_v2)
     # experiment_test(cow_fire_experiment, "best_model_0")
     # experiment_check_env(cow_skeleton_experiment)
+    # experiment_evaluate("results/basicfighter4")

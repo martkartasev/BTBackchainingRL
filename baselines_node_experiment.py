@@ -1,13 +1,11 @@
 import os
 
 from MalmoPython import AgentHost
-from stable_baselines3 import DQN, SAC, PPO
-from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.monitor import Monitor
 
+from agents.behavior_tree_agent import BehaviorTreeAgent
 from bt.back_chain_tree import BackChainTree
-from learning.agents.baselines_node_agent import BaselinesNodeAgent
 from learning.baselines_node_training_env import BaselinesNodeTrainingEnv
 from learning.disable_malmo_ai_for_training_callback import DisableMalmoAIForTrainingCallback
 from learning.save_best_model_callback import SaveOnBestTrainingRewardCallback
@@ -25,7 +23,7 @@ class BaselinesNodeExperiment:
         self.total_timesteps = total_timesteps
 
         agent_host = AgentHost()
-        self.agent = BaselinesNodeAgent(agent_host, observation_manager)
+        self.agent = BehaviorTreeAgent(agent_host, observation_manager)
         self.goals = [goal(self.agent) for goal in goals]
         self.tree = BackChainTree(self.agent, self.goals)
         self.agent.tree = self.tree.root

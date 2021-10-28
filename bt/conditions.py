@@ -2,9 +2,8 @@ import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-import observation
-from minecraft_types import Block
-from observation import GRID_SIZE_AXIS
+from mission import observation_manager
+from mission.minecraft_types import Block
 
 
 class Condition(Behaviour):
@@ -57,7 +56,7 @@ class IsNotAttackedByEnemy(Condition):
     def evaluate(self, agent) -> bool:
         enemy_distance = self.agent.observation_manager.observation.dict["enemy_relative_position"]
 
-        non_standardized_distance = enemy_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
+        non_standardized_distance = enemy_distance * observation_manager.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
         return True if distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE else False
@@ -78,7 +77,7 @@ class IsCloseToEntity(Condition):
     def evaluate(self, agent) -> bool:
         entity_distance = self.agent.observation_manager.observation.dict["entity_relative_position"]
 
-        non_standardized_distance = entity_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
+        non_standardized_distance = entity_distance * observation_manager.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
         return True if distance <= 2 else False

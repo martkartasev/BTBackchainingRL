@@ -3,7 +3,7 @@ from stable_baselines3 import PPO
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
 from learning.baseline_node import ChaseEntity
-from observation import ObservationManager, RewardDefinition
+from mission.observation_manager import ObservationManager, RewardDefinition
 from utils.file import store_spec, load_spec, get_absolute_path
 
 cow_skeleton_experiment = {
@@ -46,7 +46,7 @@ skeleton_fire_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter5",
+    "model_log_dir": "results/basicfighter_ppo4",
     "tree_log": "skeleton_tree_v2.txt",
     "hard_reset": True,
     "observation_manager": ObservationManager(observation_filter=[  # TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
@@ -113,8 +113,10 @@ def experiment_train(spec):
     experiment.train_node(spec['model_class'], spec['model_arguments'])
 
 
+# Can be used to verify gym env and generate mission spec when spec definition has changed.
 def experiment_check_env(spec):
     experiment = BaselinesNodeExperiment(**spec)
+    store_spec(spec)
     experiment.check_env()
 
 
@@ -122,4 +124,4 @@ if __name__ == '__main__':
     experiment_train(skeleton_fire_experiment_v2)
     # experiment_check_env(cow_skeleton_experiment)
     # experiment_test("results/basicfighter3", "best_model_80")
-    #  experiment_evaluate("results/basicfighter4", "best_model_91")
+    # experiment_evaluate("results/basicfighter4", "best_model_91")

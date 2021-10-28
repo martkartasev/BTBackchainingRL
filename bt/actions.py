@@ -2,8 +2,7 @@ import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
-from minecraft_types import Block
-from observation import GRID_SIZE_AXIS, game_objects
+from mission.minecraft_types import Block
 from utils.linalg import rotation_matrix_y
 
 
@@ -87,9 +86,20 @@ class PickUpEntity(Action):
         return Status.SUCCESS if has_food else Status.RUNNING
 
     def terminate(self, new_status):
-        #   print("Forward 0")
         self.agent.continuous_move(0)
         self.agent.continuous_strafe(0)
+
+    def move_towards_flat_direction(self, wanted_flat_direction_vector):
+        direction_vector = self.agent.observation_manager.observation.dict["direction"]
+        flat_direction_vector = np.array([direction_vector[0], direction_vector[2]])
+        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
+        side_direction_vector = np.array([flat_direction_vector[1], -flat_direction_vector[0]])
+
+        angle = np.arccos(np.dot(wanted_flat_direction_vector, flat_direction_vector))
+        sign = 1 if np.dot(wanted_flat_direction_vector, side_direction_vector) > 0 else -1
+
+        self.agent.continuous_move(np.cos(angle))
+        self.agent.continuous_strafe(-sign * np.sin(angle))
 
 
 class MoveForward(Action):

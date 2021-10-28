@@ -1,11 +1,6 @@
-import os
-
-import numpy as np
 from stable_baselines3.common.callbacks import BaseCallback
-from stable_baselines3.common.off_policy_algorithm import OffPolicyAlgorithm
-from stable_baselines3.common.results_plotter import load_results, ts2xy
 
-from agent import MalmoAgent
+from malmo_agent import MalmoAgent
 from mission.mission_manager import MissionManager
 
 

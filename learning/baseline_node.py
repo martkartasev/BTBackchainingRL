@@ -86,10 +86,10 @@ class BaselinesNode(Sequence):
         raise NotImplementedError()
 
 
-class DynamicBaselinesNode(BaselinesNode):
+class PPABaselinesNode(BaselinesNode):
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
-        super(DynamicBaselinesNode, self).__init__(agent, name=name, children=children, model=model)
+        super(PPABaselinesNode, self).__init__(agent, name=name, children=children, model=model)
         self.accs = []
         self.post_conditions = []
         self.total_reward = 0
@@ -129,7 +129,7 @@ class DynamicBaselinesNode(BaselinesNode):
         self.total_reward = 0
 
 
-class DefeatSkeleton(DynamicBaselinesNode):
+class DefeatSkeleton(PPABaselinesNode):
 
     def __init__(self, agent, model=None):
         children = [
@@ -143,7 +143,7 @@ class DefeatSkeleton(DynamicBaselinesNode):
         super().__init__(agent, "DefeatSkeleton", children, model)
 
 
-class DefeatCow(DynamicBaselinesNode):
+class DefeatCow(PPABaselinesNode):
 
     def __init__(self, agent, model=None):
         children = [
@@ -159,7 +159,7 @@ class DefeatCow(DynamicBaselinesNode):
         super().__init__(agent, "DefeatSkeleton", children, model)
 
 
-class ChaseEntity(DynamicBaselinesNode):
+class ChaseEntity(PPABaselinesNode):
 
     def __init__(self, agent, model=None):
         children = [

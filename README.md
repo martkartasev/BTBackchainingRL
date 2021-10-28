@@ -1,20 +1,36 @@
 # Behavior Trees Back-chaining with Reinforcement Learning 
 
-# How to setup
+# How to set up
 Run the following command to install the Python libraries required for the examples in this project.
 
-You will need to install Cuda 11.1:
-https://developer.nvidia.com/cuda-11.1.0-download-archive
+NB! This has only been tested on Python 3.7 and Project Malmo 0.37.0.
 
+You will need to install 
+
+- Malmo 0.37.0:
+
+https://github.com/microsoft/malmo/releases
+
+- All of the pip requirements:
 ```
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
-NB! This has been tested on Python 3.7 and Project Malmo 0.37.0. Please install malmo using instructions from https://github.com/microsoft/malmo
+- Torch
 
-If you dont have a GPU available or want to use your CPU instead, modify the torch requirements from requirements.txt to '+cpu' or install torch with the following command instead.
+If using CPU:
 ```
 pip3 install torch==1.8.2+cpu torchvision==0.9.1+cpu torchaudio===0.8.2 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html```
 ```
+
+If using GPU:
+```
+ pip3 install torch==1.8.2+cu111 torchvision==0.9.2+cu111 torchaudio===0.8.2 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+```
+
+- Cuda 11.1 if using GPU:
+https://developer.nvidia.com/cuda-11.1.0-download-archive
+
 
 # How to run
 Run one of the test mission configurations under "Experiments".

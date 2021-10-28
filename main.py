@@ -54,7 +54,7 @@ skeleton_fire_experiment_v2 = {
         "enemy_relative_direction",
         "health",
         "enemy_health",
-        #     "enemy_targeted",
+        # "enemy_targeted",
         "surroundings"
     ],
         reward_definition=RewardDefinition(
@@ -122,6 +122,6 @@ def experiment_check_env(spec):
 
 if __name__ == '__main__':
     experiment_train(skeleton_fire_experiment_v2)
-    #experiment_check_env(skeleton_fire_experiment_v2)
-    # experiment_test("results/basicfighter3", "best_model_80")
+    # experiment_check_env(skeleton_fire_experiment_v2)
+    # experiment_test("results/basicfighter_ppo2", "best_model_80")
     # experiment_evaluate("results/basicfighter4", "best_model_91")

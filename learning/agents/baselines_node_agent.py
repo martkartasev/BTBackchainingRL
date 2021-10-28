@@ -1,4 +1,5 @@
 import numpy as np
+from py_trees.common import Status
 
 from agent import MalmoAgent
 
@@ -27,7 +28,7 @@ class BaselinesNodeAgent(MalmoAgent):
         self.observation_manager.reset()
 
     def is_mission_over(self):
-        return not self.observation_manager.is_agent_alive()
+        return not self.observation_manager.is_agent_alive() or not self.tree.status == Status.RUNNING
 
     def control_loop(self):
         self.tree.tick_once()

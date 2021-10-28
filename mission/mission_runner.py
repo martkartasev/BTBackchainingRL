@@ -29,15 +29,15 @@ class MissionRunner:
         self.reset()
 
         world_state = self.tick_mission()
-        while world_state.is_mission_running: #TODO: Need a 'is running' method that checks whether mission has ended. Should somehow abstract into one place from baselines_node_training_env
+        while world_state.is_mission_running:
             for error in world_state.errors:
                 print("Error:", error.text)
+
+            self.agent.control_loop()
 
             if self.agent.is_mission_over():
                 self.mission_manager.quit()
                 break
-
-            self.agent.control_loop()
 
             world_state = self.tick_mission()
 

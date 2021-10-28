@@ -1,9 +1,9 @@
 import numpy as np
+
+from mission.minecraft_types import Block
+from mission.observation_manager import ObservationDefinition
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
-
-from minecraft_types import Block
-from observation import RELATIVE_DISTANCE_AXIS_MAX
 from utils.linalg import rotation_matrix_y
 
 
@@ -32,8 +32,7 @@ class AvoidFire(Action):
                 loc = np.floor(pos + delta_pos) + np.array([0.5, 0, 0.5])
                 d_res += (pos - loc)
 
-            self.result = rotation_matrix_y(self.agent.observation_manager.observation.dict["euler_direction"][0]).dot(
-                d_res) * 2
+            self.result = rotation_matrix_y(self.agent.observation_manager.observation.dict["euler_direction"][0]).dot(d_res) * 2
 
         self.agent.continuous_move(self.result[2])
         self.agent.continuous_strafe(-self.result[0])
@@ -75,7 +74,7 @@ class DefeatSkeletonManual(Action):
             return Status.RUNNING
         self.agent.continuous_turn(0)
 
-        distance = distance_vector[0] * RELATIVE_DISTANCE_AXIS_MAX
+        distance = distance_vector[0] * ObservationDefinition.RELATIVE_DISTANCE_AXIS_MAX
         if distance > DefeatSkeletonManual.WEAPON_REACH:
             if distance > DefeatSkeletonManual.SLOW_DOWN_THRESHOLD:
                 move_speed = DefeatSkeletonManual.MAX_MOVE_SPEED
@@ -139,7 +138,6 @@ class PickUpEntity(Action):
         return Status.SUCCESS if has_food else Status.RUNNING
 
     def terminate(self, new_status):
-        #   print("Forward 0")
         self.agent.continuous_move(0)
         self.agent.continuous_strafe(0)
 

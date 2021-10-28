@@ -21,12 +21,12 @@
             <FlatWorldGenerator forceReset="false"/>
             <DrawingDecorator>
 
-                <DrawCuboid type="brick_block" x1="-16" y1="4" z1="-16" x2="16" y2="6" z2="16"/>
+                <DrawCuboid type="brick_block" x1="-18" y1="4" z1="-18" x2="18" y2="6" z2="18"/>
 
 
-                <DrawCuboid type="air" x1="-15" y1="4" z1="-15" x2="15" y2="6" z2="15"/>
+                <DrawCuboid type="air" x1="-17" y1="4" z1="-17" x2="17" y2="6" z2="17"/>
 
-                <DrawCuboid type="netherrack" x1="-15" y1="3" z1="-15" x2="15" y2="3" z2="15"/>
+                <DrawCuboid type="netherrack" x1="-17" y1="3" z1="-17" x2="17" y2="3" z2="17"/>
 
                 <DrawCuboid type="fire" x1="-1" y1="4" z1="0" x2="1" y2="4" z2="0"/>
                 <DrawCuboid type="fire" x1="0" y1="4" z1="-1" x2="0" y2="4" z2="1"/>
@@ -43,10 +43,10 @@
                 <DrawCuboid type="fire" x1="7" y1="4" z1="8" x2="9" y2="4" z2="8"/>
                 <DrawCuboid type="fire" x1="8" y1="4" z1="7" x2="8" y2="4" z2="9"/>
 
-                <DrawCuboid type="fire" x1="-15" y1="4" z1="-15" x2="15" y2="4" z2="-15"/>
-                <DrawCuboid type="fire" x1="15" y1="4" z1="-15" x2="15" y2="4" z2="15"/>
-                <DrawCuboid type="fire" x1="15" y1="4" z1="15" x2="-15" y2="4" z2="15"/>
-                <DrawCuboid type="fire" x1="-15" y1="4" z1="15" x2="-15" y2="4" z2="-15"/>
+                <DrawCuboid type="fire" x1="-17" y1="4" z1="-17" x2="17" y2="4" z2="-17"/>
+                <DrawCuboid type="fire" x1="17" y1="4" z1="-17" x2="17" y2="4" z2="17"/>
+                <DrawCuboid type="fire" x1="17" y1="4" z1="17" x2="-17" y2="4" z2="17"/>
+                <DrawCuboid type="fire" x1="-17" y1="4" z1="17" x2="-17" y2="4" z2="-17"/>
 
 
                 <DrawEntity x="0" y="6" z="5" yaw="-180" type="Skeleton"/>
@@ -60,18 +60,18 @@
         <AgentStart>
             <Placement x="0" y="6" z="-5" yaw="0"/>
             <Inventory>
-                <InventoryItem type="diamond_sword" slot="0"/>
+                <!--InventoryItem type="diamond_sword" slot="0"/-->
             </Inventory>
         </AgentStart>
         <AgentHandlers>
             <ObservationFromNearbyEntities>
-                <Range name="Entities" xrange="100" yrange="100" zrange="100"/>
+                <Range name="Entities" xrange="100" yrange="4" zrange="100"/>
             </ObservationFromNearbyEntities>
             <ObservationFromRay/>
             <ObservationFromGrid>
                 <Grid name="Surroundings">
-                    <min x="-3" y="0" z="-3"/>
-                    <max x="3" y="0" z="3"/>
+                    <min x="-5" y="0" z="-5"/>
+                    <max x="5" y="0" z="5"/>
                 </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats/>

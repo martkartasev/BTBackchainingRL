@@ -50,7 +50,7 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
                         print("Saving new best model to {}".format(self.save_path))
                     self.model.save(self.save_path + "_" + str(self.index))
                     if isinstance(self.model, OffPolicyAlgorithm):
-                        self.model.save_replay_buffer(self.save_path + "_" + str(self.index) + "_buffer")
+                        self.model.save_replay_buffer(self.save_path + "_buffer")
                     self.index = self.index + 1
 
         return True

@@ -1,13 +1,10 @@
 from py_trees.common import Status
 
-from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown
+from bt.actions import TurnLeft, TurnRight, MoveForward, MoveBackward, Attack, StopMoving, PitchUp, PitchDown, MoveLeft, MoveRight
 from bt.sequence import Sequence
 
 
 class BaselinesNode(Sequence):
-    AGENT_DEAD_REWARD = -1000
-    ACC_VIOLATED_REWARD = -100
-    POST_CONDITION_FULFILLED_REWARD = 1000
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
         self.agent = agent
@@ -72,7 +69,7 @@ class BaselinesNode(Sequence):
         observation = self.get_observation_array()
         if observation is not None:
             child_index, _ = self.model.predict(observation)
-            print("Predicted action", self.children[child_index])
+            # print("Predicted action", self.children[child_index])
             self.child_index = child_index
         return self.training_tick()
 
@@ -89,10 +86,10 @@ class BaselinesNode(Sequence):
         raise NotImplementedError()
 
 
-class DynamicBaselinesNode(BaselinesNode):
+class PPABaselinesNode(BaselinesNode):
 
     def __init__(self, agent, name="A2CLearner", children=None, model=None, ):
-        super(DynamicBaselinesNode, self).__init__(agent, name=name, children=children, model=model)
+        super(PPABaselinesNode, self).__init__(agent, name=name, children=children, model=model)
         self.accs = []
         self.post_conditions = []
         self.total_reward = 0
@@ -106,13 +103,13 @@ class DynamicBaselinesNode(BaselinesNode):
         return None if observation is None else observation.filtered
 
     def calculate_rewards(self):
-        reward = self.agent.observation_manager.reward - 0.1
+        reward = self.agent.observation_manager.reward + self.agent.observation_manager.reward_definition.STEP_REWARD
         if self.is_acc_violated():
-            reward += BaselinesNode.ACC_VIOLATED_REWARD
+            reward += self.agent.observation_manager.reward_definition.ACC_VIOLATED_REWARD
         if self.is_post_conditions_fulfilled():
-            reward += BaselinesNode.POST_CONDITION_FULFILLED_REWARD
+            reward += self.agent.observation_manager.reward_definition.POST_CONDITION_FULFILLED_REWARD
         if not self.agent.observation_manager.is_agent_alive():
-            reward += BaselinesNode.AGENT_DEAD_REWARD
+            reward += self.agent.observation_manager.reward_definition.AGENT_DEAD_REWARD
         self.total_reward += reward
         return reward
 
@@ -132,7 +129,7 @@ class DynamicBaselinesNode(BaselinesNode):
         self.total_reward = 0
 
 
-class DefeatSkeleton(DynamicBaselinesNode):
+class DefeatSkeleton(PPABaselinesNode):
 
     def __init__(self, agent, model=None):
         children = [
@@ -146,7 +143,7 @@ class DefeatSkeleton(DynamicBaselinesNode):
         super().__init__(agent, "DefeatSkeleton", children, model)
 
 
-class DefeatCow(DynamicBaselinesNode):
+class DefeatCow(PPABaselinesNode):
 
     def __init__(self, agent, model=None):
         children = [
@@ -162,7 +159,7 @@ class DefeatCow(DynamicBaselinesNode):
         super().__init__(agent, "DefeatSkeleton", children, model)
 
 
-class ChaseEntity(DynamicBaselinesNode):
+class ChaseEntity(PPABaselinesNode):
 
     def __init__(self, agent, model=None):
         children = [

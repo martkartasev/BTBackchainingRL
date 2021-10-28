@@ -3,7 +3,7 @@ from bt.accs import find_accs
 from bt.ppa import AvoidFirePPA, DefeatSkeletonPPA, EatPPA, PickupBeefPPA, DefeatCowPPA, IsNotAttackedByEnemyPPA, \
     ChaseEntityPPA
 from bt.sequence import Sequence
-from learning.baseline_node import DynamicBaselinesNode
+from learning.baseline_node import PPABaselinesNode
 
 
 class BackChainTree:
@@ -56,7 +56,7 @@ class BackChainTree:
         elif isinstance(condition, conditions.IsCloseToEntity):
             ppa = ChaseEntityPPA(agent)
 
-        if ppa is not None and isinstance(ppa.action, DynamicBaselinesNode):
+        if ppa is not None and isinstance(ppa.action, PPABaselinesNode):
             self.baseline_nodes.append(ppa.action)
             ppa.action.post_conditions.append(ppa.post_condition)
         return ppa

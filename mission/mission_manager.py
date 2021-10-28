@@ -80,8 +80,8 @@ class MissionManager:
                     print("Error starting mission:", e)
                     exit(1)
                 else:
-                    print("Failed to connect to mission, retrying after 500 milliseconds: ", e)
-                    time.sleep(0.5)
+                    print("Failed to connect to mission, retrying after 100 milliseconds: ", e)
+                    time.sleep(WAIT_INTERVAL)
 
             print("Waiting for the mission to start ", end=' ')
             world_state = self.agent_host.getWorldState()
@@ -106,6 +106,12 @@ class MissionManager:
         self.make_hungry()
 
         return world_state
+
+    def enable_ai(self):
+        self.agent_host.sendCommand("chat /entitydata @e {NoAI:0}")
+
+    def disable_ai(self):
+        self.agent_host.sendCommand("chat /entitydata @e {NoAI:1}")
 
     def destroy_all_entities(self):
         self.agent_host.sendCommand("chat /kill @e[type=skeleton]")

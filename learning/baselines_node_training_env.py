@@ -28,7 +28,6 @@ class BaselinesNodeTrainingEnv(gym.Env):
 
         reward = self.node.calculate_rewards()
         ob = self.node.get_observation_array()
-
         is_mission_over = self.agent.is_mission_over()
         self.is_acc_violated = self.node.is_acc_violated()
         is_post_conditions_fulfilled = self.node.is_post_conditions_fulfilled()

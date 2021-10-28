@@ -8,12 +8,8 @@ class Enemy(Enum):
     VindicationIllager = 4
 
     @staticmethod
-    def is_enemy(text):
-        for enemy in Enemy:
-            if enemy.name == text:
-                return True
-
-        return False
+    def is_enemy(name):
+        return any(enemy.name == name for enemy in Enemy)
 
     @staticmethod
     def get_type(text):

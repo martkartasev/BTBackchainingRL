@@ -4,7 +4,7 @@ from learning.baseline_node import ChaseEntity
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
-    "mission": "resources/arena_cow_skeleton.xml",
+    "mission": "resources/arena_cow_skeleton_v2.xml",
     "tree_log": "cow_tree.txt",
     "hard_reset": False,
     "baseline_node_type": ChaseEntity,

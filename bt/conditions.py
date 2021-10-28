@@ -4,7 +4,6 @@ from py_trees.common import Status
 
 import observation
 from minecraft_types import Block
-from observation import GRID_SIZE_AXIS
 
 
 class Condition(Behaviour):
@@ -45,7 +44,7 @@ class IsEnemyDefeated(Condition):
 
     def evaluate(self, agent) -> bool:
         enemy_life = self.agent.observation_manager.observation.dict["enemy_health"]
-        return True if enemy_life == 0 else False
+        return enemy_life == 0
 
 
 class IsNotAttackedByEnemy(Condition):
@@ -60,7 +59,7 @@ class IsNotAttackedByEnemy(Condition):
         non_standardized_distance = enemy_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return True if distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE else False
+        return distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE
 
 
 class IsEntityVisible(Condition):
@@ -68,7 +67,7 @@ class IsEntityVisible(Condition):
         super(IsEntityVisible, self).__init__(f"Is Entity Visible", agent)
 
     def evaluate(self, agent) -> bool:
-        return True if self.agent.observation_manager.observation.dict["entity_visible"] == 1 else False
+        return self.agent.observation_manager.observation.dict["entity_visible"] == 1
 
 
 class IsCloseToEntity(Condition):
@@ -81,7 +80,7 @@ class IsCloseToEntity(Condition):
         non_standardized_distance = entity_distance * observation.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return True if distance <= 2 else False
+        return distance <= 2
 
 
 class IsNotHungry(Condition):
@@ -89,7 +88,7 @@ class IsNotHungry(Condition):
         super(IsNotHungry, self).__init__(f"Is not hungry", agent)
 
     def evaluate(self, agent) -> bool:
-        return True if self.agent.observation_manager.observation.dict["satiation"] == 1 else False
+        return self.agent.observation_manager.observation.dict["satiation"] == 1
 
 
 class HasFood(Condition):
@@ -97,7 +96,7 @@ class HasFood(Condition):
         super(HasFood, self).__init__(f"Has food", agent)
 
     def evaluate(self, agent) -> bool:
-        return True if self.agent.observation_manager.observation.dict["has_food"] > 0 else False
+        return self.agent.observation_manager.observation.dict["has_food"] > 0
 
 
 class IsEntityPickable(Condition):
@@ -105,4 +104,4 @@ class IsEntityPickable(Condition):
         super(IsEntityPickable, self).__init__(f"Is entity pickable", agent)
 
     def evaluate(self, agent) -> bool:
-        return True if self.agent.observation_manager.observation.dict["is_entity_pickable"] == 1 else False
+        return self.agent.observation_manager.observation.dict["is_entity_pickable"] == 1

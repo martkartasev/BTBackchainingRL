@@ -7,11 +7,10 @@ class BaselinesNodeTrainingEnv(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, learning_node, mission, hard_reset=True):
+    def __init__(self, learning_node, mission):
         self.node = learning_node
         self.agent = self.node.agent
         self.mission = mission
-        self.hard_reset = hard_reset
 
         self.is_acc_violated = False
 

@@ -11,6 +11,7 @@ from learning.baselines_node_training_env import BaselinesNodeTrainingEnv
 from learning.disable_malmo_ai_for_training_callback import DisableMalmoAIForTrainingCallback
 from learning.save_best_model_callback import SaveOnBestTrainingRewardCallback
 from mission.mission_runner import MissionRunner
+from pathlib import Path
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.monitor import Monitor
 from utils.file import get_absolute_path, get_project_root
@@ -19,7 +20,7 @@ from utils.visualisation import save_tree_to_log
 
 class BaselinesNodeExperiment:
 
-    def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, tree_log="", active_entities=True,
+    def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, active_entities=True,
                  baseline_node_type=None, observation_manager=None, **kwargs):
         self.mission_path = mission
         self.active_entities = active_entities
@@ -32,8 +33,7 @@ class BaselinesNodeExperiment:
         self.tree = BackChainTree(self.agent, self.goals)
         self.agent.tree = self.tree.root
 
-        if tree_log != "":
-            save_tree_to_log(self.tree.root, tree_log)
+        save_tree_to_log(self.tree.root, str(Path(model_log_dir) / "tree.csv"))
 
         if len(self.tree.baseline_nodes) == 0:
             raise ValueError("The tree doesn't have a baseline node")

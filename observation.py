@@ -243,7 +243,7 @@ class Observation:
         rot = np.radians(get_y_rotation_from(position, get_entity_position(enemy_info)) - yaw)
         observation_dict["enemy_relative_distance"] = np.array([np.linalg.norm(np.array(delta[0], delta[2])) / RELATIVE_DISTANCE_AXIS_MAX])
         observation_dict["enemy_relative_direction"] = np.array([((np.cos(rot) + 1) / 2), ((np.sin(rot) + 1) / 2), ])
-        observation_dict["enemy_targeted"] = 'LineOfSight' in info.keys() and Enemy.is_enemy(info.get("LineOfSight").get("type"))
+        observation_dict["enemy_targeted"] = np.array(['LineOfSight' in info.keys() and Enemy.is_enemy(info.get("LineOfSight").get("type"))])
 
         food_info = get_entity_info(info, FOOD_TYPES)
         entity_info = get_entity_info(info, [ANIMAL_TYPE]) if food_info is None else food_info

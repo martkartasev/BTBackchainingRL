@@ -2,6 +2,7 @@ import os
 
 from MalmoPython import AgentHost
 from stable_baselines3 import DQN, SAC, PPO
+from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.monitor import Monitor
 
@@ -17,7 +18,7 @@ from utils.visualisation import save_tree_to_log
 
 class BaselinesNodeExperiment:
 
-    def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, tree_log="", hard_reset=True, baseline_node_type=None, observation_manager=None):
+    def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, tree_log="", hard_reset=True, baseline_node_type=None, observation_manager=None, **kwargs):
         self.mission_path = mission
         self.hard_reset = hard_reset
         self.model_log_dir = model_log_dir
@@ -48,9 +49,9 @@ class BaselinesNodeExperiment:
         if baseline_node_type is not None and not isinstance(self.baseline_node, baseline_node_type):
             raise ValueError("The tree does not contain the baseline node type.")
 
-    def test_node(self, model):
-        fighter_model = PPO.load(get_project_root() / self.model_log_dir / model)
-        self.baseline_node.set_model(fighter_model)
+    def test_node(self, model_class, model_name):
+        loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
+        self.baseline_node.set_model(loaded_model)
 
         mission = MissionRunner(
             self.agent, get_absolute_path(self.mission_path), self.hard_reset
@@ -62,22 +63,19 @@ class BaselinesNodeExperiment:
         # TODO:
         pass
 
-    def train_node(self):
+    def train_node(self, model_class, model_args):
         env = self.setup_training_environment()
 
-        model = PPO(
-            'MultiInputPolicy',
-            env,
-            verbose=1,
-            tensorboard_log=get_absolute_path("tensorboard"),
-            # exploration_fraction=0.05
-        )
-        model.learn(total_timesteps=self.total_timesteps,
-                    callback=[SaveOnBestTrainingRewardCallback(5000, log_dir=get_absolute_path(self.model_log_dir)),
-                              DisableMalmoAIForTrainingCallback(mission_manager=env.mission.mission_manager,
-                                                                agent=self.agent)]
-                    )
-        model.save(self.model_log_dir + "/final.mdl")
+        model_class = model_class(env=env, **model_args)
+
+        model_class.learn(total_timesteps=self.total_timesteps,
+                          callback=[SaveOnBestTrainingRewardCallback(check_freq=5000,
+                                                                     log_dir=get_absolute_path(self.model_log_dir)),
+                                    DisableMalmoAIForTrainingCallback(mission_manager=env.mission.mission_manager,
+                                                                      agent=self.agent)]
+                          )
+
+        model_class.save(self.model_log_dir + "/final.mdl")
 
     def check_env(self):
         env = self.setup_training_environment()

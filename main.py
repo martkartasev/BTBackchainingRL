@@ -1,8 +1,10 @@
+from stable_baselines3 import PPO
+
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
 from learning.baseline_node import ChaseEntity
 from observation import ObservationManager, RewardDefinition
-from utils.file import store_spec, load_spec
+from utils.file import store_spec, load_spec, get_absolute_path
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
@@ -44,7 +46,7 @@ skeleton_fire_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter5",
+    "model_log_dir": "results/basicfighter4",
     "tree_log": "skeleton_tree_v2.txt",
     "hard_reset": True,
     "observation_manager": ObservationManager(observation_filter=[  # TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
@@ -52,7 +54,7 @@ skeleton_fire_experiment_v2 = {
         "enemy_relative_direction",
         "health",
         "enemy_health",
-        "enemy_targeted",
+   #     "enemy_targeted",
         "surroundings"
     ],
         reward_definition=RewardDefinition(
@@ -61,6 +63,12 @@ skeleton_fire_experiment_v2 = {
             ACC_VIOLATED_REWARD=-1000
         )
     ),
+    "model_class": PPO,
+    "model_arguments": {
+        "policy": 'MultiInputPolicy',
+        "verbose": 1,
+        "tensorboard_log": get_absolute_path("tensorboard"),
+    },
     "total_timesteps": 3000000,
 }
 
@@ -88,14 +96,21 @@ def experiment_evaluate(log_dir, model):
     spec = load_spec(log_dir)
     experiment = BaselinesNodeExperiment(**spec)
 
-    experiment.test_node(model)
+    experiment.evaluate_node(model)
+
+
+def experiment_test(log_dir, model_name):
+    spec = load_spec(log_dir)
+    experiment = BaselinesNodeExperiment(**spec)
+
+    experiment.test_node(spec['model_class'], model_name)
 
 
 def experiment_train(spec):
     experiment = BaselinesNodeExperiment(**spec)
     store_spec(spec)
 
-    experiment.train_node()
+    # experiment.train_node(spec['model_class'], spec['model_arguments'])
 
 
 def experiment_check_env(spec):
@@ -104,6 +119,7 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
-    # experiment_train(skeleton_fire_experiment_v2)
+    #experiment_train(skeleton_fire_experiment_v2)
     # experiment_check_env(cow_skeleton_experiment)
-    experiment_evaluate("results/basicfighter4", "best_model_91")
+     experiment_test("results/basicfighter3", "best_model_80")
+   #  experiment_evaluate("results/basicfighter4", "best_model_91")

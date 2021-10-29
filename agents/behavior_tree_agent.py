@@ -15,7 +15,7 @@ class BehaviorTreeAgent(MalmoAgent):
         self.observation_manager.reset()
 
     def is_mission_over(self):
-        return not self.observation_manager.is_agent_alive() or self.tree.status == Status.SUCCESS or self.tree.status == Status.FAILURE
+        return not self.observation_manager.is_agent_alive()
 
     def control_loop(self):
         self.tree.tick_once()

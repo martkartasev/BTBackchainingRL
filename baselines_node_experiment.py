@@ -55,7 +55,7 @@ class BaselinesNodeExperiment:
         loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
         self.baseline_node.set_model(loaded_model)
 
-        mission = MissionRunner(self.agent, get_absolute_path(self.mission_path))
+        mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path))
 
         mission.run()
 
@@ -89,7 +89,7 @@ class BaselinesNodeExperiment:
         check_env(env)
 
     def setup_training_environment(self):
-        mission = MissionRunner(self.agent, get_absolute_path(self.mission_path))
+        mission = MissionRunner(self.agent, self.active_entities,  get_absolute_path(self.mission_path))
 
         os.makedirs(get_absolute_path(self.model_log_dir), exist_ok=True)
         env = BaselinesNodeTrainingEnv(self.baseline_node, mission)

@@ -5,9 +5,10 @@ from mission.mission_manager import MissionManager
 
 class MissionRunner:
 
-    def __init__(self, agent, filename=None):
+    def __init__(self, agent, active_entities=True, filename=None):
         self.mission_manager = MissionManager(agent.agent_host, filename)
         self.agent = agent
+        self.active_entities = active_entities
         self.observation_manager = agent.observation_manager
 
     def tick_mission(self):
@@ -54,3 +55,5 @@ class MissionRunner:
             self.mission_manager.quit()
         self.mission_manager.mission_initialization()
         self.tick_mission()
+        if not self.active_entities:
+            self.mission_manager.disable_ai()

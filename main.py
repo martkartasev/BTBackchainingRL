@@ -10,7 +10,7 @@ cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
     "mission": "resources/arena_cow_skeleton_v2.xml",
     "model_log_dir": "results/cow_skeleton_experiment",
-    "model_class": DQN,
+    "model_class": PPO,
     "model_arguments": {
         "policy": 'MultiInputPolicy',
         "verbose": 1,
@@ -45,6 +45,7 @@ skeleton_fire_experiment = {
             ACC_VIOLATED_REWARD=-200
         )
     ),
+    "total_timesteps": 3000000,
 }
 
 skeleton_fire_experiment_v2 = {

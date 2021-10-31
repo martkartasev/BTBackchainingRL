@@ -56,4 +56,4 @@ class MissionRunner:
         self.mission_manager.mission_initialization()
         self.tick_mission()
         if not self.active_entities:
-            self.mission_manager.disable_ai()
+            self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned

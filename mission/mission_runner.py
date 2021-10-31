@@ -7,11 +7,11 @@ from mission.mission_manager import MissionManager
 
 class MissionRunner:
 
-    def __init__(self, agent, filename=None, hard_reset=True):
+    def __init__(self, agent, active_entities=True, filename=None):
         self.mission_manager = MissionManager(agent.agent_host, filename)
         self.agent = agent
+        self.active_entities = active_entities
         self.observation_manager = agent.observation_manager
-        self.hard_reset = hard_reset
 
     def tick_mission(self):
         host = self.mission_manager.agent_host
@@ -53,31 +53,9 @@ class MissionRunner:
             print("Mission ended")
 
     def reset(self):
-        if self.hard_reset:
-            if self.mission_manager.agent_host.getWorldState().is_mission_running:
-                self.mission_manager.quit()
-            self.mission_manager.mission_initialization()
-            self.tick_mission()
-        else:
-            if self.mission_manager.agent_host.getWorldState().is_mission_running:
-                self.soft_reset()
-            else:
-                self.mission_manager.mission_initialization()
-                self.tick_mission()
-                self.soft_reset()
-
-    def soft_reset(self):
-        self.mission_manager.go_to_spawn()
-        self.mission_manager.destroy_all_entities()
-        self.wait_for_entity(False)
-
-        self.mission_manager.create_static_skeleton()
-        self.mission_manager.create_cow()
-        self.wait_for_entity(True)
-
-    def wait_for_entity(self, expect_entity):
-        while True:
-            self.tick_mission()
-            observation = self.observation_manager.observation
-            if expect_entity == observation.dict["entity_visible"]:
-                break
+        if self.mission_manager.agent_host.getWorldState().is_mission_running:
+            self.mission_manager.quit()
+        self.mission_manager.mission_initialization()
+        self.tick_mission()
+        if not self.active_entities:
+            self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned

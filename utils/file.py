@@ -1,6 +1,4 @@
 import codecs
-import json
-import pickle
 from pathlib import Path
 from shutil import copyfile
 
@@ -19,13 +17,16 @@ def create_file_and_write(file_name, function):
     file_path = get_project_root() / file_name
     folder_path = file_path.parent
     folder_path.mkdir(parents=True, exist_ok=True)
-    with codecs.open(str(file_path), "w", "utf-8") as file:
+    with codecs.open(str(file_path), "w+", "utf-8") as file:
         function(file)
 
 
 def store_spec(spec):
-    create_file_and_write(spec['model_log_dir'] + "/spec.pkl", lambda file: file.write(jsonpickle.encode(spec)))
-    copyfile(get_absolute_path(spec['mission']), get_absolute_path(spec['model_log_dir']) + "/mission.xml")
+    spec_pkl = str(Path(spec["model_log_dir"]) / "spec.pkl")
+    mission_xml = str(Path(spec["model_log_dir"]) / "mission.xml")
+
+    create_file_and_write(spec_pkl, lambda file: file.write(jsonpickle.encode(spec)))
+    copyfile(get_absolute_path(spec['mission']), mission_xml)
 
 
 def load_spec(model_log_dir):

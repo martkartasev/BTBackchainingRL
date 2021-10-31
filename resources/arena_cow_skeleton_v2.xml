@@ -21,14 +21,15 @@
             <FlatWorldGenerator forceReset="false"/>
             <DrawingDecorator>
 
-                <DrawCuboid type="diamond_block" x1="-16" y1="4" z1="-6" x2="16" y2="6" z2="6"/>
+                <DrawCuboid type="diamond_block" x1="-16" y1="4" z1="-16" x2="16" y2="6" z2="16"/>
 
 
-                <DrawCuboid type="air" x1="-15" y1="4" z1="-5" x2="15" y2="6" z2="5"/>
+                <DrawCuboid type="air" x1="-15" y1="4" z1="-15" x2="15" y2="6" z2="15"/>
 
-                <DrawCuboid type="obsidian" x1="-15" y1="3" z1="-5" x2="15" y2="3" z2="5"/>
+                <DrawCuboid type="obsidian" x1="-15" y1="3" z1="-15" x2="15" y2="3" z2="15"/>
 
-                <DrawEntity x="14" y="6" z="0" yaw="-180" type="Cow"/>
+                <DrawEntity x="0" y="4" z="0" yaw="-180" type="Skeleton"/>
+                <DrawEntity x="14" y="4" z="0" yaw="-180" type="Cow"/>
 
             </DrawingDecorator>
         </ServerHandlers>
@@ -37,7 +38,7 @@
     <AgentSection mode="Survival">
         <Name>Rover</Name>
         <AgentStart>
-            <Placement x="0" y="6" z="0" yaw="90"/>
+            <Placement x="-14" y="6" z="0" yaw="-90"/>
             <Inventory>
                 <InventoryItem type="iron_sword" slot="0"/>
             </Inventory>

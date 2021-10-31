@@ -7,11 +7,10 @@ class BaselinesNodeTrainingEnv(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, learning_node, mission, hard_reset=True):
+    def __init__(self, learning_node, mission):
         self.node = learning_node
         self.agent = self.node.agent
         self.mission = mission
-        self.hard_reset = hard_reset
 
         self.is_acc_violated = False
 
@@ -47,17 +46,15 @@ class BaselinesNodeTrainingEnv(gym.Env):
                 self.mission.tick_mission()
                 self.agent.control_loop()
             self.is_acc_violated = False
-
             if self.agent.is_mission_over():
                 self.restart_mission()
         else:
             self.restart_mission()
-
+        self.node.reset_node()
         return self.node.get_observation_array()
 
     def restart_mission(self):
         self.steps = 0
-        self.node.reset_node()
         self.mission.reset()
 
         return self.node.get_observation_array()

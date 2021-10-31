@@ -1,4 +1,4 @@
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, DQN
 
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
@@ -8,10 +8,15 @@ from utils.file import store_spec, load_spec, get_absolute_path
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
-    "mission": "resources/arena_cow_skeleton.xml",
-    "model_log_dir": "",
-    "tree_log": "cow_tree.txt",
-    "hard_reset": False,
+    "mission": "resources/arena_cow_skeleton_v2.xml",
+    "model_log_dir": "results/cow_skeleton_experiment",
+    "model_class": PPO,
+    "model_arguments": {
+        "policy": 'MultiInputPolicy',
+        "verbose": 1,
+        "tensorboard_log": get_absolute_path("tensorboard"),
+    },
+    "active_entities": False,
     "baseline_node_type": ChaseEntity,
     "observation_manager": ObservationManager(observation_filter=[
         "entity_relative_position",
@@ -27,8 +32,7 @@ skeleton_fire_experiment = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
     "model_log_dir": "",
-    "tree_log": "skeleton_tree.txt",
-    "hard_reset": True,
+    "active_entities": True,
     "observation_manager": ObservationManager(observation_filter=[
         "entity_relative_position",
         "enemy_relative_position",
@@ -41,15 +45,16 @@ skeleton_fire_experiment = {
             ACC_VIOLATED_REWARD=-200
         )
     ),
+    "total_timesteps": 3000000,
 }
 
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
     "model_log_dir": "results/basicfighter_ppo4",
-    "tree_log": "skeleton_tree_v2.txt",
-    "hard_reset": True,
-    "observation_manager": ObservationManager(observation_filter=[  # TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
+    "active_entities": True,
+    "observation_manager": ObservationManager(observation_filter=[
+        # TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
         "enemy_relative_distance",
         "enemy_relative_direction",
         "health",
@@ -76,8 +81,7 @@ cow_fire_experiment = {
     "goals": [conditions.IsSafeFromFire, conditions.IsNotHungry],
     "mission": "resources/arena_cow_v2.xml",
     "model_log_dir": "",
-    "tree_log": "cow_tree.txt",
-    "hard_reset": True,
+    "active_entities": True,
     "observation_manager": ObservationManager(observation_filter=[
         "entity_relative_position",
         "enemy_relative_position",
@@ -121,7 +125,5 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
-    experiment_train(skeleton_fire_experiment_v2)
-    # experiment_check_env(skeleton_fire_experiment_v2)
-    # experiment_test("results/basicfighter_ppo2", "best_model_80")
-    # experiment_evaluate("results/basicfighter4", "best_model_91")
+    experiment_train(cow_skeleton_experiment)
+    # experiment_check_env(cow_skeleton_experiment)

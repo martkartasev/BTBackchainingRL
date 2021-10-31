@@ -1,9 +1,10 @@
 import numpy as np
+
+
+from mission.minecraft_types import Block
+from mission.observation_manager import ObservationDefinition
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
-
-from mission import observation_manager
-from mission.minecraft_types import Block
 
 
 class Condition(Behaviour):
@@ -44,7 +45,7 @@ class IsEnemyDefeated(Condition):
 
     def evaluate(self, agent) -> bool:
         enemy_life = self.agent.observation_manager.observation.dict["enemy_health"]
-        return True if enemy_life == 0 else False
+        return enemy_life == 0
 
 
 class IsNotAttackedByEnemy(Condition):
@@ -56,10 +57,10 @@ class IsNotAttackedByEnemy(Condition):
     def evaluate(self, agent) -> bool:
         enemy_distance = self.agent.observation_manager.observation.dict["enemy_relative_position"]
 
-        non_standardized_distance = enemy_distance * observation_manager.RELATIVE_DISTANCE_AXIS_MAX
+        non_standardized_distance = enemy_distance * ObservationDefinition.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return True if distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE else False
+        return distance >= IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE
 
 
 class IsEntityVisible(Condition):
@@ -67,7 +68,7 @@ class IsEntityVisible(Condition):
         super(IsEntityVisible, self).__init__(f"Is Entity Visible", agent)
 
     def evaluate(self, agent) -> bool:
-        return True if self.agent.observation_manager.observation.dict["entity_visible"] == 1 else False
+        return self.agent.observation_manager.observation.dict["entity_visible"] == 1
 
 
 class IsCloseToEntity(Condition):
@@ -77,10 +78,10 @@ class IsCloseToEntity(Condition):
     def evaluate(self, agent) -> bool:
         entity_distance = self.agent.observation_manager.observation.dict["entity_relative_position"]
 
-        non_standardized_distance = entity_distance * observation_manager.RELATIVE_DISTANCE_AXIS_MAX
+        non_standardized_distance = entity_distance * ObservationDefinition.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return True if distance <= 2 else False
+        return distance <= 2
 
 
 class IsNotHungry(Condition):
@@ -88,7 +89,7 @@ class IsNotHungry(Condition):
         super(IsNotHungry, self).__init__(f"Is not hungry", agent)
 
     def evaluate(self, agent) -> bool:
-        return True if self.agent.observation_manager.observation.dict["satiation"] == 1 else False
+        return self.agent.observation_manager.observation.dict["satiation"] == 1
 
 
 class HasFood(Condition):
@@ -96,7 +97,7 @@ class HasFood(Condition):
         super(HasFood, self).__init__(f"Has food", agent)
 
     def evaluate(self, agent) -> bool:
-        return True if self.agent.observation_manager.observation.dict["has_food"] > 0 else False
+        return self.agent.observation_manager.observation.dict["has_food"] > 0
 
 
 class IsEntityPickable(Condition):
@@ -104,4 +105,4 @@ class IsEntityPickable(Condition):
         super(IsEntityPickable, self).__init__(f"Is entity pickable", agent)
 
     def evaluate(self, agent) -> bool:
-        return True if self.agent.observation_manager.observation.dict["is_entity_pickable"] == 1 else False
+        return self.agent.observation_manager.observation.dict["is_entity_pickable"] == 1

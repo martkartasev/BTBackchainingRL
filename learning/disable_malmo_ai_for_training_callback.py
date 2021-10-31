@@ -1,18 +1,20 @@
 from stable_baselines3.common.callbacks import BaseCallback
 
-from malmo_agent import MalmoAgent
+from agents.malmo_agent import MalmoAgent
 from mission.mission_manager import MissionManager
 
 
 class DisableMalmoAIForTrainingCallback(BaseCallback):
 
-    def __init__(self, mission_manager: MissionManager, agent: MalmoAgent, verbose=0):
+    def __init__(self, mission_manager: MissionManager, agent: MalmoAgent, active_entities=True, verbose=0):
         super(DisableMalmoAIForTrainingCallback, self).__init__(verbose)
         self.manager = mission_manager
         self.agent = agent
+        self.active_entities = active_entities
 
     def _on_rollout_start(self) -> None:
-        self.manager.enable_ai()
+        if self.active_entities:
+            self.manager.enable_ai()
         self.agent.resume()
 
     def _on_rollout_end(self) -> None:

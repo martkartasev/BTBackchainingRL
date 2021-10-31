@@ -1,10 +1,9 @@
 import json
-from dataclasses import dataclass
-
 import numpy as np
-from gym.spaces import Box, Dict, Discrete
 
-from minecraft_types import Block, Enemy
+from dataclasses import dataclass
+from gym.spaces import Box, Dict, Discrete
+from mission.minecraft_types import Block, Enemy
 
 
 @dataclass
@@ -22,11 +21,12 @@ class ObservationDefinition:  # Override defaults from main spec
     FOOD_TYPES = ["beef", "cooked_beef"]
     ENEMY_MAX_LIFE = 24
 
-    GRID_SIZE_AXIS = [1, 11, 11]
+    GRID_SIZE_AXIS = [1, 7, 7]
     GRID_SIZE = np.prod(GRID_SIZE_AXIS)
 
     # Always append at the end of this list
-    GAME_OBJECTS = ["dirt", "grass", "stone", "fire", "air", "brick_block", "netherrack"]  # TODO: I would prefer an enum. I brought in minecraft_types but its a little WIP
+    GAME_OBJECTS = ["dirt", "grass", "stone", "fire", "air", "brick_block",
+                    "netherrack"]  # TODO: I would prefer an enum. I brought in minecraft_types but its a little WIP
 
 
 @dataclass
@@ -39,7 +39,8 @@ class RewardDefinition:  # Override defaults from main spec
 
 class ObservationManager:
 
-    def __init__(self, observation_filter=None, reward_definition=RewardDefinition(), observation_definition=ObservationDefinition()):
+    def __init__(self, observation_filter=None, reward_definition=RewardDefinition(),
+                 observation_definition=ObservationDefinition()):
         self.previous_observation = None
         self.observation = None
         self.reward = 0
@@ -102,13 +103,16 @@ class Observation:
         yaw = helper.get_yaw(info)
         delta = helper.get_relative_position(enemy_info, position)
         rot = np.radians(helper.get_y_rotation_from(position, helper.get_entity_position(enemy_info)) - yaw)
-        observation_dict["enemy_relative_distance"] = np.array([np.linalg.norm(np.array(delta[0], delta[2])) / self.definition.RELATIVE_DISTANCE_AXIS_MAX])
+        observation_dict["enemy_relative_distance"] = np.array(
+            [np.linalg.norm(np.array(delta[0], delta[2])) / self.definition.RELATIVE_DISTANCE_AXIS_MAX])
         observation_dict["enemy_relative_direction"] = np.array([((np.cos(rot) + 1) / 2), ((np.sin(rot) + 1) / 2), ])
-        observation_dict["enemy_targeted"] = np.array(['LineOfSight' in info.keys() and Enemy.is_enemy(info.get("LineOfSight").get("type"))])
+        observation_dict["enemy_targeted"] = np.array(
+            ['LineOfSight' in info.keys() and Enemy.is_enemy(info.get("LineOfSight").get("type"))])
 
         food_info = helper.get_entity_info(info, self.definition.FOOD_TYPES)
         entity_info = helper.get_entity_info(info, [self.definition.ANIMAL_TYPE]) if food_info is None else food_info
-        observation_dict["entity_relative_position"] = helper.get_standardized_rotated_position(entity_info, position, direction)
+        observation_dict["entity_relative_position"] = helper.get_standardized_rotated_position(entity_info, position,
+                                                                                                direction)
 
         observation_dict["health"] = np.array([info.get("Life", 0) / self.definition.PLAYER_MAX_LIFE])
         observation_dict["satiation"] = np.array([info.get("Food", 0) / self.definition.PLAYER_MAX_FOOD])
@@ -133,7 +137,8 @@ class Observation:
         if observation_filter is not None:
             self.filtered = {key: value for key, value in observation_dict.items() if key in observation_filter}
             surroundings = self.filtered["surroundings"]
-            self.filtered["surroundings"] = np.rot90(surroundings, int((euler_direction[0] + 45) / 90) + 2, axes=(1, 2)).ravel()
+            self.filtered["surroundings"] = np.rot90(surroundings, int((euler_direction[0] + 45) / 90) + 2,
+                                                     axes=(1, 2)).ravel()
 
     @staticmethod
     def get_observation_space(observation_definition, observation_filter=None):
@@ -250,7 +255,8 @@ class ObservationHelper:
 
         entity_position = np.array(entity_position_list)
         relative_position = entity_position - player_position
-        return np.clip(relative_position, -self.definition.RELATIVE_DISTANCE_AXIS_MAX, self.definition.RELATIVE_DISTANCE_AXIS_MAX)
+        return np.clip(relative_position, -self.definition.RELATIVE_DISTANCE_AXIS_MAX,
+                       self.definition.RELATIVE_DISTANCE_AXIS_MAX)
 
     def get_entity_position(self, entity_info):
         if entity_info is not None:
@@ -261,12 +267,18 @@ class ObservationHelper:
         relative_position = self.get_relative_position(entity_info, player_position)
 
         flat_direction_vector = np.delete(direction, 1)
-        flat_direction_vector /= np.linalg.norm(flat_direction_vector)
+        flat_direction_norm = np.linalg.norm(flat_direction_vector)
+
+        if flat_direction_norm != 0:
+            flat_direction_vector /= flat_direction_norm
         side_direction_vector = np.array([flat_direction_vector[1], -flat_direction_vector[0]])
 
         flat_relative_position = np.delete(relative_position, 1)
         relative_position_length = np.linalg.norm(flat_relative_position)
-        relative_position_normalized = flat_relative_position / relative_position_length
+        if relative_position_length != 0:
+            relative_position_normalized = flat_relative_position / relative_position_length
+        else:
+            relative_position_normalized = flat_relative_position
 
         angle = np.arccos(np.dot(relative_position_normalized, flat_direction_vector))
         sign = 1 if np.dot(relative_position_normalized, side_direction_vector) > 0 else -1

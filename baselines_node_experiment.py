@@ -1,9 +1,9 @@
 import os
 
 try:
-    from malmo.MalmoPython import AgentHost
-except ImportError:
     from MalmoPython import AgentHost
+except ImportError:
+    from malmo.MalmoPython import AgentHost
 
 from agents.behavior_tree_agent import BehaviorTreeAgent
 from bt.back_chain_tree import BackChainTree

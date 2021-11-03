@@ -4,9 +4,9 @@ import time
 from builtins import range
 
 try:
-    from malmo import MalmoPython
-except ImportError:
     import MalmoPython
+except ImportError:
+    from malmo import MalmoPython
 
 if sys.version_info[0] == 2:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately

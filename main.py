@@ -51,14 +51,14 @@ skeleton_fire_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter_ppo4",
+    "model_log_dir": "results/basicfighter_ppo5",
     "active_entities": True,
     "observation_manager": ObservationManager(observation_filter=[
         "enemy_relative_distance",
         "enemy_relative_direction",
         "health",
         "enemy_health",
-        # "enemy_targeted",
+        "enemy_targeted",
         "surroundings"
     ],
         reward_definition=RewardDefinition(

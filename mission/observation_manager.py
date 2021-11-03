@@ -1,32 +1,41 @@
 import json
+from typing import List
+
 import numpy as np
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from gym.spaces import Box, Dict, Discrete
+from numpy import ndarray
+
 from mission.minecraft_types import Block, Enemy
 
 
 @dataclass
 class ObservationDefinition:  # Override defaults from main spec
-    CIRCLE_DEGREES = 360
-    ARENA_SIZE = 16
-    RELATIVE_DISTANCE_AXIS_MAX = 20
-    INVENTORY_SIZE = 41
+    CIRCLE_DEGREES: int = 360
+    ARENA_SIZE: int = 16
+    RELATIVE_DISTANCE_AXIS_MAX: int = 20
+    INVENTORY_SIZE: int = 41
 
-    PLAYER_MAX_LIFE = 20
-    PLAYER_MAX_FOOD = 20
+    PLAYER_MAX_LIFE: int = 20
+    PLAYER_MAX_FOOD: int = 20
 
-    ENEMY_TYPE = "Skeleton"
-    ANIMAL_TYPE = "Cow"
-    FOOD_TYPES = ["beef", "cooked_beef"]
-    ENEMY_MAX_LIFE = 24
+    ENEMY_TYPE: str = "Skeleton"
+    ANIMAL_TYPE: str = "Cow"
+    FOOD_TYPES: List = field(default_factory=lambda: ["beef", "cooked_beef"])
+    ENEMY_MAX_LIFE: int = 24
 
-    GRID_SIZE_AXIS = [1, 7, 7]
-    GRID_SIZE = np.prod(GRID_SIZE_AXIS)
+    GRID_SIZE_AXIS: List[int] = field(default_factory=lambda: [1, 7, 7])
+    GRID_SIZE: ndarray = field(init=False)
 
     # Always append at the end of this list
-    GAME_OBJECTS = ["dirt", "grass", "stone", "fire", "air", "brick_block",
-                    "netherrack"]  # TODO: I would prefer an enum. I brought in minecraft_types but its a little WIP
+    GAME_OBJECTS: List = field(default_factory=lambda: ["dirt", "grass",
+                                                        "stone", "fire",
+                                                        "air", "brick_block",
+                                                        "netherrack"])
+
+    def __post_init__(self):
+        self.GRID_SIZE = np.prod(self.GRID_SIZE_AXIS)
 
 
 @dataclass

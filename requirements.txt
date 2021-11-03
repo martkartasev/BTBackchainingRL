@@ -1,0 +1,10 @@
+--find-links https://pypi.python.org/simple https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+malmo~=0.37.0.0
+py-trees
+numpy~=1.21.1
+stable-baselines3[extra]==1.1.0
+gym~=0.18.3
+tensorboard
+# tensorflow
+future
+jsonpickle

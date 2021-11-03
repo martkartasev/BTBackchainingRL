@@ -3,7 +3,7 @@ from stable_baselines3 import PPO, DQN
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
 from learning.baseline_node import ChaseEntity
-from mission.observation_manager import ObservationManager, RewardDefinition
+from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from utils.file import store_spec, load_spec, get_absolute_path
 
 cow_skeleton_experiment = {
@@ -53,8 +53,7 @@ skeleton_fire_experiment_v2 = {
     "mission": "resources/arena_skeleton_v2.xml",
     "model_log_dir": "results/basicfighter_ppo4",
     "active_entities": True,
-    "observation_manager": ObservationManager(observation_filter=[
-        # TODO We should modify this so we provide the obs manager from here with parameters for filtering, but also global parameters like max distance, life, etc
+    "observation_manager": ObservationManager(observation_filter=[tc
         "enemy_relative_distance",
         "enemy_relative_direction",
         "health",
@@ -66,6 +65,9 @@ skeleton_fire_experiment_v2 = {
             POST_CONDITION_FULFILLED_REWARD=1000,
             AGENT_DEAD_REWARD=-1000,
             ACC_VIOLATED_REWARD=-1000
+        ),
+        observation_definition=ObservationDefinition(
+            GRID_SIZE_AXIS=[1, 11, 11]
         )
     ),
     "model_class": PPO,

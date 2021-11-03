@@ -53,7 +53,7 @@ skeleton_fire_experiment_v2 = {
     "mission": "resources/arena_skeleton_v2.xml",
     "model_log_dir": "results/basicfighter_ppo4",
     "active_entities": True,
-    "observation_manager": ObservationManager(observation_filter=[tc
+    "observation_manager": ObservationManager(observation_filter=[
         "enemy_relative_distance",
         "enemy_relative_direction",
         "health",
@@ -127,5 +127,5 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
-    experiment_train(cow_skeleton_experiment)
+    experiment_train(skeleton_fire_experiment_v2)
     # experiment_check_env(cow_skeleton_experiment)

@@ -51,7 +51,7 @@ skeleton_fire_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter_ppo5",
+    "model_log_dir": "results/basicfighter_ppo7",
     "active_entities": True,
     "observation_manager": ObservationManager(observation_filter=[
         "enemy_relative_distance",
@@ -67,7 +67,8 @@ skeleton_fire_experiment_v2 = {
             ACC_VIOLATED_REWARD=-1000
         ),
         observation_definition=ObservationDefinition(
-            GRID_SIZE_AXIS=[1, 11, 11]
+            GRID_SIZE_AXIS=[1, 11, 11],
+            FIRE_AVOID_DISTANCE=1.5
         )
     ),
     "model_class": PPO,

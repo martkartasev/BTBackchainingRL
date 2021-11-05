@@ -6,9 +6,20 @@ class EvaluationManager:
 
     def __init__(self):
         self.nodes = dict()
+        self.missions = list()
+        self.current_record: MissionRecord
 
-    def record_mission(self, state, steps, start, end):
-        pass
+    def register_node(self, node):
+        record = NodeRecord(node)
+        self.nodes[node] = record
+        return record
+
+    def record_mission_start(self, start):
+        self.current_record = MissionRecord(start)
+
+    def record_mission_end(self, state, steps, end):
+        self.current_record.finalize(state, steps, end)
+        self.missions.append(self.current_record)
 
     def record_node(self, node, status):
         record = self.nodes[node]
@@ -18,10 +29,14 @@ class EvaluationManager:
         else:
             record.failures += 1
 
-    def register_node(self, node):
-        record = NodeRecord(node)
-        self.nodes[node] = record
-        return record
+
+class MissionRecord:
+    def __init__(self, start):
+        self.start = start
+        self.nodes = list
+
+    def finalize(self, state, steps, end):
+        pass
 
 
 class NodeRecord:

@@ -49,10 +49,12 @@ class MissionRunner:
     def run(self):
         while True:
             start = time.time()
-            state, steps = self.run_mission()
-            end = time.time()
+            self.evaluation_manager.record_mission_start(start) if self.evaluation_manager is not None else None
 
-            self.evaluation_manager.record_mission(state, steps, start, end) if self.evaluation_manager is not None else None
+            state, steps = self.run_mission()
+
+            end = time.time()
+            self.evaluation_manager.record_mission_end(state, steps, end) if self.evaluation_manager is not None else None
 
             print("took " + str((end - start) * 1000) + ' milliseconds')
             print("Mission ended")

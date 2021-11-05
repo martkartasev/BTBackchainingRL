@@ -53,6 +53,7 @@ skeleton_fire_experiment_v2 = {
     "mission": "resources/arena_skeleton_v2.xml",
     "model_log_dir": "results/basicfighter_ppo7",
     "active_entities": True,
+    "acc_ends_episode": True,
     "observation_manager": ObservationManager(observation_filter=[
         "enemy_relative_distance",
         "enemy_relative_direction",
@@ -77,7 +78,7 @@ skeleton_fire_experiment_v2 = {
         "verbose": 1,
         "tensorboard_log": get_absolute_path("tensorboard"),
     },
-    "total_timesteps": 3000000,
+    "total_timesteps": 2000000,
 }
 
 cow_fire_experiment = {
@@ -128,5 +129,10 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
+    experiment_train(skeleton_fire_experiment_v2)
+
+    skeleton_fire_experiment_v2["acc_ends_episode"] = False
+    skeleton_fire_experiment_v2["model_log_dir"] = "results/basicfighter_ppo8"
+
     experiment_train(skeleton_fire_experiment_v2)
     # experiment_check_env(cow_skeleton_experiment)

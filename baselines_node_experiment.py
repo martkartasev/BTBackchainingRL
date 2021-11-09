@@ -61,9 +61,13 @@ class BaselinesNodeExperiment:
 
         mission.run()
 
-    def evaluate_node(self, model):
+    def evaluate_node(self, model_class, model_name):
+        loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
+        self.baseline_node.set_model(loaded_model)
+
         mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path), evaluation_manager=self.evaluation_manager)
-        pass
+
+        mission.run()
 
     def train_node(self, model_class, model_args):
         env = self.setup_training_environment()

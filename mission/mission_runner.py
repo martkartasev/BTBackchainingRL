@@ -1,3 +1,4 @@
+import math
 import time
 
 from py_trees.common import Status
@@ -47,17 +48,23 @@ class MissionRunner:
         return world_state, steps
 
     def run(self):
+        i = 0
         while True:
+            i += 1
             start = time.time()
             self.evaluation_manager.record_mission_start(start) if self.evaluation_manager is not None else None
 
             state, steps = self.run_mission()
 
             end = time.time()
-            self.evaluation_manager.record_mission_end(state, steps, end) if self.evaluation_manager is not None else None
 
-            print("took " + str((end - start) * 1000) + ' milliseconds')
-            print("Mission ended")
+            print("Took " + str((end - start) * 1000) + ' milliseconds')
+            print("Mission " + str(i) + " ended")
+
+            if self.evaluation_manager is not None:
+                self.evaluation_manager.record_mission_end(self.agent.is_mission_over(), steps, end)
+                if self.evaluation_manager.runs <= i:
+                    break
 
     def reset(self):
         if self.mission_manager.agent_host.getWorldState().is_mission_running:

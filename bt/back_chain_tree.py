@@ -27,20 +27,18 @@ class BackChainTree:
         back_chain_tree.setup_with_descendants()
 
         for baseline_node in self.baseline_nodes:
-            if evaluation_manager is not None:
-                baseline_node.accs = (EvaluationBehaviour(condition, evaluation_manager) for condition in find_accs(baseline_node))
-            baseline_node.accs = find_accs(baseline_node)
+            accs = find_accs(baseline_node)
+            baseline_node.accs = [EvaluationBehaviour(condition, evaluation_manager) for condition in accs] if evaluation_manager is not None else accs
         return back_chain_tree
 
     def back_chain_recursive(self, agent, condition, evaluation_manager=None):
         ppa = self.condition_to_ppa_tree(agent, condition)
+        if evaluation_manager is not None:
+            ppa.post_condition = EvaluationBehaviour(ppa.post_condition, evaluation_manager)
+            # ppa.action = EvaluationBehaviour(ppa.action, evaluation_manager)  # TODO: Review if these are necessary. If so need to do it a bit differently
+            # ppa.pre_conditions = (EvaluationBehaviour(condition, evaluation_manager) for condition in ppa.pre_conditions)
 
         if ppa is not None and isinstance(ppa.action, PPABaselinesNode):
-            if evaluation_manager is not None:
-                ppa.post_condition = EvaluationBehaviour(ppa.post_condition, evaluation_manager)
-                # ppa.action = EvaluationBehaviour(ppa.action, evaluation_manager) # TODO: Review if these are necessary
-                # ppa.pre_conditions = (EvaluationBehaviour(condition, evaluation_manager) for condition in ppa.pre_conditions)
-
             self.baseline_nodes.append(ppa.action)
             ppa.action.post_conditions.append(ppa.post_condition)
 

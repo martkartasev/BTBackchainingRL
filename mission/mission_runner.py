@@ -1,3 +1,4 @@
+import math
 import time
 
 from py_trees.common import Status
@@ -7,11 +8,12 @@ from mission.mission_manager import MissionManager
 
 class MissionRunner:
 
-    def __init__(self, agent, active_entities=True, filename=None):
+    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None):
         self.mission_manager = MissionManager(agent.agent_host, filename)
         self.agent = agent
         self.active_entities = active_entities
         self.observation_manager = agent.observation_manager
+        self.evaluation_manager = evaluation_manager
 
     def tick_mission(self):
         host = self.mission_manager.agent_host
@@ -29,28 +31,40 @@ class MissionRunner:
 
     def run_mission(self):
         self.reset()
-
+        steps = 0
         world_state = self.tick_mission()
         while world_state.is_mission_running:
             for error in world_state.errors:
                 print("Error:", error.text)
 
             self.agent.control_loop()
+            steps += 1
 
             if self.agent.is_mission_over() or self.agent.tree.status == Status.SUCCESS or self.agent.tree.status == Status.FAILURE:
                 self.mission_manager.quit()
                 break
 
             world_state = self.tick_mission()
+        return world_state, steps
 
     def run(self):
+        i = 0
         while True:
+            i += 1
             start = time.time()
-            self.run_mission()
+            self.evaluation_manager.record_mission_start(start) if self.evaluation_manager is not None else None
+
+            state, steps = self.run_mission()
+
             end = time.time()
 
-            print("took " + str((end - start) * 1000) + ' milliseconds')
-            print("Mission ended")
+            print("Took " + str((end - start) * 1000) + ' milliseconds')
+            print("Mission " + str(i) + " ended")
+
+            if self.evaluation_manager is not None:
+                self.evaluation_manager.record_mission_end(self.agent.is_mission_over(), steps, end)
+                if self.evaluation_manager.runs <= i:
+                    break
 
     def reset(self):
         if self.mission_manager.agent_host.getWorldState().is_mission_running:

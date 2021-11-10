@@ -12,6 +12,8 @@ from mission.minecraft_types import Block, Enemy
 
 @dataclass
 class ObservationDefinition:  # Override defaults from main spec
+    FIRE_AVOID_DISTANCE: float = 1.2
+
     CIRCLE_DEGREES: int = 360
     ARENA_SIZE: int = 16
     RELATIVE_DISTANCE_AXIS_MAX: int = 20

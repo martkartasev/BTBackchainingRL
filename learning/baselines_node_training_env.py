@@ -7,11 +7,12 @@ class BaselinesNodeTrainingEnv(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, learning_node, mission):
+    def __init__(self, learning_node, mission, acc_ends_episode=True):
         self.node = learning_node
         self.agent = self.node.agent
         self.mission = mission
 
+        self.acc_ends_episode = acc_ends_episode
         self.is_acc_violated = False
 
         self.action_space = gym.spaces.Discrete(len(self.node.children))
@@ -28,7 +29,7 @@ class BaselinesNodeTrainingEnv(gym.Env):
         reward = self.node.calculate_rewards()
         ob = self.node.get_observation_array()
         is_mission_over = self.agent.is_mission_over()
-        self.is_acc_violated = self.node.is_acc_violated()
+        self.is_acc_violated = self.acc_ends_episode and self.node.is_acc_violated()
         is_post_conditions_fulfilled = self.node.is_post_conditions_fulfilled()
         is_timed_out = self.steps > EP_MAX_TIME_STEPS
 

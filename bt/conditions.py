@@ -34,7 +34,7 @@ class IsSafeFromFire(Condition):
                 delta_pos = np.array([-1 + fire_loc[2][i], -1 + fire_loc[0][i], -1 + fire_loc[1][i]])
                 position = self.agent.observation_manager.observation.dict["position"]
                 loc = np.floor(position + delta_pos) + np.array([0.5, 0, 0.5])
-                if np.max(np.abs(position - loc)) <= 1.2:
+                if np.max(np.abs(position - loc)) <= self.agent.observation_manager.helper.definition.FIRE_AVOID_DISTANCE:
                     return False
         return True
 

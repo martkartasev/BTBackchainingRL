@@ -2,8 +2,10 @@ from stable_baselines3 import PPO, DQN
 
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
+from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
+from plotting import get_reward_series, plot_reward_series
 from utils.file import store_spec, load_spec, get_absolute_path
 
 cow_skeleton_experiment = {
@@ -45,14 +47,15 @@ skeleton_fire_experiment = {
             ACC_VIOLATED_REWARD=-200
         )
     ),
-    "total_timesteps": 3000000,
+    "total_timesteps": 1000,
 }
 
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter_ppo5",
+    "model_log_dir": "results/basicfighter_ppo8",
     "active_entities": True,
+    "acc_ends_episode": True,
     "observation_manager": ObservationManager(observation_filter=[
         "enemy_relative_distance",
         "enemy_relative_direction",
@@ -67,7 +70,8 @@ skeleton_fire_experiment_v2 = {
             ACC_VIOLATED_REWARD=-1000
         ),
         observation_definition=ObservationDefinition(
-            GRID_SIZE_AXIS=[1, 11, 11]
+            GRID_SIZE_AXIS=[1, 11, 11],
+            FIRE_AVOID_DISTANCE=1.5
         )
     ),
     "model_class": PPO,
@@ -76,7 +80,7 @@ skeleton_fire_experiment_v2 = {
         "verbose": 1,
         "tensorboard_log": get_absolute_path("tensorboard"),
     },
-    "total_timesteps": 3000000,
+    "total_timesteps": 2000000,
 }
 
 cow_fire_experiment = {
@@ -98,11 +102,12 @@ cow_fire_experiment = {
 }
 
 
-def experiment_evaluate(log_dir, model):
+def experiment_evaluate(log_dir, model_name, evaluation_manager):
     spec = load_spec(log_dir)
+    spec["evaluation_manager"] = evaluation_manager
     experiment = BaselinesNodeExperiment(**spec)
 
-    experiment.evaluate_node(model)
+    experiment.evaluate_node(spec['model_class'], model_name)
 
 
 def experiment_test(log_dir, model_name):
@@ -126,6 +131,22 @@ def experiment_check_env(spec):
     experiment.check_env()
 
 
+def plot_rewards():
+    data = {
+        "PPO5": get_reward_series(r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv"),
+        "PPO7": get_reward_series(r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv"),
+      #  "Targeting": get_reward_series(r"C:\Users\Mart\workspace\RLBT\resources\logs\simultaneous_node\run_DQNSimultaneousAgentAltTargetMix_2_targeting_1-tag-episode_reward.csv"),
+    }
+    plot_reward_series(data, (1, 1), (5, 3.5), (-2000, 3000))
+
+
 if __name__ == '__main__':
-    experiment_train(skeleton_fire_experiment_v2)
+    # experiment_evaluate("results/basicfighter_ppo7", "best_model_68", EvaluationManager(runs=50))
+    # experiment_train(skeleton_fire_experiment_v2)
+
+    # skeleton_fire_experiment_v2["acc_ends_episode"] = False
+    # skeleton_fire_experiment_v2["model_log_dir"] = "results/basicfighter_ppo9"
+
+    # experiment_train(skeleton_fire_experiment_v2)
     # experiment_check_env(cow_skeleton_experiment)
+    plot_rewards()

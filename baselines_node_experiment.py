@@ -21,16 +21,18 @@ from utils.visualisation import save_tree_to_log
 class BaselinesNodeExperiment:
 
     def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, active_entities=True,
-                 baseline_node_type=None, observation_manager=None, **kwargs):
+                 baseline_node_type=None, observation_manager=None, evaluation_manager=None, acc_ends_episode=True, **kwargs):
         self.mission_path = mission
         self.active_entities = active_entities
         self.model_log_dir = model_log_dir
         self.total_timesteps = total_timesteps
+        self.evaluation_manager = evaluation_manager
+        self.acc_ends_episode = acc_ends_episode
 
         agent_host = AgentHost()
         self.agent = BehaviorTreeAgent(agent_host, observation_manager)
         self.goals = [goal(self.agent) for goal in goals]
-        self.tree = BackChainTree(self.agent, self.goals)
+        self.tree = BackChainTree(self.agent, self.goals, evaluation_manager)
         self.agent.tree = self.tree.root
 
         save_tree_to_log(self.tree.root, str(Path(model_log_dir) / "tree.csv"))
@@ -59,9 +61,13 @@ class BaselinesNodeExperiment:
 
         mission.run()
 
-    def evaluate_node(self, model):
-        # TODO:
-        pass
+    def evaluate_node(self, model_class, model_name):
+        loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
+        self.baseline_node.set_model(loaded_model)
+
+        mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path), evaluation_manager=self.evaluation_manager)
+
+        mission.run()
 
     def train_node(self, model_class, model_args):
         env = self.setup_training_environment()
@@ -92,6 +98,6 @@ class BaselinesNodeExperiment:
         mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path))
 
         os.makedirs(get_absolute_path(self.model_log_dir), exist_ok=True)
-        env = BaselinesNodeTrainingEnv(self.baseline_node, mission)
+        env = BaselinesNodeTrainingEnv(self.baseline_node, mission, self.acc_ends_episode)
         env = Monitor(env, get_absolute_path(self.model_log_dir))
         return env

@@ -5,6 +5,7 @@ from bt import conditions
 from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
+from plotting import get_reward_series, plot_reward_series
 from utils.file import store_spec, load_spec, get_absolute_path
 
 cow_skeleton_experiment = {
@@ -130,8 +131,17 @@ def experiment_check_env(spec):
     experiment.check_env()
 
 
+def plot_rewards():
+    data = {
+        "PPO5": get_reward_series(r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv"),
+        "PPO7": get_reward_series(r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv"),
+      #  "Targeting": get_reward_series(r"C:\Users\Mart\workspace\RLBT\resources\logs\simultaneous_node\run_DQNSimultaneousAgentAltTargetMix_2_targeting_1-tag-episode_reward.csv"),
+    }
+    plot_reward_series(data, (1, 1), (5, 3.5), (-2000, 3000))
+
+
 if __name__ == '__main__':
-    experiment_evaluate("results/basicfighter_ppo7", "best_model_68", EvaluationManager(runs=50))
+    # experiment_evaluate("results/basicfighter_ppo7", "best_model_68", EvaluationManager(runs=50))
     # experiment_train(skeleton_fire_experiment_v2)
 
     # skeleton_fire_experiment_v2["acc_ends_episode"] = False
@@ -139,3 +149,4 @@ if __name__ == '__main__':
 
     # experiment_train(skeleton_fire_experiment_v2)
     # experiment_check_env(cow_skeleton_experiment)
+    plot_rewards()

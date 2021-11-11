@@ -1,5 +1,7 @@
 import time
 
+from py_trees.common import Status
+
 from mission.mission_manager import MissionManager
 
 
@@ -35,7 +37,7 @@ class MissionRunner:
 
             self.agent.control_loop()
 
-            if self.agent.is_mission_over():
+            if self.agent.is_mission_over() or self.agent.tree.status == Status.SUCCESS or self.agent.tree.status == Status.FAILURE:
                 self.mission_manager.quit()
                 break
 

@@ -81,6 +81,9 @@ class ObservationManager:
     def is_agent_alive(self):
         return self.observation.dict["health"] > 0
 
+    def get_position(self):
+        return self.observation.dict["position"]
+
 
 class Observation:
 
@@ -269,7 +272,8 @@ class ObservationHelper:
         return np.clip(relative_position, -self.definition.RELATIVE_DISTANCE_AXIS_MAX,
                        self.definition.RELATIVE_DISTANCE_AXIS_MAX)
 
-    def get_entity_position(self, entity_info):
+    @staticmethod
+    def get_entity_position(entity_info):
         if entity_info is not None:
             return [entity_info.get("x"), entity_info.get("y"), entity_info.get("z")]
         return [0, 0, 0]

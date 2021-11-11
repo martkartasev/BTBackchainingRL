@@ -21,7 +21,8 @@ from utils.visualisation import save_tree_to_log
 class BaselinesNodeExperiment:
 
     def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, active_entities=True,
-                 baseline_node_type=None, observation_manager=None, evaluation_manager=None, acc_ends_episode=True, **kwargs):
+                 baseline_node_type=None, observation_manager=None, evaluation_manager=None, acc_ends_episode=True,
+                 **kwargs):
         self.mission_path = mission
         self.active_entities = active_entities
         self.model_log_dir = model_log_dir
@@ -65,7 +66,12 @@ class BaselinesNodeExperiment:
         loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
         self.baseline_node.set_model(loaded_model)
 
-        mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path), evaluation_manager=self.evaluation_manager)
+        mission = MissionRunner(
+            agent=self.agent,
+            active_entities=self.active_entities,
+            filename=get_absolute_path(self.mission_path),
+            evaluation_manager=self.evaluation_manager
+        )
 
         mission.run()
 

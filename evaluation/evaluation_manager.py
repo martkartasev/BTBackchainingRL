@@ -1,16 +1,24 @@
 import copy
+import json
+import os
 
+from dataclasses import dataclass
+
+import jsonpickle
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
+
+from utils.file import get_absolute_path
 
 
 class EvaluationManager:
 
-    def __init__(self, runs=50):
+    def __init__(self, runs=50, eval_log_file=None):
         self.runs = runs
-
+        self.log_file = get_absolute_path(eval_log_file) if eval_log_file is not None else None
         self.nodes = dict()
-        self.mission_results = list()
+        self.positions = list()
+        self.mission_records = list()
         self.current_record = MissionRecord(None)
 
     def register_node(self, node):
@@ -22,9 +30,9 @@ class EvaluationManager:
         self.current_record = MissionRecord(start)
 
     def record_mission_end(self, state, steps, end):
-        self.current_record.finalize(state, steps, end, self.nodes)
+        self.current_record.finalize(state, steps, end, self.nodes, self.positions)
         [node.reset() for node in self.nodes.values()]
-        self.mission_results.append(self.current_record)
+        self.mission_records.append(self.current_record)
 
     def record_node(self, node, status):
         record = self.nodes[node]
@@ -34,18 +42,38 @@ class EvaluationManager:
         else:
             record.failures += 1
 
+    def record_position(self, x, z):
+        self.positions.append(PositionRecord(x, z))
+
+    def store_evaluation(self):
+        if self.log_file is not None:
+            jsonpickle.set_encoder_options('simplejson', sort_keys=True, indent=4)
+            eval_json = jsonpickle.encode(self.mission_records, unpicklable=False)
+            os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
+            with open(self.log_file, 'w+') as file:
+                file.write(eval_json)
+
 
 class MissionRecord:
     def __init__(self, start):
         self.steps = 0
         self.end = 0
         self.start = start
+        self.positions = list()
         self.nodes = list()
 
-    def finalize(self, state, steps, end, nodes: dict):
+    def finalize(self, state, steps, end, nodes: dict, positions: list):
         self.steps = steps
         self.end = end
         self.nodes = [copy.deepcopy(node) for node in nodes.values()]
+        self.positions = copy.deepcopy(positions)
+
+
+@dataclass
+class PositionRecord:
+    def __init__(self, x, z):
+        self.x = float(x)
+        self.z = float(z)
 
 
 class NodeRecord:

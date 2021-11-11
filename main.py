@@ -5,7 +5,7 @@ from bt import conditions
 from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
-from plotting import get_reward_series, plot_reward_series
+from utils.plotting import get_reward_series, plot_reward_series
 from utils.file import store_spec, load_spec, get_absolute_path
 
 cow_skeleton_experiment = {
@@ -102,9 +102,9 @@ cow_fire_experiment = {
 }
 
 
-def experiment_evaluate(log_dir, model_name, evaluation_manager):
+def experiment_evaluate(log_dir, model_name, eval_log_file, runs):
     spec = load_spec(log_dir)
-    spec["evaluation_manager"] = evaluation_manager
+    spec["evaluation_manager"] = EvaluationManager(runs, eval_log_file)
     experiment = BaselinesNodeExperiment(**spec)
 
     experiment.evaluate_node(spec['model_class'], model_name)
@@ -133,16 +133,29 @@ def experiment_check_env(spec):
 
 def plot_rewards():
     data = {
-        "PPO5": get_reward_series(r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv"),
-        "PPO7": get_reward_series(r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv"),
+        "PPO5": get_reward_series(
+            r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv"),
+        "PPO7": get_reward_series(
+            r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv"),
         #  "Targeting": get_reward_series(r"C:\Users\Mart\workspace\RLBT\resources\logs\simultaneous_node\run_DQNSimultaneousAgentAltTargetMix_2_targeting_1-tag-episode_reward.csv"),
     }
     plot_reward_series(data, (1, 1), (5, 3.5), (-2000, 3000))
 
 
+def plot_paths(n_runs):
+    for i in range(n_runs):
+        experiment_evaluate(
+            "results/cow_skeleton_experiment",
+            f"best_model_{i}",
+            f"log/eval/cow_skeleton_experiment_{i}.json",
+            1
+        )
+
+
 if __name__ == '__main__':
     # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
-    experiment_train(skeleton_fire_experiment_v2)
-
+    # experiment_train(skeleton_fire_experiment_v2)
+    plot_paths(42)
+    # store_spec(cow_skeleton_experiment)
     # experiment_check_env(skeleton_fire_experiment_v2)
     # plot_rewards()

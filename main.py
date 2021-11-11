@@ -55,7 +55,7 @@ skeleton_fire_experiment_v2 = {
     "mission": "resources/arena_skeleton_v2.xml",
     "model_log_dir": "results/basicfighter_ppo8",
     "active_entities": True,
-    "acc_ends_episode": True,
+    "acc_ends_episode": False,
     "observation_manager": ObservationManager(observation_filter=[
         "enemy_relative_distance",
         "enemy_relative_direction",
@@ -67,7 +67,7 @@ skeleton_fire_experiment_v2 = {
         reward_definition=RewardDefinition(
             POST_CONDITION_FULFILLED_REWARD=1000,
             AGENT_DEAD_REWARD=-1000,
-            ACC_VIOLATED_REWARD=-1000
+            ACC_VIOLATED_REWARD=0
         ),
         observation_definition=ObservationDefinition(
             GRID_SIZE_AXIS=[1, 11, 11],
@@ -135,18 +135,14 @@ def plot_rewards():
     data = {
         "PPO5": get_reward_series(r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv"),
         "PPO7": get_reward_series(r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv"),
-      #  "Targeting": get_reward_series(r"C:\Users\Mart\workspace\RLBT\resources\logs\simultaneous_node\run_DQNSimultaneousAgentAltTargetMix_2_targeting_1-tag-episode_reward.csv"),
+        #  "Targeting": get_reward_series(r"C:\Users\Mart\workspace\RLBT\resources\logs\simultaneous_node\run_DQNSimultaneousAgentAltTargetMix_2_targeting_1-tag-episode_reward.csv"),
     }
     plot_reward_series(data, (1, 1), (5, 3.5), (-2000, 3000))
 
 
 if __name__ == '__main__':
-    # experiment_evaluate("results/basicfighter_ppo7", "best_model_68", EvaluationManager(runs=50))
-    # experiment_train(skeleton_fire_experiment_v2)
+    # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
+    experiment_train(skeleton_fire_experiment_v2)
 
-    # skeleton_fire_experiment_v2["acc_ends_episode"] = False
-    # skeleton_fire_experiment_v2["model_log_dir"] = "results/basicfighter_ppo9"
-
-    # experiment_train(skeleton_fire_experiment_v2)
-    # experiment_check_env(cow_skeleton_experiment)
-    plot_rewards()
+    # experiment_check_env(skeleton_fire_experiment_v2)
+    # plot_rewards()

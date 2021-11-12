@@ -112,11 +112,11 @@ class Observation:
         observation_dict["enemy_relative_position"] = rotated_position
 
         yaw = helper.get_yaw(info)
-        delta = helper.get_relative_position(enemy_info, position)
-        rot = np.radians(helper.get_y_rotation_from(position, helper.get_entity_position(enemy_info)) - yaw)
+        enemy_delta = helper.get_relative_position(enemy_info, position)
+        enemy_rot = np.radians(helper.get_y_rotation_from(position, helper.get_entity_position(enemy_info)) - yaw)
         observation_dict["enemy_relative_distance"] = np.array(
-            [np.linalg.norm(np.array(delta[0], delta[2])) / self.definition.RELATIVE_DISTANCE_AXIS_MAX])
-        observation_dict["enemy_relative_direction"] = np.array([((np.cos(rot) + 1) / 2), ((np.sin(rot) + 1) / 2), ])
+            [np.linalg.norm(np.array(enemy_delta[0], enemy_delta[2])) / self.definition.RELATIVE_DISTANCE_AXIS_MAX])
+        observation_dict["enemy_relative_direction"] = np.array([((np.cos(enemy_rot) + 1) / 2), ((np.sin(enemy_rot) + 1) / 2), ])
         observation_dict["enemy_targeted"] = np.array(
             ['LineOfSight' in info.keys() and Enemy.is_enemy(info.get("LineOfSight").get("type"))])
 
@@ -124,6 +124,11 @@ class Observation:
         entity_info = helper.get_entity_info(info, [self.definition.ANIMAL_TYPE]) if food_info is None else food_info
         observation_dict["entity_relative_position"] = helper.get_standardized_rotated_position(entity_info, position,
                                                                                                 direction)
+        entity_delta = helper.get_relative_position(entity_info, position)
+        entity_rot = np.radians(helper.get_y_rotation_from(position, helper.get_entity_position(entity_info)) - yaw)
+        observation_dict["entity_relative_distance"] = np.array(
+            [np.linalg.norm(np.array(entity_delta[0], entity_delta[2])) / self.definition.RELATIVE_DISTANCE_AXIS_MAX])
+        observation_dict["entity_relative_direction"] = np.array([((np.cos(entity_rot) + 1) / 2), ((np.sin(entity_rot) + 1) / 2), ])
 
         observation_dict["health"] = np.array([info.get("Life", 0) / self.definition.PLAYER_MAX_LIFE])
         observation_dict["satiation"] = np.array([info.get("Food", 0) / self.definition.PLAYER_MAX_FOOD])
@@ -155,11 +160,13 @@ class Observation:
     def get_observation_space(observation_definition, observation_filter=None):
         full_space = {
             "entity_relative_position": Box(-1, 1, (3,)),
-            "enemy_relative_position": Box(-1, 1, (3,)),
+            "entity_relative_distance": Box(0, 1, (1,)),
+            "entity_relative_direction": Box(0, 1, (2,)),
 
+            "enemy_relative_position": Box(-1, 1, (3,)),
             "enemy_relative_distance": Box(0, 1, (1,)),
-            "enemy_targeted": Box(0, 1, (1,), dtype=np.uint8),
             "enemy_relative_direction": Box(0, 1, (2,)),
+            "enemy_targeted": Box(0, 1, (1,), dtype=np.uint8),
 
             "direction": Box(0, 1, (3,)),
             "health": Box(0, 1, (1,)),

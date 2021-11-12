@@ -1,8 +1,7 @@
-from stable_baselines3 import PPO, DQN
+from stable_baselines3 import PPO
 
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
-from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from plotting import get_reward_series, plot_reward_series
@@ -11,8 +10,9 @@ from utils.file import store_spec, load_spec, get_absolute_path
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
     "mission": "resources/arena_cow_skeleton_v2.xml",
-    "model_log_dir": "results/cow_skeleton_experiment",
+    "model_log_dir": "results/cow_skeleton_experiment_1",
     "model_class": PPO,
+    "acc_ends_episode": True,
     "model_arguments": {
         "policy": 'MultiInputPolicy',
         "verbose": 1,
@@ -21,33 +21,19 @@ cow_skeleton_experiment = {
     "active_entities": False,
     "baseline_node_type": ChaseEntity,
     "observation_manager": ObservationManager(observation_filter=[
-        "entity_relative_position",
-        "enemy_relative_position",
-        "direction",
+        "entity_relative_distance",
+        "entity_relative_direction",
+        "enemy_relative_distance",
+        "enemy_relative_direction",
         "health",
         "entity_visible",
         "surroundings"
-    ]),
-}
-
-skeleton_fire_experiment = {
-    "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
-    "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "",
-    "active_entities": True,
-    "observation_manager": ObservationManager(observation_filter=[
-        "entity_relative_position",
-        "enemy_relative_position",
-        "direction", "health",
-        "enemy_health",
-        "entity_visible",
-        "surroundings"
-    ],
-        reward_definition=RewardDefinition(
-            ACC_VIOLATED_REWARD=-200
-        )
-    ),
-    "total_timesteps": 1000,
+    ], reward_definition=RewardDefinition(
+        POST_CONDITION_FULFILLED_REWARD=1000,
+        AGENT_DEAD_REWARD=-1000,
+        ACC_VIOLATED_REWARD=-1000,
+    )),
+    "total_timesteps": 3000000,
 }
 
 skeleton_fire_experiment_v2 = {
@@ -141,8 +127,11 @@ def plot_rewards():
 
 
 if __name__ == '__main__':
-    # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
-    experiment_train(skeleton_fire_experiment_v2)
+    # manager = EvaluationManager(runs=5)
+    # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", manager)
+    # print_skeleton_fire_results(manager)
+
+    experiment_train(cow_skeleton_experiment)
 
     # experiment_check_env(skeleton_fire_experiment_v2)
     # plot_rewards()

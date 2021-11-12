@@ -33,6 +33,7 @@ cow_skeleton_experiment = {
         AGENT_DEAD_REWARD=-1000,
         ACC_VIOLATED_REWARD=-1000,
     )),
+    "max_steps_per_episode": 1500,
     "total_timesteps": 3000000,
 }
 

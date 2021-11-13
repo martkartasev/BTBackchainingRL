@@ -6,26 +6,28 @@ from py_trees.common import Status
 
 class MissionRunner:
 
-    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None):
+    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None, mission_max_time=None):
         self.mission_manager = MissionManager(agent.agent_host, filename)
         self.agent = agent
         self.active_entities = active_entities
         self.observation_manager = agent.observation_manager
         self.evaluation_manager = evaluation_manager
+        self.mission_max_time = mission_max_time
+        self.mission_start_time = time.time()
 
     def run(self):
         mission = 0
         while True:
             mission += 1
-            start = time.time()
+            self.mission_start_time = time.time()
             if self.evaluation_manager is not None:
-                self.evaluation_manager.record_mission_start(start)
+                self.evaluation_manager.record_mission_start(self.mission_start_time)
 
             state, steps = self.run_mission()
 
             end = time.time()
 
-            print("Took " + str((end - start) * 1000) + ' milliseconds')
+            print("Took " + str((end - self.mission_start_time) * 1000) + ' milliseconds')
             print("Mission " + str(mission) + " ended")
 
             if self.evaluation_manager is not None:
@@ -46,7 +48,9 @@ class MissionRunner:
             steps += 1
 
             tree_status = self.agent.tree.status
-            if self.agent.is_mission_over() or tree_status == Status.SUCCESS or tree_status == Status.FAILURE:
+            tree_finished = (tree_status == Status.SUCCESS or tree_status == Status.FAILURE)
+            timed_out = self.mission_max_time is not None and time.time() - self.mission_start_time >= self.mission_max_time
+            if self.agent.is_mission_over() or tree_finished or timed_out:
                 self.mission_manager.quit()
                 break
 

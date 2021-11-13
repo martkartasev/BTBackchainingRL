@@ -72,6 +72,9 @@ class IsEntityVisible(Condition):
 
 
 class IsCloseToEntity(Condition):
+
+    RANGE = 2
+
     def __init__(self, agent):
         super(IsCloseToEntity, self).__init__(f"Is Close To Entity", agent)
 
@@ -81,7 +84,7 @@ class IsCloseToEntity(Condition):
         non_standardized_distance = entity_distance * ObservationDefinition.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return distance <= 2
+        return distance <= RANGE
 
 
 class IsNotHungry(Condition):

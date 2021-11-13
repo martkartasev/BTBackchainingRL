@@ -1,9 +1,17 @@
+from msilib.schema import Patch
+
+import jsonpickle
+import numpy as np
+from matplotlib.lines import Line2D
 from stable_baselines3 import PPO, DQN
 
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
+from bt.conditions import IsNotAttackedByEnemy, IsCloseToEntity
 from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import ChaseEntity
+from matplotlib import pyplot as plt
+from matplotlib import cm, colors
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from utils.plotting import get_reward_series, plot_reward_series
 from utils.file import store_spec, load_spec, get_absolute_path
@@ -107,7 +115,7 @@ def experiment_evaluate(log_dir, model_name, eval_log_file, runs):
     spec["evaluation_manager"] = EvaluationManager(runs, eval_log_file)
     experiment = BaselinesNodeExperiment(**spec)
 
-    experiment.evaluate_node(spec['model_class'], model_name)
+    experiment.evaluate_node(spec['model_class'], model_name, 60)
 
 
 def experiment_test(log_dir, model_name):
@@ -144,13 +152,58 @@ def plot_rewards():
 
 def plot_paths(n_runs):
     for i in range(n_runs):
+        """
         experiment_evaluate(
             "results/cow_skeleton_experiment",
             f"best_model_{i}",
             f"log/eval/cow_skeleton_experiment_{i}.json",
             1
         )
+        """
+        plot_path(i, n_runs)
 
+    entity_size = 0.5
+    player_position = (-14, 0)
+    skeleton_position = (0, 0)
+    cow_position = (14, 0)
+
+    plt.xlim(-20, 20)
+    plt.ylim(-20, 20)
+
+    plt.gca().add_patch(plt.Circle(player_position, entity_size, color='r',  zorder=100))
+    plt.gca().add_patch(plt.Circle(skeleton_position, entity_size, color='gray'))
+    plt.gca().add_patch(plt.Circle(skeleton_position, IsNotAttackedByEnemy.ENEMY_AGGRO_RANGE, color='gray', fill=False))
+    plt.gca().add_patch(plt.Circle(cow_position, entity_size, color='blue'))
+    plt.gca().add_patch(plt.Circle(cow_position, IsCloseToEntity.RANGE, color='blue', fill=False))
+    plt.gca().add_patch(plt.Rectangle((-15, -15), 31, 31, linewidth=1, edgecolor='black', fill=False))
+
+    legend_elements = [
+        Line2D([0], [0], marker='o', color='w', label='Start Position', markerfacecolor='r', markersize=8),
+        Line2D([0], [0], marker='o', color='w', label='Goal Position', markerfacecolor='blue', markersize=8),
+        Line2D([0], [0], marker='o', color='w', label='Enemy Position', markerfacecolor='gray', markersize=8)
+    ]
+
+    # Create the figure
+    plt.legend(handles=legend_elements, loc='lower right')
+
+    plt.colorbar(plt.cm.ScalarMappable(
+        norm=colors.Normalize(0, n_runs-1),
+        cmap=cm.get_cmap('viridis')
+    ))
+
+    #plt.show()
+    plt.savefig("positions")
+
+
+def plot_path(i, n_runs):
+    colors = cm.get_cmap('viridis')
+    with open(get_absolute_path(f"log/eval/cow_skeleton_experiment_{i}.json"), "r") as file:
+        record = jsonpickle.decode(file.read())
+        positions = np.array([(position["x"], position["z"]) for position in record[0]["positions"]])
+        x = positions[:, 0]
+        z = positions[:, 1]
+        color = colors(i/(n_runs-1))
+        plt.plot(x, z, color=color, label=f"{i}")
 
 if __name__ == '__main__':
     # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))

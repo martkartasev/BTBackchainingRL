@@ -1,10 +1,9 @@
 import numpy as np
-
+from py_trees.behaviour import Behaviour
+from py_trees.common import Status
 
 from mission.minecraft_types import Block
 from mission.observation_manager import ObservationDefinition
-from py_trees.behaviour import Behaviour
-from py_trees.common import Status
 
 
 class Condition(Behaviour):
@@ -84,7 +83,7 @@ class IsCloseToEntity(Condition):
         non_standardized_distance = entity_distance * ObservationDefinition.RELATIVE_DISTANCE_AXIS_MAX
         distance = np.linalg.norm(non_standardized_distance)
 
-        return distance <= RANGE
+        return distance <= IsCloseToEntity.RANGE
 
 
 class IsNotHungry(Condition):

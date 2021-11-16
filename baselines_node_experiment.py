@@ -62,11 +62,17 @@ class BaselinesNodeExperiment:
 
         mission.run()
 
-    def evaluate_node(self, model_class, model_name):
+    def evaluate_node(self, model_class, model_name, mission_max_time=None):
         loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
         self.baseline_node.set_model(loaded_model)
 
-        mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path), evaluation_manager=self.evaluation_manager)
+        mission = MissionRunner(
+            agent=self.agent,
+            active_entities=self.active_entities,
+            filename=get_absolute_path(self.mission_path),
+            evaluation_manager=self.evaluation_manager,
+            mission_max_time=mission_max_time
+        )
 
         mission.run()
 

@@ -10,6 +10,8 @@ from py_trees.common import Status
 
 from utils.file import get_absolute_path
 
+import numpy as np
+
 
 class EvaluationManager:
 
@@ -104,3 +106,15 @@ class EvaluationBehaviour(Behaviour):
 
     def terminate(self, new_status):
         return self.embedded.terminate(new_status)
+
+
+def print_skeleton_fire_results(evaluation_manager):
+    values = np.array([[mission.steps, select(mission.nodes, "Is safe from fire").failures] for mission in evaluation_manager.mission_results])
+    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    print("Evaluation results: ")
+    print("Tex string: {0} & {1} & {2} & {3} ".format("Column", np.average(values[:, 0]), np.sum(values[:, 1]), np.average(values[:, 1])))  # steps
+    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+
+
+def select(node_list, name):
+    return list(filter(lambda el: el.name == name and el.steps != 0, node_list))[0]

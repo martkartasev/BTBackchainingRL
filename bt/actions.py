@@ -1,9 +1,9 @@
 import numpy as np
+from py_trees.behaviour import Behaviour
+from py_trees.common import Status
 
 from mission.minecraft_types import Block
 from mission.observation_manager import ObservationDefinition
-from py_trees.behaviour import Behaviour
-from py_trees.common import Status
 from utils.linalg import rotation_matrix_y
 
 
@@ -61,7 +61,9 @@ class DefeatSkeletonManual(Action):
         distance_vector = self.agent.observation_manager.observation.dict["enemy_relative_position"]
 
         enemy_relative_position = np.array([distance_vector[0], distance_vector[2]])
-        enemy_relative_position = enemy_relative_position / np.linalg.norm(enemy_relative_position)
+        enemy_distance = np.linalg.norm(enemy_relative_position)
+        if enemy_distance != 0:
+            enemy_relative_position = enemy_relative_position / enemy_distance
 
         direction_dot = enemy_relative_position[0]
 

@@ -102,6 +102,6 @@ class BaselinesNodeExperiment:
                 raise ValueError("The tree does not contain the baseline node type.")
 
         baseline_node = self.tree.baseline_nodes[0]
-        if baseline_node_type is not None and not isinstance(self.baseline_node, baseline_node_type):
+        if baseline_node_type is not None and not isinstance(baseline_node, baseline_node_type):
             raise ValueError("The tree does not contain the baseline node type.")
         return baseline_node

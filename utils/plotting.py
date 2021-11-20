@@ -131,8 +131,29 @@ def plot_paths(spec, eval_dir, eval_name):
 
 
 def plot_path(eval_file_name, time_steps, max_time_steps):
-    colors = cm.get_cmap('viridis')
+    colormap = cm.get_cmap('viridis')
     with open(get_absolute_path(eval_file_name), "r") as file:
         record = jsonpickle.decode(file.read())
         positions = np.array([(position["x"], position["z"]) for position in record[0]["positions"]])
-        plt.plot(positions[:, 0], positions[:, 1], color=colors(time_steps / max_time_steps))
+        if (len(positions) == 0):
+            print("oi")
+        plt.plot(positions[:, 0], positions[:, 1], color=colormap(time_steps / max_time_steps))
+
+
+def plot_positions(eval_dir, eval_name):
+    for x in range(-15, 16):
+        for z in range(-15, 16):
+            plot_vector(f"{eval_dir}/{eval_name}_pos_{x}_{z}.json")
+    plt.savefig("vectors")
+
+
+def plot_vector(eval_file_name, min_delta_steps=80):
+    with open(get_absolute_path(eval_file_name), "r") as file:
+        record = jsonpickle.decode(file.read())
+        positions = np.array([(position["x"], position["z"]) for position in record[0]["positions"]])
+
+        delta_steps = min(min_delta_steps, len(positions) - 1)
+        diff = positions[delta_steps, :] - positions[0, :]
+        if not np.all(diff == 0):
+            plt.quiver(np.array(positions[0, 0]), np.array(positions[0, 1]), np.array(diff[0]), np.array(diff[1]),
+                       width=0.004, headwidth=2, pivot='mid')

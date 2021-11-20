@@ -123,15 +123,22 @@ class MissionManager:
 
     # This needs to be called before starting the mission
     def randomize_start_position(self, ranges):
-        x = get_random_in_range(ranges['x'])
-        y = get_random_in_range(ranges['y'])
-        z = get_random_in_range(ranges['z'])
-        print(f"Set start position to {x} {y} {z}.")
-        self.mission.startAt(x, y, z)
+        if ranges:
+            x = get_random_in_range(ranges['x'])
+            y = get_random_in_range(ranges['y'])
+            z = get_random_in_range(ranges['z'])
+            print(f"Set start position to {x} {y} {z}.")
+            self.mission.startAt(x, y, z)
 
     # This needs to be called after starting the mission
+    def randomize_entity_positions(self, entity_ranges):
+        if entity_ranges:
+            for entity, position_range in entity_ranges.items():
+                self.randomize_entity_position(position_range, entity)
+
     def randomize_entity_position(self, ranges, entity_type):
         x = get_random_in_range(ranges['x'])
         y = get_random_in_range(ranges['y'])
         z = get_random_in_range(ranges['z'])
+        print(f"Set {entity_type} position to {x} {y} {z}.")
         self.agent_host.sendCommand(f"chat /teleport @e[type={entity_type}] {x} {y} {z}")

@@ -88,15 +88,12 @@ class MissionRunner:
         self.initialize_mission()
 
     def initialize_mission(self):
-        if self.random_position_range:
-            self.mission_manager.randomize_start_position(self.random_position_range)
+        self.mission_manager.randomize_start_position(self.random_position_range)
         self.mission_manager.start_mission()
         self.mission_manager.activate_night_vision()
         self.mission_manager.set_fire_eternal()
         self.mission_manager.make_hungry()
         self.tick_mission()
-        if self.random_entities_position_range:
-            for entity, position_range in self.random_entities_position_range.items():
-                self.mission_manager.randomize_entity_position(position_range, entity)
+        self.mission_manager.randomize_entity_positions(self.random_entities_position_range)
         if not self.active_entities:
             self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned

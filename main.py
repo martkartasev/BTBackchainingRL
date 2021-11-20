@@ -41,10 +41,10 @@ cow_skeleton_experiment = {
     )),
     "max_steps_per_episode": float('inf'),
     "total_timesteps": 3000000,
-    "random_position_range": {'x': [-14, -10], 'y': [6], 'z': [-14, 14]},
+    "random_position_range": {'x': [-14, -10], 'y': [6], 'z': [-12, 12]},
     "random_entities_position_range": {
-        "cow": {'x': [14], 'y': [4], 'z': [-14, 14]},
-        "skeleton": {'x': [0], 'y': [4], 'z': [-14, 14]}
+        "cow": {'x': [14], 'y': [4], 'z': [-12, 12]},
+        "skeleton": {'x': [0], 'y': [4], 'z': [-12, 12]}
     },
     'mission_max_time': 60
 }

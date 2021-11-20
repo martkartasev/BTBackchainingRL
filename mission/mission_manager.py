@@ -3,6 +3,8 @@ import sys
 import time
 from builtins import range
 
+from utils.random import get_random_in_range
+
 try:
     import MalmoPython
 except ImportError:
@@ -59,7 +61,7 @@ class MissionManager:
             else:
                 self.mission, self.mission_record = create_mission(read_mission(filename))
 
-    def mission_initialization(self):
+    def start_mission(self):
         # Attempt to start a mission:
         max_retries = MAX_RETRIES
 
@@ -99,10 +101,6 @@ class MissionManager:
         print()
         print("Running mission", end=' ')
 
-        self.activate_night_vision()
-        self.set_fire_eternal()
-        self.make_hungry()
-
         return world_state
 
     def enable_ai(self):
@@ -122,3 +120,11 @@ class MissionManager:
 
     def quit(self):
         self.agent_host.sendCommand("quit")
+
+    # This needs to be called before starting the mission
+    def randomize_start_position(self, ranges):
+        x = get_random_in_range(ranges['x'])
+        y = get_random_in_range(ranges['y'])
+        z = get_random_in_range(ranges['z'])
+        print(f"Set start position to {x} {y} {z}.")
+        self.mission.startAt(x, y, z)

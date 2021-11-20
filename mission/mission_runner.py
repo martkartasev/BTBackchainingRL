@@ -7,7 +7,8 @@ from mission.mission_manager import MissionManager
 
 class MissionRunner:
 
-    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None, mission_max_time=None):
+    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None, mission_max_time=None,
+                 random_position_range=None):
         self.mission_manager = MissionManager(agent.agent_host, filename)
         self.agent = agent
         self.active_entities = active_entities
@@ -15,6 +16,7 @@ class MissionRunner:
         self.evaluation_manager = evaluation_manager
         self.mission_max_time = mission_max_time
         self.mission_start_time = time.time()
+        self.random_position_range = random_position_range
 
     def run(self):
         mission = 0
@@ -81,7 +83,15 @@ class MissionRunner:
     def reset(self):
         if self.mission_manager.agent_host.getWorldState().is_mission_running:
             self.mission_manager.quit()
-        self.mission_manager.mission_initialization()
+        self.initialize_mission()
+
+    def initialize_mission(self):
+        if self.random_position_range:
+            self.mission_manager.randomize_start_position(self.random_position_range)
+        self.mission_manager.start_mission()
+        self.mission_manager.activate_night_vision()
+        self.mission_manager.set_fire_eternal()
+        self.mission_manager.make_hungry()
         self.tick_mission()
         if not self.active_entities:
             self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned

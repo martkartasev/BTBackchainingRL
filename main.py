@@ -8,6 +8,7 @@ from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from utils.file import store_spec, load_spec, get_absolute_path, get_model_file_names_from_folder
+from utils.plotting import get_reward_series, plot_reward_series
 from utils.plotting import get_reward_series, plot_reward_series, plot_positions, plot_multi_series
 import xml.etree.ElementTree as ET
 
@@ -15,7 +16,7 @@ import xml.etree.ElementTree as ET
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
     "mission": "resources/arena_cow_skeleton_v2.xml",
-    "model_log_dir": "results/cow_skeleton_experiment",
+    "model_log_dir": "results/cow_skeleton_experiment_random",
     "model_class": PPO,
     "acc_ends_episode": True,
     "model_arguments": {
@@ -40,6 +41,7 @@ cow_skeleton_experiment = {
     )),
     "max_steps_per_episode": 1500,
     "total_timesteps": 3000000,
+    "random_position_range": {'x': [-14, -10], 'y': [6], 'z': [-14, 14]}
 }
 
 skeleton_fire_experiment_v2 = {
@@ -166,11 +168,11 @@ def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
             experiment.evaluate_node(spec['model_class'], model_name, 3)
             os.remove(get_absolute_path(temp_mission_path))
 
-
 if __name__ == '__main__':
     # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
-    experiment_train(skeleton_fire_experiment_v2)
+    experiment_train(cow_skeleton_experiment)
     # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
+    # plot_paths(cow_skeleton_experiment, "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")
     # store_spec(cow_skeleton_experiment)

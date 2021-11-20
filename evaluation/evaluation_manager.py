@@ -1,26 +1,26 @@
 import copy
-import json
 import os
-
 from dataclasses import dataclass
 
 import jsonpickle
+import numpy as np
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
 from utils.file import get_absolute_path
-
-import numpy as np
 
 
 class EvaluationManager:
 
     def __init__(self, runs=50, eval_log_file=None):
         self.runs = runs
+        self.mission_max_time = None
         self.log_file = get_absolute_path(eval_log_file) if eval_log_file is not None else None
+
         self.nodes = dict()
         self.positions = list()
         self.mission_records = list()
+
         self.current_record = MissionRecord(None)
 
     def register_node(self, node):

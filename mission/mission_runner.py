@@ -7,8 +7,8 @@ from mission.mission_manager import MissionManager
 
 class MissionRunner:
 
-    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None, mission_max_time=None,
-                 random_position_range=None):
+    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None,
+                 random_position_range=None, mission_max_time=None):
         self.mission_manager = MissionManager(agent.agent_host, filename)
         self.agent = agent
         self.active_entities = active_entities
@@ -57,8 +57,8 @@ class MissionRunner:
 
             tree_status = self.agent.tree.status
             tree_finished = (tree_status == Status.SUCCESS or tree_status == Status.FAILURE)
-            timed_out = self.mission_max_time is not None and time.time() - self.mission_start_time >= self.mission_max_time
-            if self.agent.is_mission_over() or tree_finished or timed_out:
+            timed_out = self.mission_max_time is not None and time.time() - self.mission_start_time >= self.evaluation_manager.mission_max_time
+            if self.agent.is_mission_over() or tree_finished or self.evaluation_manager.timed_out:
                 self.mission_manager.quit()
                 break
 

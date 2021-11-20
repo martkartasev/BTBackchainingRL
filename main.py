@@ -41,7 +41,8 @@ cow_skeleton_experiment = {
     )),
     "max_steps_per_episode": 1500,
     "total_timesteps": 3000000,
-    "random_position_range": {'x': [-14, -10], 'y': [6], 'z': [-14, 14]}
+    "random_position_range": {'x': [-14, -10], 'y': [6], 'z': [-14, 14]},
+    'mission_max_time': 60
 }
 
 skeleton_fire_experiment_v2 = {

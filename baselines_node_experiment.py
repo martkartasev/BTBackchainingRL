@@ -22,7 +22,8 @@ class BaselinesNodeExperiment:
 
     def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, max_steps_per_episode=15000,
                  active_entities=True, baseline_node_type=None, observation_manager=None, evaluation_manager=None,
-                 acc_ends_episode=True, random_position_range=None, mission_max_time=None, **kwargs):
+                 acc_ends_episode=True, random_position_range=None, random_entities_position_range=None,
+                 mission_max_time=None, **kwargs):
         self.active_entities = active_entities
         self.model_log_dir = model_log_dir
         self.total_timesteps = total_timesteps
@@ -42,6 +43,7 @@ class BaselinesNodeExperiment:
             filename=get_absolute_path(mission),
             evaluation_manager=evaluation_manager,
             random_position_range=random_position_range,
+            random_entities_position_range=random_entities_position_range,
             mission_max_time=mission_max_time
         )
 

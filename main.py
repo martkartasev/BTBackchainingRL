@@ -39,9 +39,13 @@ cow_skeleton_experiment = {
         AGENT_DEAD_REWARD=-1000,
         ACC_VIOLATED_REWARD=-1000,
     )),
-    "max_steps_per_episode": 1500,
+    "max_steps_per_episode": float('inf'),
     "total_timesteps": 3000000,
     "random_position_range": {'x': [-14, -10], 'y': [6], 'z': [-14, 14]},
+    "random_entities_position_range": {
+        "cow": {'x': [14], 'y': [4], 'z': [-14, 14]},
+        "skeleton": {'x': [0], 'y': [4], 'z': [-14, 14]}
+    },
     'mission_max_time': 60
 }
 

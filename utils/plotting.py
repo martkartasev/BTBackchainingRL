@@ -63,6 +63,27 @@ def plot_reward_series(data, spacing, figsize, yrange):
     plt.show()
 
 
+def plot_multi_series(data, figsize):
+    # Make a data frame
+
+    plt.style.use('seaborn-darkgrid')
+
+    # create a color palette
+    palette = plt.get_cmap('Set1')
+
+    fig = plt.figure(figsize=figsize)
+
+    f, ax = plt.subplots(1, 1)
+
+    for name, values in data.items():
+        sns.lineplot(x="Timestep", y="Mean Reward", data=values)
+
+    plt.legend(labels=data.keys())
+    plt.title("Training mean reward over", loc='left', fontsize=8, fontweight=0)
+    plt.tight_layout()
+    plt.show()
+
+
 def plot_paths(spec, eval_dir, eval_name):
     model_file_names = get_model_file_names_from_folder(spec['model_log_dir'])
     time_steps = [

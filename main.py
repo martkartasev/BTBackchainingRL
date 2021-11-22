@@ -6,7 +6,7 @@ from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from utils.file import store_spec, load_spec, get_absolute_path, get_model_file_names_from_folder
-from utils.plotting import get_reward_series, plot_reward_series, plot_paths
+from utils.plotting import get_reward_series, plot_reward_series, plot_paths, plot_multi_series
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
@@ -127,7 +127,7 @@ def plot_rewards():
             r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv"),
         #  "Targeting": get_reward_series(r"C:\Users\Mart\workspace\RLBT\resources\logs\simultaneous_node\run_DQNSimultaneousAgentAltTargetMix_2_targeting_1-tag-episode_reward.csv"),
     }
-    plot_reward_series(data, (1, 1), (5, 3.5), (-2000, 3000))
+    plot_multi_series(data,(5, 3.5) )
 
 
 def evaluate_all_models_once(log_dir, eval_dir, eval_name):
@@ -140,8 +140,8 @@ def evaluate_all_models_once(log_dir, eval_dir, eval_name):
 if __name__ == '__main__':
     # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
     # experiment_train(skeleton_fire_experiment_v2)
-    #evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
-    plot_paths(cow_skeleton_experiment, "log/eval", "cow_skeleton_experiment")
+    # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
+    # plot_paths(cow_skeleton_experiment, "log/eval", "cow_skeleton_experiment")
     # store_spec(cow_skeleton_experiment)
     # experiment_check_env(skeleton_fire_experiment_v2)
-    # plot_rewards()
+    plot_rewards()

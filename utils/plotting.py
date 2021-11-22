@@ -66,20 +66,19 @@ def plot_reward_series(data, spacing, figsize, yrange):
 def plot_multi_series(data, figsize):
     # Make a data frame
 
-    plt.style.use('seaborn-darkgrid')
+    sns.set_context("paper")
+    sns.set_style("darkgrid")
 
     # create a color palette
     palette = plt.get_cmap('Set1')
-
     fig = plt.figure(figsize=figsize)
-
     f, ax = plt.subplots(1, 1)
 
     for name, values in data.items():
         sns.lineplot(x="Timestep", y="Mean Reward", data=values)
 
     plt.legend(labels=data.keys())
-    plt.title("Training mean reward over", loc='left', fontsize=8, fontweight=0)
+    plt.title("Training mean reward over last 100 episodes", loc='left', fontsize=8, fontweight=0)
     plt.tight_layout()
     plt.show()
 

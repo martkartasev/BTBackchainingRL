@@ -45,7 +45,7 @@ cow_skeleton_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter_ppo8",
+    "model_log_dir": "results/basicfighter_ppo9",
     "active_entities": True,
     "acc_ends_episode": False,
     "observation_manager": ObservationManager(observation_filter=[
@@ -59,7 +59,7 @@ skeleton_fire_experiment_v2 = {
         reward_definition=RewardDefinition(
             POST_CONDITION_FULFILLED_REWARD=1000,
             AGENT_DEAD_REWARD=-1000,
-            ACC_VIOLATED_REWARD=0
+            ACC_VIOLATED_REWARD=-1000
         ),
         observation_definition=ObservationDefinition(
             GRID_SIZE_AXIS=[1, 11, 11],
@@ -125,11 +125,9 @@ def experiment_check_env(spec):
 
 def plot_rewards():
     data = {
-        "PPO5": get_reward_series(
-            r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv"),
-        "PPO7": get_reward_series(
-            r"C:\Users\Mart9\Workspace\BTBackchainingRL\results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv"),
-        #  "Targeting": get_reward_series(r"C:\Users\Mart\workspace\RLBT\resources\logs\simultaneous_node\run_DQNSimultaneousAgentAltTargetMix_2_targeting_1-tag-episode_reward.csv"),
+        "ACC": get_reward_series(get_absolute_path(r"results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv")),
+        "ACC + Reward": get_reward_series(get_absolute_path(r"results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv")),
+        "Pure RL": get_reward_series(get_absolute_path(r"results\basicfighter_ppo8\run-PPO_8-tag-rollout_ep_rew_mean.csv")),
     }
     plot_multi_series(data,(5, 3.5) )
 
@@ -171,10 +169,10 @@ def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
 
 if __name__ == '__main__':
     # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
-    # experiment_train(skeleton_fire_experiment_v2)
+    experiment_train(skeleton_fire_experiment_v2)
     # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")
     # store_spec(cow_skeleton_experiment)
     # experiment_check_env(skeleton_fire_experiment_v2)
-    plot_rewards()
+    # plot_rewards()

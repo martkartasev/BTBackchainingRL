@@ -1,7 +1,8 @@
 import time
 
-from mission.mission_manager import MissionManager
 from py_trees.common import Status
+
+from mission.mission_manager import MissionManager
 
 
 class MissionRunner:
@@ -38,6 +39,7 @@ class MissionRunner:
 
     def run_mission(self):
         self.reset()
+        self.mission_start_time = time.time()
         steps = 0
         world_state = self.tick_mission()
         while world_state.is_mission_running:
@@ -47,6 +49,10 @@ class MissionRunner:
             self.agent.control_loop()
             steps += 1
 
+            if self.evaluation_manager is not None:
+                position = self.observation_manager.get_position()
+                self.evaluation_manager.record_position(position[0], position[2])
+
             tree_status = self.agent.tree.status
             tree_finished = (tree_status == Status.SUCCESS or tree_status == Status.FAILURE)
             timed_out = self.mission_max_time is not None and time.time() - self.mission_start_time >= self.mission_max_time
@@ -55,9 +61,6 @@ class MissionRunner:
                 break
 
             world_state = self.tick_mission()
-            if self.evaluation_manager is not None:
-                position = self.observation_manager.get_position()
-                self.evaluation_manager.record_position(position[0], position[2])
 
         return world_state, steps
 

@@ -16,7 +16,7 @@ class ObservationDefinition:  # Override defaults from main spec
 
     CIRCLE_DEGREES: int = 360
     ARENA_SIZE: int = 16
-    RELATIVE_DISTANCE_AXIS_MAX: int = 20
+    RELATIVE_DISTANCE_AXIS_MAX: int = 50
     INVENTORY_SIZE: int = 41
 
     PLAYER_MAX_LIFE: int = 20
@@ -127,6 +127,7 @@ class Observation:
         entity_info = helper.get_entity_info(info, [self.definition.ANIMAL_TYPE]) if food_info is None else food_info
         observation_dict["entity_relative_position"] = helper.get_standardized_rotated_position(entity_info, position,
                                                                                                 direction)
+
         entity_delta = helper.get_relative_position(entity_info, position)
         entity_rot = np.radians(helper.get_y_rotation_from(position, helper.get_entity_position(entity_info)) - yaw)
         observation_dict["entity_relative_distance"] = np.array(

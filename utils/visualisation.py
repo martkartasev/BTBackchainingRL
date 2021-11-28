@@ -54,5 +54,4 @@ def subtree_to_csv(tree, parent_id):
 
 
 def save_tree_to_log(tree, filename):
-    logfile = f"log/{filename}"
-    create_file_and_write(logfile, lambda file: file.write(tree_to_drawio_csv(tree)))
+    create_file_and_write(filename, lambda file: file.write(tree_to_drawio_csv(tree)))

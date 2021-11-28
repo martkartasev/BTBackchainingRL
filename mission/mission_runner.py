@@ -81,7 +81,17 @@ class MissionRunner:
     def reset(self):
         if self.mission_manager.agent_host.getWorldState().is_mission_running:
             self.mission_manager.quit()
-        self.mission_manager.mission_initialization()
-        self.tick_mission()
-        if not self.active_entities:
-            self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned
+
+        done = False
+        while not done:
+            self.mission_manager.mission_initialization()
+            tries = 0
+
+            while not done and tries < 100:  # Sync mission and client
+                self.tick_mission()
+                done = not self.agent.is_mission_over()
+
+                tries += 1
+
+            if not self.active_entities:
+                self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned

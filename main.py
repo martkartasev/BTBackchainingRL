@@ -15,8 +15,8 @@ import xml.etree.ElementTree as ET
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
-    "mission": "resources/arena_cow_skeleton_v2.xml",
-    "model_log_dir": "results/cow_skeleton_experiment_random",
+    "mission": "resources/mission.xml",
+    "model_log_dir": "results/cow_skeleton_experiment_random_5",
     "model_class": PPO,
     "acc_ends_episode": True,
     "model_arguments": {
@@ -40,8 +40,8 @@ cow_skeleton_experiment = {
         ACC_VIOLATED_REWARD=-1000,
     )),
     "max_steps_per_episode": float('inf'),
-    "total_timesteps": 3000000,
-    "random_position_range": {'x': [-14, -10], 'y': [6], 'z': [-12, 12]},
+    "total_timesteps": 2000000,
+    "random_position_range": {'x': [-14, -12], 'y': [6], 'z': [-12, 12]},
     "random_entities_position_range": {
         "cow": {'x': [14], 'y': [4], 'z': [-12, 12]},
         "skeleton": {'x': [0], 'y': [4], 'z': [-12, 12]}
@@ -106,7 +106,7 @@ def experiment_evaluate(log_dir, model_name, runs, eval_log_file=None):
     spec["evaluation_manager"] = EvaluationManager(runs, eval_log_file)
     experiment = BaselinesNodeExperiment(**spec)
 
-    experiment.evaluate_node(spec['model_class'], model_name, 3)
+    experiment.evaluate_node(spec['model_class'], model_name)
 
 
 def experiment_test(log_dir, model_name):
@@ -139,10 +139,10 @@ def plot_rewards():
     plot_multi_series(data,(5, 3.5) )
 
 
-def evaluate_all_models_once(log_dir, eval_dir, eval_name):
+def evaluate_all_models(log_dir, eval_dir, eval_name, n_evaluations=1):
     model_files = get_model_file_names_from_folder(log_dir)
     for i, model in enumerate(model_files):
-        experiment_evaluate(log_dir, model, 1, f"{eval_dir}/{eval_name}_{i}.json")
+        experiment_evaluate(log_dir, model, n_evaluations, f"{eval_dir}/{eval_name}_{i}.json")
 
 
 def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
@@ -176,7 +176,7 @@ def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
 if __name__ == '__main__':
     # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
     experiment_train(cow_skeleton_experiment)
-    # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
+    # evaluate_all_models("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
     # plot_paths(cow_skeleton_experiment, "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")

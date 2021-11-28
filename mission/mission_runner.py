@@ -59,8 +59,8 @@ class MissionRunner:
 
             tree_status = self.agent.tree.status
             tree_finished = (tree_status == Status.SUCCESS or tree_status == Status.FAILURE)
-            timed_out = self.mission_max_time is not None and time.time() - self.mission_start_time >= self.evaluation_manager.mission_max_time
-            if self.agent.is_mission_over() or tree_finished or self.evaluation_manager.timed_out:
+            timed_out = self.mission_max_time is not None and time.time() - self.mission_start_time >= self.mission_max_time
+            if self.agent.is_mission_over() or tree_finished or timed_out:
                 self.mission_manager.quit()
                 break
 

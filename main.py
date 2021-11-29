@@ -5,7 +5,7 @@ from stable_baselines3 import PPO
 
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
-from evaluation.evaluation_manager import EvaluationManager
+from evaluation.evaluation_manager import EvaluationManager, print_skeleton_fire_results
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from utils.file import store_spec, load_spec, get_absolute_path, get_model_file_names_from_folder
@@ -97,12 +97,13 @@ cow_fire_experiment = {
 }
 
 
-def experiment_evaluate(log_dir, model_name, runs, eval_log_file=None):
+def experiment_evaluate(log_dir, model_name, evaluation_manager):
     spec = load_spec(log_dir)
-    spec["evaluation_manager"] = EvaluationManager(runs, eval_log_file)
+    spec["evaluation_manager"] = evaluation_manager
     experiment = BaselinesNodeExperiment(**spec)
 
     experiment.evaluate_node(spec['model_class'], model_name, 3)
+    print_skeleton_fire_results(spec["evaluation_manager"])
 
 
 def experiment_test(log_dir, model_name):
@@ -139,7 +140,7 @@ def plot_rewards():
 def evaluate_all_models_once(log_dir, eval_dir, eval_name):
     model_files = get_model_file_names_from_folder(log_dir)
     for i, model in enumerate(model_files):
-        experiment_evaluate(log_dir, model, 1, f"{eval_dir}/{eval_name}_{i}.json")
+        experiment_evaluate(log_dir, model, EvaluationManager(1, f"{eval_dir}/{eval_name}_{i}.json"))
 
 
 def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
@@ -172,11 +173,18 @@ def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
 
 
 if __name__ == '__main__':
-    # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
-    # experiment_train(cow_skeleton_experiment)
-    # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
-    # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
-    # plot_positions("log/eval", "cow_skeleton_experiment")
-    # store_spec(cow_skeleton_experiment)
-    # experiment_check_env(skeleton_fire_experiment_v2)
-    plot_rewards()
+    experiment_evaluate("results/basicfighter_ppo5", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/basicfighter_ppo7", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/basicfighter_ppo8", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/basicfighter_ppo10", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/cow_skeleton_experiment", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/cow_skeleton_experiment_1_2", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/cow_skeleton_experiment_2", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/cow_skeleton_experiment3_2", "final.mdl", EvaluationManager(runs=100))
+# experiment_train(cow_skeleton_experiment)
+# evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
+# evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
+# plot_positions("log/eval", "cow_skeleton_experiment")
+# store_spec(cow_skeleton_experiment)
+# experiment_check_env(skeleton_fire_experiment_v2)
+# plot_rewards()

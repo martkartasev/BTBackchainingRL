@@ -8,6 +8,7 @@ import jsonpickle
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
+from conditions import Condition
 from utils.file import get_absolute_path
 
 import numpy as np
@@ -15,13 +16,15 @@ import numpy as np
 
 class EvaluationManager:
 
-    def __init__(self, runs=50, eval_log_file=None):
+    def __init__(self, runs=50, eval_log_file=None, name=""):
         self.runs = runs
         self.log_file = get_absolute_path(eval_log_file) if eval_log_file is not None else None
         self.nodes = dict()
         self.positions = list()
         self.mission_records = list()
         self.current_record = MissionRecord(None)
+        self.baselines_node = None
+        self.name = name
 
     def register_node(self, node):
         record = NodeRecord(node)
@@ -44,6 +47,10 @@ class EvaluationManager:
         else:
             record.failures += 1
 
+    def record_reward(self):
+        if self.baselines_node is not None:
+            self.current_record.rewards.append(self.baselines_node.calculate_rewards())
+
     def record_position(self, x, z):
         self.positions.append(PositionRecord(x, z))
 
@@ -63,6 +70,7 @@ class MissionRecord:
         self.start = start
         self.positions = list()
         self.nodes = list()
+        self.rewards = list()
 
     def finalize(self, state, steps, end, nodes: dict, positions: list):
         self.steps = steps
@@ -91,28 +99,12 @@ class NodeRecord:
         self.steps = 0
 
 
-class EvaluationBehaviour(Behaviour):
-
-    def __init__(self, embedded: Behaviour, manager: EvaluationManager):
-        super().__init__(name=embedded.name)
-        self.embedded = embedded
-        self.manager = manager
-        self.record = self.manager.register_node(self)
-
-    def update(self):
-        update = self.embedded.update()
-        self.manager.record_node(self, update)
-        return update
-
-    def terminate(self, new_status):
-        return self.embedded.terminate(new_status)
-
-
-def print_skeleton_fire_results(evaluation_manager):
-    values = np.array([[mission.steps, select(mission.nodes, "Is safe from fire").failures] for mission in evaluation_manager.mission_results])
+def print_node_results(evaluation_manager):
+    values = np.array([[mission.steps, select(mission.nodes, "Is not attacked by enemy").failures, np.sum(mission.rewards)] for mission in evaluation_manager.mission_records])
     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    print("Evaluation results: ")
-    print("Tex string: {0} & {1} & {2} & {3} ".format("Column", np.average(values[:, 0]), np.sum(values[:, 1]), np.average(values[:, 1])))  # steps
+    print("Evaluation results: " + str(evaluation_manager.name))
+    print("Tex string: {0} & {1} & {2} & {3} & {4} ".format("Column", "Timesteps", "# Episodes ACC_f", "# ACC_f", "# Avg ACC_f"))  # steps
+    print("Tex string: {0} & {1} & {2} & {3} & {4} ".format("Column", np.average(values[:, 0]), np.sum(values[:, 1] > 0), np.sum(values[:, 1]), np.average(values[:, 1])))  # steps
     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
 

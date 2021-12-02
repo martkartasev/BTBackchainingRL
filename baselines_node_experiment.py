@@ -17,6 +17,8 @@ from stable_baselines3.common.monitor import Monitor
 from utils.file import get_absolute_path, get_project_root
 from utils.visualisation import save_tree_to_log
 
+agent_host = AgentHost()
+
 
 class BaselinesNodeExperiment:
 
@@ -30,7 +32,6 @@ class BaselinesNodeExperiment:
         self.acc_ends_episode = acc_ends_episode
         self.max_steps_per_episode = max_steps_per_episode
 
-        agent_host = AgentHost()
         self.agent = BehaviorTreeAgent(agent_host, observation_manager)
         self.goals = [goal(self.agent) for goal in goals]
         self.tree = BackChainTree(self.agent, self.goals, evaluation_manager)
@@ -71,7 +72,7 @@ class BaselinesNodeExperiment:
             active_entities=self.active_entities,
             filename=get_absolute_path(self.mission_path),
             evaluation_manager=self.evaluation_manager,
-            mission_max_time=mission_max_time
+            mission_max_time=mission_max_time,
         )
 
         mission.run()

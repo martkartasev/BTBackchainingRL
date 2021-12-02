@@ -7,14 +7,15 @@ from mission.mission_manager import MissionManager
 
 class MissionRunner:
 
-    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None, mission_max_time=None):
-        self.mission_manager = MissionManager(agent.agent_host, filename)
+    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None, mission_max_time=None, logging=0):
+        self.mission_manager = MissionManager(agent.agent_host, filename, logging)
         self.agent = agent
         self.active_entities = active_entities
         self.observation_manager = agent.observation_manager
         self.evaluation_manager = evaluation_manager
         self.mission_max_time = mission_max_time
         self.mission_start_time = time.time()
+        self.logging = logging
 
     def run(self):
         mission = 0
@@ -27,9 +28,9 @@ class MissionRunner:
             state, steps = self.run_mission()
 
             end = time.time()
-
-            print("Took " + str((end - self.mission_start_time) * 1000) + ' milliseconds')
-            print("Mission " + str(mission) + " ended")
+            if self.logging > 0:
+                print("Took " + str((end - self.mission_start_time) * 1000) + ' milliseconds')
+                print("Mission " + str(mission) + " ended")
 
             if self.evaluation_manager is not None:
                 self.evaluation_manager.record_mission_end(self.agent.is_mission_over(), steps, end)
@@ -51,6 +52,7 @@ class MissionRunner:
 
             if self.evaluation_manager is not None:
                 position = self.observation_manager.get_position()
+                self.evaluation_manager.record_reward()
                 self.evaluation_manager.record_position(position[0], position[2])
 
             tree_status = self.agent.tree.status

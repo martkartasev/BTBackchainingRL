@@ -5,7 +5,7 @@ from stable_baselines3 import PPO
 
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
-from evaluation.evaluation_manager import EvaluationManager, print_skeleton_fire_results
+from evaluation.evaluation_manager import EvaluationManager, print_node_results
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from utils.file import store_spec, load_spec, get_absolute_path, get_model_file_names_from_folder
@@ -100,10 +100,12 @@ cow_fire_experiment = {
 def experiment_evaluate(log_dir, model_name, evaluation_manager):
     spec = load_spec(log_dir)
     spec["evaluation_manager"] = evaluation_manager
+    evaluation_manager.name = spec["model_log_dir"]
     experiment = BaselinesNodeExperiment(**spec)
+    evaluation_manager.baselines_node = experiment.baseline_node
 
-    experiment.evaluate_node(spec['model_class'], model_name, 3)
-    print_skeleton_fire_results(spec["evaluation_manager"])
+    experiment.evaluate_node(spec['model_class'], model_name, mission_max_time=30)
+    # print_node_results(spec["evaluation_manager"])
 
 
 def experiment_test(log_dir, model_name):
@@ -127,12 +129,23 @@ def experiment_check_env(spec):
     experiment.check_env()
 
 
-def plot_rewards():
+def plot_rewards_cow():
     data = {
-        "ACC": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_2\run-PPO_11-tag-rollout_ep_rew_mean.csv")),
-        "ACC + Reward": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_1_2\run-PPO_11-tag-rollout_ep_rew_mean (2).csv")),
-        "Normal": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_3_2\run-PPO_12-tag-rollout_ep_rew_mean.csv")),
-        "Normal + Reward": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment\run-PPO_COW-tag-rollout_ep_rew_mean.csv")),
+        "FBT": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_2\run-PPO_11-tag-rollout_ep_rew_mean.csv")),
+        "FBT + AR": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_1_2\run-PPO_11-tag-rollout_ep_rew_mean (2).csv")),
+        "SA": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_3_2\run-PPO_12-tag-rollout_ep_rew_mean.csv")),
+        "SA + AR": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment\run-PPO_COW-tag-rollout_ep_rew_mean.csv")),
+    }
+    plot_multi_series(data, (5, 3.5))
+
+
+def plot_rewards_skeleton():
+    data = {
+        "FBT": get_reward_series(get_absolute_path(r"results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv")),
+        "FBT + AR": get_reward_series(get_absolute_path(r"results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv")),
+        "SA": get_reward_series(get_absolute_path(r"results\basicfighter_ppo8\run-PPO_8-tag-rollout_ep_rew_mean.csv")),
+        "SA + AR": get_reward_series(get_absolute_path(r"results\basicfighter_ppo10\run-PPO_10-tag-rollout_ep_rew_mean.csv")),
+
     }
     plot_multi_series(data, (5, 3.5))
 
@@ -173,18 +186,17 @@ def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
 
 
 if __name__ == '__main__':
-    experiment_evaluate("results/basicfighter_ppo5", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/basicfighter_ppo5", "final.mdl", EvaluationManager(runs=100))
     # experiment_evaluate("results/basicfighter_ppo7", "final.mdl", EvaluationManager(runs=100))
     # experiment_evaluate("results/basicfighter_ppo8", "final.mdl", EvaluationManager(runs=100))
     # experiment_evaluate("results/basicfighter_ppo10", "final.mdl", EvaluationManager(runs=100))
-    # experiment_evaluate("results/cow_skeleton_experiment", "final.mdl", EvaluationManager(runs=100))
-    # experiment_evaluate("results/cow_skeleton_experiment_1_2", "final.mdl", EvaluationManager(runs=100))
-    # experiment_evaluate("results/cow_skeleton_experiment_2", "final.mdl", EvaluationManager(runs=100))
-    # experiment_evaluate("results/cow_skeleton_experiment3_2", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/cow_skeleton_experiment", "final.mdl", EvaluationManager(runs=100)) # & 333.6 & 9 & 2335.0
+    # experiment_evaluate("results/cow_skeleton_experiment_1_2", "final.mdl", EvaluationManager(runs=100)) # 237.56 & 0 & 0.0
+    # experiment_evaluate("results/cow_skeleton_experiment_2", "final.mdl", EvaluationManager(runs=100)) # & 201.88 & 13 & 3596.0
+    experiment_evaluate("results/cow_skeleton_experiment_3_2", "final.mdl", EvaluationManager(runs=100))
     # experiment_train(cow_skeleton_experiment)
     # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")
     # store_spec(cow_skeleton_experiment)
     # experiment_check_env(skeleton_fire_experiment_v2)
-    # plot_rewards()

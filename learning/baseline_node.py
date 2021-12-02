@@ -69,7 +69,6 @@ class BaselinesNode(Sequence):
         observation = self.get_observation_array()
         if observation is not None:
             child_index, _ = self.model.predict(observation)
-            # print("Predicted action", self.children[child_index])
             self.child_index = child_index
         return self.training_tick()
 

@@ -57,7 +57,6 @@ class DefeatSkeletonManual(Action):
         super().__init__(name, agent)
 
     def update(self):
-        print("Defeat Skeleton manual")
         distance_vector = self.agent.observation_manager.observation.dict["enemy_relative_position"]
 
         enemy_relative_position = np.array([distance_vector[0], distance_vector[2]])

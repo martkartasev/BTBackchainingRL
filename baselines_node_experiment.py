@@ -14,7 +14,7 @@ from mission.mission_runner import MissionRunner
 from pathlib import Path
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.monitor import Monitor
-from utils.file import get_absolute_path, get_project_root
+from utils.file import get_absolute_path, get_project_root, load_spec
 from utils.visualisation import save_tree_to_log
 
 agent_host = AgentHost()
@@ -53,6 +53,7 @@ class BaselinesNodeExperiment:
                 raise ValueError("The tree does not contain the baseline node type.")
 
         self.baseline_node = self.tree.baseline_nodes[0]
+        self.baseline_nodes = self.tree.baseline_nodes
         if baseline_node_type is not None and not isinstance(self.baseline_node, baseline_node_type):
             raise ValueError("The tree does not contain the baseline node type.")
 
@@ -67,6 +68,24 @@ class BaselinesNodeExperiment:
     def evaluate_node(self, model_class, model_name, mission_max_time=None):
         loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
         self.baseline_node.set_model(loaded_model)
+
+        mission = MissionRunner(
+            agent=self.agent,
+            active_entities=self.active_entities,
+            filename=get_absolute_path(self.mission_path),
+            evaluation_manager=self.evaluation_manager,
+            mission_max_time=mission_max_time,
+            logging=self.logging
+        )
+
+        mission.run()
+
+    def evaluate(self, model_spec, mission_max_time=None):
+        for node in self.baseline_nodes:
+            model_dir, model_name = model_spec[node.__class__]
+            spec = load_spec(model_dir)
+            loaded_model = spec["model_class"].load(get_project_root() / self.model_log_dir / model_name)
+            node.set_model(loaded_model)
 
         mission = MissionRunner(
             agent=self.agent,

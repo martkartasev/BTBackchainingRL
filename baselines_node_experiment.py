@@ -23,7 +23,7 @@ agent_host = AgentHost()
 class BaselinesNodeExperiment:
 
     def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, max_steps_per_episode=15000, active_entities=True,
-                 baseline_node_type=None, observation_manager=None, evaluation_manager=None, acc_ends_episode=True, **kwargs):
+                 baseline_node_type=None, observation_manager=None, evaluation_manager=None, acc_ends_episode=True, logging=0, **kwargs):
         self.mission_path = mission
         self.active_entities = active_entities
         self.model_log_dir = model_log_dir
@@ -31,6 +31,7 @@ class BaselinesNodeExperiment:
         self.evaluation_manager = evaluation_manager
         self.acc_ends_episode = acc_ends_episode
         self.max_steps_per_episode = max_steps_per_episode
+        self.logging = logging
 
         self.agent = BehaviorTreeAgent(agent_host, observation_manager)
         self.goals = [goal(self.agent) for goal in goals]
@@ -59,7 +60,7 @@ class BaselinesNodeExperiment:
         loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
         self.baseline_node.set_model(loaded_model)
 
-        mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path))
+        mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path), logging=self.logging)
 
         mission.run()
 
@@ -73,6 +74,7 @@ class BaselinesNodeExperiment:
             filename=get_absolute_path(self.mission_path),
             evaluation_manager=self.evaluation_manager,
             mission_max_time=mission_max_time,
+            logging=self.logging
         )
 
         mission.run()
@@ -103,7 +105,7 @@ class BaselinesNodeExperiment:
         check_env(env)
 
     def setup_training_environment(self):
-        mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path))
+        mission = MissionRunner(self.agent, self.active_entities, get_absolute_path(self.mission_path), logging=self.logging)
 
         os.makedirs(get_absolute_path(self.model_log_dir), exist_ok=True)
         env = BaselinesNodeTrainingEnv(self.baseline_node, mission, self.acc_ends_episode,

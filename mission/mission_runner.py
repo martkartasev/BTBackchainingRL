@@ -52,7 +52,6 @@ class MissionRunner:
 
             if self.evaluation_manager is not None:
                 position = self.observation_manager.get_position()
-                self.evaluation_manager.record_reward()
                 self.evaluation_manager.record_position(position[0], position[2])
 
             tree_status = self.agent.tree.status

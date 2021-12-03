@@ -23,7 +23,6 @@ class EvaluationManager:
         self.positions = list()
         self.mission_records = list()
         self.current_record = MissionRecord(None)
-        self.baselines_node = None
         self.name = name
 
     def register_node(self, node):
@@ -46,10 +45,6 @@ class EvaluationManager:
             record.successes += 1
         else:
             record.failures += 1
-
-    def record_reward(self):
-        if self.baselines_node is not None:
-            self.current_record.rewards.append(self.baselines_node.calculate_rewards())
 
     def record_position(self, x, z):
         self.positions.append(PositionRecord(x, z))
@@ -100,7 +95,7 @@ class NodeRecord:
 
 
 def print_node_results(evaluation_manager):
-    values = np.array([[mission.steps, select(mission.nodes, "Is not attacked by enemy").failures, np.sum(mission.rewards)] for mission in evaluation_manager.mission_records])
+    values = np.array([[mission.steps, select(mission.nodes, "Is not attacked by enemy").failures] for mission in evaluation_manager.mission_records])
     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     print("Evaluation results: " + str(evaluation_manager.name))
     print("Tex string: {0} & {1} & {2} & {3} & {4} ".format("Column", "Timesteps", "# Episodes ACC_f", "# ACC_f", "# Avg ACC_f"))  # steps

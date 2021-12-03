@@ -47,7 +47,7 @@ cow_skeleton_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter_ppo10",
+    "model_log_dir": "results/basicfighter_ppo11",
     "active_entities": True,
     "acc_ends_episode": False,
     "observation_manager": ObservationManager(
@@ -76,6 +76,7 @@ skeleton_fire_experiment_v2 = {
         "tensorboard_log": get_absolute_path("tensorboard"),
     },
     "total_timesteps": 2000000,
+    "logging": 1
 }
 
 cow_fire_experiment = {
@@ -102,10 +103,8 @@ def experiment_evaluate(log_dir, model_name, evaluation_manager):
     spec["evaluation_manager"] = evaluation_manager
     evaluation_manager.name = spec["model_log_dir"]
     experiment = BaselinesNodeExperiment(**spec)
-    evaluation_manager.baselines_node = experiment.baseline_node
 
     experiment.evaluate_node(spec['model_class'], model_name, mission_max_time=30)
-    # print_node_results(spec["evaluation_manager"])
 
 
 def experiment_test(log_dir, model_name):
@@ -190,11 +189,11 @@ if __name__ == '__main__':
     # experiment_evaluate("results/basicfighter_ppo7", "final.mdl", EvaluationManager(runs=100))
     # experiment_evaluate("results/basicfighter_ppo8", "final.mdl", EvaluationManager(runs=100))
     # experiment_evaluate("results/basicfighter_ppo10", "final.mdl", EvaluationManager(runs=100))
-    # experiment_evaluate("results/cow_skeleton_experiment", "final.mdl", EvaluationManager(runs=100)) # & 333.6 & 9 & 2335.0
-    # experiment_evaluate("results/cow_skeleton_experiment_1_2", "final.mdl", EvaluationManager(runs=100)) # 237.56 & 0 & 0.0
-    # experiment_evaluate("results/cow_skeleton_experiment_2", "final.mdl", EvaluationManager(runs=100)) # & 201.88 & 13 & 3596.0
-    experiment_evaluate("results/cow_skeleton_experiment_3_2", "final.mdl", EvaluationManager(runs=100))
-    # experiment_train(cow_skeleton_experiment)
+    # experiment_evaluate("results/cow_skeleton_experiment", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/cow_skeleton_experiment_1_2", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/cow_skeleton_experiment_2", "final.mdl", EvaluationManager(runs=100))
+    # experiment_evaluate("results/cow_skeleton_experiment_3_2", "final.mdl", EvaluationManager(runs=100))
+    experiment_train(skeleton_fire_experiment_v2)
     # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")

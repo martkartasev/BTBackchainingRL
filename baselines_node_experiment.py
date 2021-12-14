@@ -23,7 +23,7 @@ agent_host = AgentHost()
 class BaselinesNodeExperiment:
 
     def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, max_steps_per_episode=15000, active_entities=True,
-                 baseline_node_type=None, observation_manager=None, evaluation_manager=None, acc_ends_episode=True, logging=0, **kwargs):
+                 baseline_node_type=None, observation_manager=None, observation_filter=None, evaluation_manager=None, acc_ends_episode=True, logging=0, **kwargs):
         self.mission_path = mission
         self.active_entities = active_entities
         self.model_log_dir = model_log_dir
@@ -53,6 +53,7 @@ class BaselinesNodeExperiment:
                 raise ValueError("The tree does not contain the baseline node type.")
 
         self.baseline_node = self.tree.baseline_nodes[0]
+        self.baseline_node.obs_filter = observation_filter
         self.baseline_nodes = self.tree.baseline_nodes
         if baseline_node_type is not None and not isinstance(self.baseline_node, baseline_node_type):
             raise ValueError("The tree does not contain the baseline node type.")
@@ -65,27 +66,13 @@ class BaselinesNodeExperiment:
 
         mission.run()
 
-    def evaluate_node(self, model_class, model_name, mission_max_time=None):
-        loaded_model = model_class.load(get_project_root() / self.model_log_dir / model_name)
-        self.baseline_node.set_model(loaded_model)
-
-        mission = MissionRunner(
-            agent=self.agent,
-            active_entities=self.active_entities,
-            filename=get_absolute_path(self.mission_path),
-            evaluation_manager=self.evaluation_manager,
-            mission_max_time=mission_max_time,
-            logging=self.logging
-        )
-
-        mission.run()
-
     def evaluate(self, model_spec, mission_max_time=None):
         for node in self.baseline_nodes:
             model_dir, model_name = model_spec[node.__class__]
             spec = load_spec(model_dir)
-            loaded_model = spec["model_class"].load(get_project_root() / self.model_log_dir / model_name)
+            loaded_model = spec["model_class"].load(get_project_root() / model_dir / model_name)
             node.set_model(loaded_model)
+            node.obs_filter = spec["observation_filter"] if 'observation_filter' in spec.keys() else spec['observation_manager'].observation_filter
 
         mission = MissionRunner(
             agent=self.agent,
@@ -93,7 +80,7 @@ class BaselinesNodeExperiment:
             filename=get_absolute_path(self.mission_path),
             evaluation_manager=self.evaluation_manager,
             mission_max_time=mission_max_time,
-            logging=self.logging
+            logging=0
         )
 
         mission.run()

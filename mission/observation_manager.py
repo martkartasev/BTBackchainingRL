@@ -27,7 +27,7 @@ class ObservationDefinition:  # Override defaults from main spec
     FOOD_TYPES: List = field(default_factory=lambda: ["beef", "cooked_beef"])
     ENEMY_MAX_LIFE: int = 24
 
-    GRID_SIZE_AXIS: List[int] = field(default_factory=lambda: [1, 7, 7])
+    GRID_SIZE_AXIS: List[int] = field(default_factory=lambda: [1, 11, 11])
     GRID_SIZE: ndarray = field(init=False)
 
     # Always append at the end of this list
@@ -45,32 +45,34 @@ class RewardDefinition:  # Override defaults from main spec
     POST_CONDITION_FULFILLED_REWARD: int = 1000
     AGENT_DEAD_REWARD: int = -1000
     ACC_VIOLATED_REWARD: int = -1000
-    STEP_REWARD: int = -0.1
+    STEP_REWARD: int = -0.3
 
 
 class ObservationManager:
 
-    def __init__(self, observation_filter=None, reward_definition=RewardDefinition(),
+    def __init__(self,
+                 observation_filter=None,  # For backwards compatibility
+                 reward_definition=RewardDefinition(),
                  observation_definition=ObservationDefinition()):
         self.previous_observation = None
         self.observation = None
         self.reward = 0
         self.index = 0
         self.reward_definition = reward_definition
-        self.observation_filter = observation_filter
+        self.observation_filter = observation_filter # For backwards compatibility
         self.helper = ObservationHelper(observation_definition)
 
     def update(self, observations, reward):
         self.previous_observation = self.observation
-        self.observation = Observation(observations, self.helper, self.observation_filter)
+        self.observation = Observation(observations, self.helper)
 
         self.reward = reward
 
         self.index += 1
         return self.observation
 
-    def get_observation_space(self):
-        return Observation.get_observation_space(self.helper.definition, self.observation_filter)
+    def get_observation_space(self, observation_filter):
+        return Observation.get_observation_space(self.helper.definition, observation_filter)
 
     def reset(self):
         self.previous_observation = None
@@ -87,7 +89,7 @@ class ObservationManager:
 
 class Observation:
 
-    def __init__(self, observations, helper, observation_filter=None):
+    def __init__(self, observations, helper):
         self.definition = helper.definition
 
         if observations is None or len(observations) == 0:
@@ -105,10 +107,10 @@ class Observation:
 
         position = helper.get_player_position(info)
         direction = helper.get_direction_vector(info)
-        euler_direction = helper.get_euler_direction(info)
+        self.euler_direction = helper.get_euler_direction(info)
         observation_dict["position"] = position
         observation_dict["direction"] = direction
-        observation_dict["euler_direction"] = euler_direction
+        observation_dict["euler_direction"] = self.euler_direction
 
         enemy_info = helper.get_entity_info(info, [helper.definition.ENEMY_TYPE])
         rotated_position = helper.get_standardized_rotated_position(enemy_info, position, direction)
@@ -153,11 +155,12 @@ class Observation:
         observation_dict["surroundings"] = surroundings
 
         self.dict = observation_dict
-        if observation_filter is not None:
-            self.filtered = {key: value for key, value in observation_dict.items() if key in observation_filter}
-            surroundings = self.filtered["surroundings"]
-            self.filtered["surroundings"] = np.rot90(surroundings, int((euler_direction[0] + 45) / 90) + 2,
-                                                     axes=(1, 2)).ravel()
+
+    def get_filtered(self, observation_filter):
+        filtered = {key: value for key, value in self.dict.items() if key in observation_filter}
+        surroundings = filtered["surroundings"]
+        filtered["surroundings"] = np.rot90(surroundings, int((self.euler_direction[0] + 45) / 90) + 2, axes=(1, 2)).ravel()
+        return filtered
 
     @staticmethod
     def get_observation_space(observation_definition, observation_filter=None):

@@ -93,15 +93,3 @@ class NodeRecord:
         self.successes = 0
         self.steps = 0
 
-
-def print_node_results(evaluation_manager):
-    values = np.array([[mission.steps, select(mission.nodes, "Is not attacked by enemy").failures] for mission in evaluation_manager.mission_records])
-    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    print("Evaluation results: " + str(evaluation_manager.name))
-    print("Tex string: {0} & {1} & {2} & {3} & {4} ".format("Column", "Timesteps", "# Episodes ACC_f", "# ACC_f", "# Avg ACC_f"))  # steps
-    print("Tex string: {0} & {1} & {2} & {3} & {4} ".format("Column", np.average(values[:, 0]), np.sum(values[:, 1] > 0), np.sum(values[:, 1]), np.average(values[:, 1])))  # steps
-    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-
-
-def select(node_list, name):
-    return list(filter(lambda el: el.name == name and el.steps != 0, node_list))[0]

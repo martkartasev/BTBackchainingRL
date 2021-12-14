@@ -92,14 +92,15 @@ class PPABaselinesNode(BaselinesNode):
         self.accs = []
         self.post_conditions = []
         self.total_reward = 0
+        self.obs_filter = None
 
     def get_observation_space(self):
-        return self.agent.observation_manager.get_observation_space()
+        return self.agent.observation_manager.get_observation_space(self.obs_filter)
 
     def get_observation_array(self):
         observation = self.agent.observation_manager.observation
 
-        return None if observation is None else observation.filtered
+        return None if observation is None else observation.get_filtered(self.obs_filter)
 
     def calculate_rewards(self):
         reward = self.agent.observation_manager.reward + self.agent.observation_manager.reward_definition.STEP_REWARD

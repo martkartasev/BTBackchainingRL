@@ -9,21 +9,20 @@ from plotting import get_reward_series, plot_multi_series
 
 def plot_rewards_cow():
     data = {
-        "FBT": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_4_FBT\run-PPO_COW_FBT-tag-rollout_ep_rew_mean.csv")),
-        "FBT + AR": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_4_FBT_AR\run-PPO_COW_FBT_AR-tag-rollout_ep_rew_mean.csv")),
-        "SA": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_4_SA\run-PPO_COW_SA-tag-rollout_ep_rew_mean.csv")),
-        "SA + AR": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_4_SA_AR\run-PPO_COW_SA_AR-tag-rollout_ep_rew_mean.csv")),
+        "Standard RL": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_4_SA\run-PPO_COW_SA-tag-rollout_ep_rew_mean.csv")),
+        "ACC Aware (Neg. Reward)": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_4_SA_AR\run-PPO_COW_SA_AR-tag-rollout_ep_rew_mean.csv")),
+        "ACC Aware (End Episode)": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_4_FBT\run-PPO_COW_FBT-tag-rollout_ep_rew_mean.csv")),
+        "ACC Aware (NR and EE)": get_reward_series(get_absolute_path(r"results\cow_skeleton_experiment_4_FBT_AR\run-PPO_COW_FBT_AR-tag-rollout_ep_rew_mean.csv")),
     }
     plot_multi_series(data, (5, 3.5))
 
 
 def plot_rewards_skeleton():
     data = {
-        "FBT": get_reward_series(get_absolute_path(r"results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv")),
-        "FBT + AR": get_reward_series(get_absolute_path(r"results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv")),
-        "SA": get_reward_series(get_absolute_path(r"results\basicfighter_ppo8\run-PPO_8-tag-rollout_ep_rew_mean.csv")),
-        "SA + AR": get_reward_series(get_absolute_path(r"results\basicfighter_ppo10\run-PPO_10-tag-rollout_ep_rew_mean.csv")),
-
+        "Standard RL": get_reward_series(get_absolute_path(r"results\basicfighter_ppo8\run-PPO_8-tag-rollout_ep_rew_mean.csv")),
+        "ACC Aware (Neg. Reward)": get_reward_series(get_absolute_path(r"results\basicfighter_ppo10\run-PPO_10-tag-rollout_ep_rew_mean.csv")),
+        "ACC Aware (End Episode)": get_reward_series(get_absolute_path(r"results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv")),
+        "ACC Aware (NR and EE)": get_reward_series(get_absolute_path(r"results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv")),
     }
     plot_multi_series(data, (5, 3.5))
 
@@ -111,4 +110,5 @@ def select(node_list, name):
 
 
 if __name__ == '__main__':
-    evaluate_fighter()
+    plot_rewards_skeleton()
+    plot_rewards_cow()

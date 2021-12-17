@@ -29,8 +29,8 @@ class MissionRunner:
 
             end = time.time()
             if self.logging > 0:
-                print("Took " + str((end - self.mission_start_time) * 1000) + ' milliseconds')
-                print("Mission " + str(mission) + " ended")
+                print(f"Took {(end - self.mission_start_time) * 1000} milliseconds")
+                print(f"Mission {mission} ended")
 
             if self.evaluation_manager is not None:
                 self.evaluation_manager.record_mission_end(self.agent.is_mission_over(), steps, end)

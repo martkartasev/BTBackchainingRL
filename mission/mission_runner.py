@@ -33,7 +33,7 @@ class MissionRunner:
                 print(f"Mission {mission} ended")
 
             if self.evaluation_manager is not None:
-                self.evaluation_manager.record_mission_end(self.agent.is_mission_over(), steps, end)
+                self.evaluation_manager.record_mission_end(self.agent.is_mission_over(), steps, end, self.observation_manager.observation.dict["health"][0])
                 if self.evaluation_manager.runs <= mission:
                     self.evaluation_manager.store_evaluation()
                     break

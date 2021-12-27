@@ -39,11 +39,11 @@ https://developer.nvidia.com/cuda-11.1.0-download-archive
 
 ### Bootstrapping
 
-If the installation for the Malmo wheel was successful, you can run the [bootstrap_malmo()](https://github.com/martkartasev/BTBackchainingRL/blob/0ffacf839f9e8bd1c7217bc75bea5c3e0523d79c/malmo_bootstrap.py#L6) to automatically download the necessary files for malmo.
+If the installation for the Malmo wheel was successful, you can run [bootstrap_malmo()](https://github.com/martkartasev/BTBackchainingRL/blob/0ffacf839f9e8bd1c7217bc75bea5c3e0523d79c/malmo_bootstrap.py#L6) to automatically download the necessary files for malmo.
 
 N.B! Sometimes the necessary libraries are not automatically picked up by python. Seems to be an error in how the wheel is set up. In such a case you can add the [library folder](https://github.com/martkartasev/BTBackchainingRL/tree/master/malmolibrary) to your python path.
 
-Once bootstrapping is complete you can run Malmo from [run_malmo()](https://github.com/martkartasev/BTBackchainingRL/blob/0ffacf839f9e8bd1c7217bc75bea5c3e0523d79c/malmo_bootstrap.py#L11)
+Once bootstrapping is complete you can run Malmo from [run_malmo()](https://github.com/martkartasev/BTBackchainingRL/blob/0ffacf839f9e8bd1c7217bc75bea5c3e0523d79c/malmo_bootstrap.py#L11).
 
 # How to run
 Once you have done a manual installation or bootstrapped, you should be able to run Malmo locally.

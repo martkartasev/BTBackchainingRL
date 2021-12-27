@@ -1,6 +1,7 @@
 # Improving the Performance of Backward Chained Behavior Trees using Reinforcement Learning
 
 An experimentation environment for Reinforcment Learning in Backward Chained Behavior Trees.
+
 For more details see the related paper at [WIP]()
 
 # How to set up

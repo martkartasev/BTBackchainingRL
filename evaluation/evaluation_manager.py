@@ -14,7 +14,6 @@ class EvaluationManager:
         self.runs = runs
         self.log_file = get_absolute_path(eval_log_file) if eval_log_file is not None else None
         self.nodes = dict()
-        self.positions = list()
         self.mission_records = list()
         self.current_record = MissionRecord(None)
         self.name = name
@@ -28,7 +27,7 @@ class EvaluationManager:
         self.current_record = MissionRecord(start)
 
     def record_mission_end(self, state, steps, end, health):
-        self.current_record.finalize(state, steps, end, self.nodes, self.positions, health)
+        self.current_record.finalize(state, steps, end, self.nodes,  health)
         [node.reset() for node in self.nodes.values()]
         self.mission_records.append(self.current_record)
 
@@ -41,7 +40,8 @@ class EvaluationManager:
             record.failures += 1
 
     def record_position(self, x, z):
-        self.positions.append(PositionRecord(x, z))
+        pass
+        # self.positions.append(PositionRecord(x, z))
 
     def store_evaluation(self):
         if self.log_file is not None:
@@ -63,11 +63,10 @@ class MissionRecord:
         self.health = 0
         self.state = True
 
-    def finalize(self, state, steps, end, nodes: dict, positions: list, health):
+    def finalize(self, state, steps, end, nodes: dict, health):
         self.steps = steps
         self.end = end
         self.nodes = [copy.deepcopy(node) for node in nodes.values()]
-        self.positions = copy.deepcopy(positions)
         self.health = health
         self.state = state
 

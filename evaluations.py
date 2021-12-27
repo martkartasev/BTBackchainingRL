@@ -49,7 +49,7 @@ def evaluate_combined():
 def evaluate_fighter():
     print_node_results(experiment_evaluate(log_dir="results/basicfighter_ppo8", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo8", "final.mdl"),
-    }, evaluation_manager=EvaluationManager(runs=2)), "Is safe from fire")
+    }, evaluation_manager=EvaluationManager(runs=1000)), "Is safe from fire")
     print_node_results(experiment_evaluate(log_dir="results/basicfighter_ppo10", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo10", "final.mdl"),
     }, evaluation_manager=EvaluationManager(runs=1000)), "Is safe from fire")
@@ -65,7 +65,7 @@ def print_node_results(evaluation_manager, evaluated_node):
     values = np.array([[mission.steps, select(mission.nodes, evaluated_node).failures, mission.health] for mission in evaluation_manager.mission_records])
     print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     print("Evaluation results: " + str(evaluation_manager.name))
-    print(f"Tex string: & % Episodes ACC_f & Avg ACC_f & Std dev ACC_f & Avg health remaining & Nr of failures & Timesteps & Timesteps std dev ")
+    print(f"Tex string: & % Episodes ACC_f & Avg ACC_f & Std dev ACC_f & Avg health remaining & % of failures & Timesteps & Timesteps std dev ")
     print(f"Tex string: "
           f"& {np.sum(values[:, 1] > 0) / evaluation_manager.runs * 100} "
           f"& {np.average(values[:, 1])} "
@@ -84,5 +84,5 @@ def select(node_list, name):
 
 
 if __name__ == '__main__':
-    evaluate_fighter()
+  #  evaluate_fighter()
     evaluate_combined()

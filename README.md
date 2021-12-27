@@ -1,4 +1,4 @@
-# Improving the Performance of Backward ChainedBehavior Trees using Reinforcement Learning
+# Improving the Performance of Backward Chained Behavior Trees using Reinforcement Learning
 
 # How to set up
 Run the following command to install the Python libraries required for the examples in this project.

@@ -13,9 +13,11 @@ NB! This has only been tested on Python 3.7 and Project Malmo 0.37.0.
 
 - Malmo 0.37.0:
 
+See [Bootstrapping]((#Bootstrapping)) on how to run Malmo from the pip wheel.
+
+Alternatively, install Malmo locally:
 https://github.com/microsoft/malmo/releases
 
-Or see "Bootstrapping" on how to run Malmo from the pip wheel.
 
 - All of the pip requirements:
 ```

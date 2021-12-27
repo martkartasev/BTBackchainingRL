@@ -1,4 +1,4 @@
-# Behavior Trees Back-chaining with Reinforcement Learning 
+# Improving the Performance of Backward ChainedBehavior Trees using Reinforcement Learning
 
 # How to set up
 Run the following command to install the Python libraries required for the examples in this project.
@@ -35,7 +35,9 @@ https://developer.nvidia.com/cuda-11.1.0-download-archive
 # How to run
 Run one of the test mission configurations under "Experiments".
 
-# How to use tensorboard
+# How to view the Stable-Baselines integrated tensorboard
+
+The logging has already been set up. Running the training examples will generate tensorboard files into a separate directory which can be viewed with the following command.
 
 ```
 tensorboard --logdir <tensorboard directory>

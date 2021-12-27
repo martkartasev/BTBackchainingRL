@@ -1,11 +1,14 @@
 # Improving the Performance of Backward Chained Behavior Trees using Reinforcement Learning
 
+An experimentation environment for Reinforcment Learning in Backward Chained Behavior Trees.
+For more details see the related paper at [WIP]()
+
 # How to set up
 Run the following command to install the Python libraries required for the examples in this project.
 
 NB! This has only been tested on Python 3.7 and Project Malmo 0.37.0.
 
-You will need to install 
+### Installation
 
 - Malmo 0.37.0:
 
@@ -31,9 +34,18 @@ If using GPU:
 - Cuda 11.1 if using GPU:
 https://developer.nvidia.com/cuda-11.1.0-download-archive
 
+### Bootstrapping
+
+If the installation for the Malmo wheel was successful, you can run the 
+
+
 
 # How to run
-Run one of the test mission configurations under "Experiments".
+
+
+Once Malmo is running, you can start one of the test mission configurations in [main](https://github.com/martkartasev/BTBackchainingRL/blob/master/main.py) to train an agent.
+
+Alternatively, you can run one of the [evaluations](https://github.com/martkartasev/BTBackchainingRL/blob/master/evaluations.py) on one of the included results from our own experiments. Archives are available under [GitHub Releases](https://github.com/martkartasev/BTBackchainingRL/releases) for this repository.
 
 # How to view the Stable-Baselines integrated tensorboard
 
@@ -42,3 +54,4 @@ The logging has already been set up. Running the training examples will generate
 ```
 tensorboard --logdir <tensorboard directory>
 ```
+

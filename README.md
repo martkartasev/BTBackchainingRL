@@ -2,7 +2,7 @@
 
 An experimentation environment for Reinforcment Learning in Backward Chained Behavior Trees.
 
-For more details see the related paper on [arxiv](https://arxiv.org/abs/2112.13744).
+For more details see the related paper on [arxiv:2112.13744](https://arxiv.org/abs/2112.13744).
 
 # How to set up
 Run the following command to install the Python libraries required for the examples in this project.

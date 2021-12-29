@@ -82,7 +82,42 @@ def print_node_results(evaluation_manager, evaluated_node):
 def select(node_list, name):
     return list(filter(lambda el: el.name == name and el.steps != 0, node_list))[0]
 
+#TODO: This needs to be updated
+#def evaluate_all_models(log_dir, eval_dir, eval_name, n_evaluations=1):
+#    model_files = get_model_file_names_from_folder(log_dir)
+#    for i, model in enumerate(model_files):
+#        experiment_evaluate(log_dir, model, n_evaluations, f"{eval_dir}/{eval_name}_{i}.json")
+
+
+#def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
+#    spec = load_spec(log_dir)
+#
+#    mission_path = spec['mission']
+#    xml_namespaces = {"Malmo": "http://ProjectMalmo.microsoft.com"}
+#    xml_element = ET.parse(get_absolute_path(mission_path))
+#    ET.register_namespace("", "http://ProjectMalmo.microsoft.com")
+#
+#    split_path = mission_path.split(".")
+#    temp_mission_path = f"{split_path[0]}_temp.{split_path[1]}"
+#    for x in range(-15, 16):
+#        for z in range(-15, 16):
+#            print(x)
+#            print(z)
+#            placement = xml_element.find(".//Malmo:Placement", xml_namespaces)
+#            placement.set('x', str(x))
+#            placement.set('z', str(z))
+#
+#            with open(get_absolute_path(temp_mission_path), 'w+') as f:
+#                xml_element.write(f, encoding='unicode')
+#
+#            spec['mission'] = temp_mission_path
+#            spec["evaluation_manager"] = EvaluationManager(1, f"{eval_dir}/{eval_name}_pos_{x}_{z}.json")
+#
+#            experiment = BaselinesNodeExperiment(**spec)
+#            experiment.evaluate_node(spec['model_class'], model_name, 3)
+#            os.remove(get_absolute_path(temp_mission_path))
+
 
 if __name__ == '__main__':
-  #  evaluate_fighter()
+    #  evaluate_fighter()
     evaluate_combined()

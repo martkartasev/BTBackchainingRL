@@ -44,9 +44,10 @@ WAIT_INTERVAL = 0.1
 
 
 class MissionManager:
-    def __init__(self, agent_host: MalmoPython.AgentHost, filename=None):
+    def __init__(self, agent_host: MalmoPython.AgentHost, filename=None, logging=0):
         self.agent_host = agent_host
         self.counter = 0
+        self.logging = logging
 
         if filename is not None:
             if isinstance(filename, list):
@@ -77,29 +78,33 @@ class MissionManager:
                 break
             except RuntimeError as e:
                 if retry == max_retries - 1:
-                    print("Error starting mission:", e)
+                    if self.logging > 0:
+                        print("Error starting mission:", e)
                     exit(1)
                 else:
-                    print("Failed to connect to mission, retrying after 100 milliseconds: ", e)
+                    if self.logging > 0:
+                        print("Failed to connect to mission, retrying after 100 milliseconds: ", e)
                     time.sleep(WAIT_INTERVAL)
-
-            print("Waiting for the mission to start ", end=' ')
+            if self.logging > 0:
+                print("Waiting for the mission to start ", end=' ')
             world_state = self.agent_host.getWorldState()
 
             wait_counter = 0
             while not world_state.has_mission_begun:
-                print(".", end="")
+                if self.logging > 0:
+                    print(".", end="")
                 wait_counter += 1
                 time.sleep(WAIT_INTERVAL)
                 world_state = self.agent_host.getWorldState()
+
                 for error in world_state.errors:
                     print("Error:", error.text)
 
                 if wait_counter > WAIT_FOR_SECONDS / WAIT_INTERVAL:
                     break
-
-        print()
-        print("Running mission", end=' ')
+        if self.logging > 0:
+            print()
+            print("Running mission", end=' ')
 
         return world_state
 

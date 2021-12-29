@@ -10,8 +10,23 @@ class Condition(Behaviour):
     def __init__(self, name, agent):
         super(Condition, self).__init__(name)
         self.agent = agent
+        self.update_aux = self.execution
+        self.evaluation_manager = None
 
     def update(self):
+        return self.update_aux()
+
+    def evaluation(self):
+        result = self.execution()
+        self.evaluation_manager.record_node(self, result)
+        return result
+
+    def set_evaluation_manager(self, evaluation_manager):
+        self.update_aux = self.evaluation
+        self.evaluation_manager = evaluation_manager
+        self.evaluation_manager.register_node(self)
+
+    def execution(self):
         if self.evaluate(self.agent):
             return Status.SUCCESS
         return Status.FAILURE
@@ -71,7 +86,6 @@ class IsEntityVisible(Condition):
 
 
 class IsCloseToEntity(Condition):
-
     RANGE = 2
 
     def __init__(self, agent):

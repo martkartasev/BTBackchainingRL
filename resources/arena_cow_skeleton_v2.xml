@@ -21,12 +21,12 @@
             <FlatWorldGenerator forceReset="false"/>
             <DrawingDecorator>
 
-                <DrawCuboid type="diamond_block" x1="-16" y1="4" z1="-16" x2="16" y2="6" z2="16"/>
+                <DrawCuboid type="diamond_block" x1="-24" y1="4" z1="-24" x2="24" y2="6" z2="24"/>
 
 
-                <DrawCuboid type="air" x1="-15" y1="4" z1="-15" x2="15" y2="6" z2="15"/>
+                <DrawCuboid type="air" x1="-23" y1="4" z1="-23" x2="23" y2="6" z2="23"/>
 
-                <DrawCuboid type="obsidian" x1="-15" y1="3" z1="-15" x2="15" y2="3" z2="15"/>
+                <DrawCuboid type="obsidian" x1="-23" y1="3" z1="-23" x2="23" y2="3" z2="23"/>
 
                 <DrawEntity x="0" y="4" z="0" yaw="-180" type="Skeleton"/>
                 <DrawEntity x="14" y="4" z="0" yaw="-180" type="Cow"/>
@@ -50,8 +50,8 @@
             <ObservationFromRay/>
             <ObservationFromGrid>
                 <Grid name="Surroundings">
-                    <min x="-3" y="0" z="-3"/>
-                    <max x="3" y="0" z="3"/>
+                    <min x="-5" y="0" z="-5"/>
+                    <max x="5" y="0" z="5"/>
                 </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats/>

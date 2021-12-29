@@ -3,7 +3,6 @@ from bt.accs import find_accs
 from bt.ppa import AvoidFirePPA, DefeatSkeletonPPA, EatPPA, PickupBeefPPA, DefeatCowPPA, IsNotAttackedByEnemyPPA, \
     ChaseEntityPPA
 from bt.sequence import Sequence
-from evaluation.evaluation_manager import EvaluationBehaviour
 from learning.baseline_node import PPABaselinesNode
 
 
@@ -28,15 +27,16 @@ class BackChainTree:
 
         for baseline_node in self.baseline_nodes:
             accs = find_accs(baseline_node)
-            baseline_node.accs = [EvaluationBehaviour(condition, evaluation_manager) for condition in accs] if evaluation_manager is not None else accs
+            if evaluation_manager is not None:
+                [acc.set_evaluation_manager(evaluation_manager) for acc in accs]
+            baseline_node.accs = accs
         return back_chain_tree
 
     def back_chain_recursive(self, agent, condition, evaluation_manager=None):
         ppa = self.condition_to_ppa_tree(agent, condition)
         if evaluation_manager is not None:
-            ppa.post_condition = EvaluationBehaviour(ppa.post_condition, evaluation_manager)
-            # ppa.action = EvaluationBehaviour(ppa.action, evaluation_manager)  # TODO: Review if these are necessary. If so need to do it a bit differently
-            # ppa.pre_conditions = (EvaluationBehaviour(condition, evaluation_manager) for condition in ppa.pre_conditions)
+            ppa.post_condition.set_evaluation_manager(evaluation_manager)
+            [precond.set_evaluation_manager(evaluation_manager) for precond in ppa.pre_conditions]
 
         if ppa is not None and isinstance(ppa.action, PPABaselinesNode):
             self.baseline_nodes.append(ppa.action)

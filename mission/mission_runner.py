@@ -8,8 +8,9 @@ from mission.mission_manager import MissionManager
 class MissionRunner:
 
     def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None,
-                 random_position_range=None, random_entities_position_range=None, mission_max_time=None):
-        self.mission_manager = MissionManager(agent.agent_host, filename)
+                 random_position_range=None, random_entities_position_range=None, mission_max_time=None,
+                 logging = 0):
+        self.mission_manager = MissionManager(agent.agent_host, filename, logging)
         self.agent = agent
         self.active_entities = active_entities
         self.observation_manager = agent.observation_manager
@@ -18,7 +19,10 @@ class MissionRunner:
         self.random_entities_position_range = random_entities_position_range
 
         self.mission_start_time = time.time()
+
         self.mission_max_time = mission_max_time
+
+        self.logging = logging
 
     def run(self):
         mission = 0
@@ -31,12 +35,12 @@ class MissionRunner:
             state, steps = self.run_mission()
 
             end = time.time()
-
-            print("Took " + str((end - self.mission_start_time) * 1000) + ' milliseconds')
-            print("Mission " + str(mission) + " ended")
+            if self.logging > 0:
+                print(f"Took {(end - self.mission_start_time) * 1000} milliseconds")
+                print(f"Mission {mission} ended")
 
             if self.evaluation_manager is not None:
-                self.evaluation_manager.record_mission_end(self.agent.is_mission_over(), steps, end)
+                self.evaluation_manager.record_mission_end(self.agent.is_mission_over(), steps, end, self.observation_manager.observation.dict["health"][0])
                 if self.evaluation_manager.runs <= mission:
                     self.evaluation_manager.store_evaluation()
                     break
@@ -85,7 +89,22 @@ class MissionRunner:
     def reset(self):
         if self.mission_manager.agent_host.getWorldState().is_mission_running:
             self.mission_manager.quit()
-        self.initialize_mission()
+
+        done = False
+        while not done:
+            self.initialize_mission()
+            tries = 0
+
+            while not done and tries < 100:  # Sync mission and client
+                self.tick_mission()
+                done = not self.agent.is_mission_over()
+
+                tries += 1
+
+            self.mission_manager.randomize_entity_positions(self.random_entities_position_range)
+
+            if not self.active_entities:
+                self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned
 
     def initialize_mission(self):
         self.mission_manager.randomize_start_position(self.random_position_range)
@@ -93,7 +112,3 @@ class MissionRunner:
         self.mission_manager.activate_night_vision()
         self.mission_manager.set_fire_eternal()
         self.mission_manager.make_hungry()
-        self.tick_mission()
-        self.mission_manager.randomize_entity_positions(self.random_entities_position_range)
-        if not self.active_entities:
-            self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned

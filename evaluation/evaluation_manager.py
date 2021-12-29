@@ -3,8 +3,6 @@ import os
 from dataclasses import dataclass
 
 import jsonpickle
-import numpy as np
-from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
 from utils.file import get_absolute_path
@@ -12,7 +10,7 @@ from utils.file import get_absolute_path
 
 class EvaluationManager:
 
-    def __init__(self, runs=50, eval_log_file=None):
+    def __init__(self, runs=50, eval_log_file=None, name=""):
         self.runs = runs
         self.mission_max_time = None
         self.log_file = get_absolute_path(eval_log_file) if eval_log_file is not None else None
@@ -20,8 +18,9 @@ class EvaluationManager:
         self.nodes = dict()
         self.positions = list()
         self.mission_records = list()
-
         self.current_record = MissionRecord(None)
+
+        self.name = name
 
     def register_node(self, node):
         record = NodeRecord(node)
@@ -31,8 +30,8 @@ class EvaluationManager:
     def record_mission_start(self, start):
         self.current_record = MissionRecord(start)
 
-    def record_mission_end(self, state, steps, end):
-        self.current_record.finalize(state, steps, end, self.nodes, self.positions)
+    def record_mission_end(self, state, steps, end, health):
+        self.current_record.finalize(state, steps, end, self.nodes, self.positions, health)
         [node.reset() for node in self.nodes.values()]
         self.mission_records.append(self.current_record)
 
@@ -63,12 +62,17 @@ class MissionRecord:
         self.start = start
         self.positions = list()
         self.nodes = list()
+        self.rewards = list()
+        self.health = 0
+        self.state = True
 
-    def finalize(self, state, steps, end, nodes: dict, positions: list):
+    def finalize(self, state, steps, end, nodes: dict, positions: list, health):
         self.steps = steps
         self.end = end
         self.nodes = [copy.deepcopy(node) for node in nodes.values()]
         self.positions = copy.deepcopy(positions)
+        self.health = health
+        self.state = state
 
 
 @dataclass
@@ -90,31 +94,3 @@ class NodeRecord:
         self.successes = 0
         self.steps = 0
 
-
-class EvaluationBehaviour(Behaviour):
-
-    def __init__(self, embedded: Behaviour, manager: EvaluationManager):
-        super().__init__(name=embedded.name)
-        self.embedded = embedded
-        self.manager = manager
-        self.record = self.manager.register_node(self)
-
-    def update(self):
-        update = self.embedded.update()
-        self.manager.record_node(self, update)
-        return update
-
-    def terminate(self, new_status):
-        return self.embedded.terminate(new_status)
-
-
-def print_skeleton_fire_results(evaluation_manager):
-    values = np.array([[mission.steps, select(mission.nodes, "Is safe from fire").failures] for mission in evaluation_manager.mission_results])
-    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    print("Evaluation results: ")
-    print("Tex string: {0} & {1} & {2} & {3} ".format("Column", np.average(values[:, 0]), np.sum(values[:, 1]), np.average(values[:, 1])))  # steps
-    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-
-
-def select(node_list, name):
-    return list(filter(lambda el: el.name == name and el.steps != 0, node_list))[0]

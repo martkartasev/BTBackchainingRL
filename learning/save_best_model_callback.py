@@ -39,15 +39,15 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
                 # Mean training reward over the last 100 episodes
                 mean_reward = np.mean(y[-100:])
                 if self.verbose > 0:
-                    print("Num timesteps: {}".format(self.num_timesteps))
-                    print("Best mean reward: {:.2f} - Last mean reward per episode: {:.2f}".format(self.best_mean_reward, mean_reward))
+                    print(f"Num timesteps: {self.num_timesteps}")
+                    print(f"Best mean reward: {self.best_mean_reward} - Last mean reward per episode: {mean_reward}")
 
                 # New best model, you could save the agent here
                 if mean_reward > self.best_mean_reward:
                     self.best_mean_reward = mean_reward
                     # Example for saving best model
                     if self.verbose > 0:
-                        print("Saving new best model to {}".format(self.save_path))
+                        print(f"Saving new best model to {self.save_path}")
                     self.model.save(self.save_path + "_" + str(self.index))
                     if isinstance(self.model, OffPolicyAlgorithm):
                         self.model.save_replay_buffer(self.save_path + "_buffer")

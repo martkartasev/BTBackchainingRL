@@ -1,22 +1,18 @@
 import os
+import xml.etree.ElementTree as ET
 
 from stable_baselines3 import PPO
 
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
-from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
-from utils.file import store_spec, load_spec, get_absolute_path, get_model_file_names_from_folder
-from utils.plotting import get_reward_series, plot_reward_series
-from utils.plotting import get_reward_series, plot_reward_series, plot_positions, plot_multi_series
-import xml.etree.ElementTree as ET
-
+from utils.file import store_spec, load_spec, get_absolute_path
 
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
-    "mission": "resources/mission.xml",
-    "model_log_dir": "results/cow_skeleton_experiment_random_5",
+    "mission": "resources/arena_cow_skeleton_v2.xml",
+    "model_log_dir": "results/cow_skeleton_experiment",
     "model_class": PPO,
     "acc_ends_episode": True,
     "model_arguments": {
@@ -26,7 +22,18 @@ cow_skeleton_experiment = {
     },
     "active_entities": False,
     "baseline_node_type": ChaseEntity,
-    "observation_manager": ObservationManager(observation_filter=[
+    "observation_manager": ObservationManager(
+        reward_definition=RewardDefinition(
+            POST_CONDITION_FULFILLED_REWARD=1000,
+            AGENT_DEAD_REWARD=-1000,
+            ACC_VIOLATED_REWARD=-10,
+        ),
+        observation_definition=ObservationDefinition(
+            GRID_SIZE_AXIS=[1, 11, 11],
+            FIRE_AVOID_DISTANCE=1.5
+        )
+    ),
+    "observation_filter": [
         "entity_relative_distance",
         "entity_relative_direction",
         "enemy_relative_distance",
@@ -34,28 +41,35 @@ cow_skeleton_experiment = {
         "health",
         "entity_visible",
         "surroundings"
-    ], reward_definition=RewardDefinition(
-        POST_CONDITION_FULFILLED_REWARD=1000,
-        AGENT_DEAD_REWARD=-1000,
-        ACC_VIOLATED_REWARD=-1000,
-    )),
-    "max_steps_per_episode": float('inf'),
+    ],
+    "max_steps_per_episode": 2500,
     "total_timesteps": 2000000,
     "random_position_range": {'x': [-14, -12], 'y': [6], 'z': [-12, 12]},
     "random_entities_position_range": {
         "cow": {'x': [14], 'y': [4], 'z': [-12, 12]},
         "skeleton": {'x': [0], 'y': [4], 'z': [-12, 12]}
     },
-    'mission_max_time': 60
+    'mission_max_time': 30
 }
 
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter_ppo9",
+    "model_log_dir": "results/basicfighter_ppo11",
     "active_entities": True,
     "acc_ends_episode": False,
-    "observation_manager": ObservationManager(observation_filter=[
+    "observation_manager": ObservationManager(
+        reward_definition=RewardDefinition(
+            POST_CONDITION_FULFILLED_REWARD=1000,
+            AGENT_DEAD_REWARD=-1000,
+            ACC_VIOLATED_REWARD=-10
+        ),
+        observation_definition=ObservationDefinition(
+            GRID_SIZE_AXIS=[1, 11, 11],
+            FIRE_AVOID_DISTANCE=1.5
+        )
+    ),
+    "observation_filter": [
         "enemy_relative_distance",
         "enemy_relative_direction",
         "health",
@@ -63,23 +77,14 @@ skeleton_fire_experiment_v2 = {
         "enemy_targeted",
         "surroundings"
     ],
-        reward_definition=RewardDefinition(
-            POST_CONDITION_FULFILLED_REWARD=1000,
-            AGENT_DEAD_REWARD=-1000,
-            ACC_VIOLATED_REWARD=-1000
-        ),
-        observation_definition=ObservationDefinition(
-            GRID_SIZE_AXIS=[1, 11, 11],
-            FIRE_AVOID_DISTANCE=1.5
-        )
-    ),
     "model_class": PPO,
     "model_arguments": {
         "policy": 'MultiInputPolicy',
         "verbose": 1,
         "tensorboard_log": get_absolute_path("tensorboard"),
     },
-    "total_timesteps": 2000000,
+    "total_timesteps": 3000000,
+    "logging": 1
 }
 
 cow_fire_experiment = {
@@ -87,7 +92,8 @@ cow_fire_experiment = {
     "mission": "resources/arena_cow_v2.xml",
     "model_log_dir": "",
     "active_entities": True,
-    "observation_manager": ObservationManager(observation_filter=[
+    "observation_manager": ObservationManager(),
+    "observation_filter": [
         "entity_relative_position",
         "enemy_relative_position",
         "direction",
@@ -97,16 +103,18 @@ cow_fire_experiment = {
         "is_entity_pickable",
         "has_food",
         "satiation"
-    ]),
+    ]
 }
 
 
-def experiment_evaluate(log_dir, model_name, runs, eval_log_file=None):
+def experiment_evaluate(log_dir, model_spec, evaluation_manager):
     spec = load_spec(log_dir)
-    spec["evaluation_manager"] = EvaluationManager(runs, eval_log_file)
+    spec["evaluation_manager"] = evaluation_manager
+    evaluation_manager.name = spec["model_log_dir"]
     experiment = BaselinesNodeExperiment(**spec)
 
-    experiment.evaluate_node(spec['model_class'], model_name)
+    experiment.evaluate(model_spec)
+    return evaluation_manager
 
 
 def experiment_test(log_dir, model_name):
@@ -130,13 +138,12 @@ def experiment_check_env(spec):
     experiment.check_env()
 
 
-def plot_rewards():
-    data = {
-        "ACC": get_reward_series(get_absolute_path(r"results\basicfighter_ppo5\run-PPO_5-tag-rollout_ep_rew_mean.csv")),
-        "ACC + Reward": get_reward_series(get_absolute_path(r"results\basicfighter_ppo7\run-PPO_7-tag-rollout_ep_rew_mean.csv")),
-        "Pure RL": get_reward_series(get_absolute_path(r"results\basicfighter_ppo8\run-PPO_8-tag-rollout_ep_rew_mean.csv")),
-    }
-    plot_multi_series(data,(5, 3.5) )
+def experiment_evaluate_alternative(log_dir, model_name, runs, eval_log_file=None):
+    spec = load_spec(log_dir)
+    spec["evaluation_manager"] = EvaluationManager(runs, eval_log_file)
+    experiment = BaselinesNodeExperiment(**spec)
+
+    experiment.evaluate_node(spec['model_class'], model_name)
 
 
 def evaluate_all_models(log_dir, eval_dir, eval_name, n_evaluations=1):
@@ -173,13 +180,12 @@ def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
             experiment.evaluate_node(spec['model_class'], model_name, 3)
             os.remove(get_absolute_path(temp_mission_path))
 
+
 if __name__ == '__main__':
-    # experiment_evaluate("results/basicfighter_ppo6", "best_model_63", EvaluationManager(runs=50))
     experiment_train(cow_skeleton_experiment)
-    # evaluate_all_models("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
-    # plot_paths(cow_skeleton_experiment, "log/eval", "cow_skeleton_experiment")
+
+    # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")
     # store_spec(cow_skeleton_experiment)
     # experiment_check_env(skeleton_fire_experiment_v2)
-    # plot_rewards()

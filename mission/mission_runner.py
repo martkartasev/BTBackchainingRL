@@ -7,14 +7,21 @@ from mission.mission_manager import MissionManager
 
 class MissionRunner:
 
-    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None, mission_max_time=None, logging=0):
+    def __init__(self, agent, active_entities=True, filename=None, evaluation_manager=None,
+                 random_position_range=None, random_entities_position_range=None, mission_max_time=None,
+                 logging = 0):
         self.mission_manager = MissionManager(agent.agent_host, filename, logging)
         self.agent = agent
         self.active_entities = active_entities
         self.observation_manager = agent.observation_manager
         self.evaluation_manager = evaluation_manager
-        self.mission_max_time = mission_max_time
+        self.random_position_range = random_position_range
+        self.random_entities_position_range = random_entities_position_range
+
         self.mission_start_time = time.time()
+
+        self.mission_max_time = mission_max_time
+
         self.logging = logging
 
     def run(self):
@@ -85,7 +92,7 @@ class MissionRunner:
 
         done = False
         while not done:
-            self.mission_manager.mission_initialization()
+            self.initialize_mission()
             tries = 0
 
             while not done and tries < 100:  # Sync mission and client
@@ -94,5 +101,14 @@ class MissionRunner:
 
                 tries += 1
 
+            self.mission_manager.randomize_entity_positions(self.random_entities_position_range)
+
             if not self.active_entities:
                 self.mission_manager.disable_ai()  # Done after tick mission to ensure that the entities have spawned
+
+    def initialize_mission(self):
+        self.mission_manager.randomize_start_position(self.random_position_range)
+        self.mission_manager.start_mission()
+        self.mission_manager.activate_night_vision()
+        self.mission_manager.set_fire_eternal()
+        self.mission_manager.make_hungry()

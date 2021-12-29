@@ -9,9 +9,9 @@ from utils.file import store_spec, load_spec, get_absolute_path
 cow_skeleton_experiment = {
     "goals": [conditions.IsCloseToEntity],
     "mission": "resources/arena_cow_skeleton_v2.xml",
-    "model_log_dir": "results/cow_skeleton_experiment_4_SA_AR",
+    "model_log_dir": "results/cow_skeleton_experiment",
     "model_class": PPO,
-    "acc_ends_episode": False,
+    "acc_ends_episode": True,
     "model_arguments": {
         "policy": 'MultiInputPolicy',
         "verbose": 1,
@@ -41,6 +41,12 @@ cow_skeleton_experiment = {
     ],
     "max_steps_per_episode": 2500,
     "total_timesteps": 2000000,
+    "random_position_range": {'x': [-14, -12], 'y': [6], 'z': [-12, 12]},
+    "random_entities_position_range": {
+        "cow": {'x': [14], 'y': [4], 'z': [-12, 12]},
+        "skeleton": {'x': [0], 'y': [4], 'z': [-12, 12]}
+    },
+    'mission_max_time': 30
 }
 
 skeleton_fire_experiment_v2 = {
@@ -104,7 +110,7 @@ def experiment_evaluate(log_dir, model_spec, evaluation_manager):
     evaluation_manager.name = spec["model_log_dir"]
     experiment = BaselinesNodeExperiment(**spec)
 
-    experiment.evaluate(model_spec, mission_max_time=30)
+    experiment.evaluate(model_spec)
     return evaluation_manager
 
 

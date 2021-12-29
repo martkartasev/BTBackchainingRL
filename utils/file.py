@@ -28,7 +28,7 @@ def store_spec(spec):
     mission_xml = str(Path(spec["model_log_dir"]) / "mission.xml")
     create_file_and_write(spec_pkl, lambda file: file.write(
         simplejson.dumps(simplejson.loads(jsonpickle.encode(spec)), indent=4)))
-    copyfile(get_absolute_path(spec["mission"]), mission_xml)
+    copyfile(get_absolute_path(spec['mission']), mission_xml)
 
 
 def load_spec(model_log_dir):

@@ -1,11 +1,11 @@
 import numpy as np
 
+from baselines_node_experiment import BaselinesNodeExperiment
 from evaluation.evaluation_manager import EvaluationManager
 from learning.baseline_node import DefeatSkeleton, ChaseEntity
 from main import experiment_evaluate
-from utils.file import get_absolute_path, get_model_file_names_from_folder
+from utils.file import get_absolute_path, get_model_file_names_from_folder, load_spec
 from utils.plotting import get_reward_series, plot_multi_series
-
 
 def plot_rewards_cow():
     data = {
@@ -105,34 +105,16 @@ def evaluate_all_models_once(node_class, log_dir,  eval_dir, eval_name):
 
 def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
     spec = load_spec(log_dir)
-#
-    mission_path = spec['mission']
-    xml_namespaces = {"Malmo": "http://ProjectMalmo.microsoft.com"}
-    xml_element = ET.parse(get_absolute_path(mission_path))
-    ET.register_namespace("", "http://ProjectMalmo.microsoft.com")
-#
-    split_path = mission_path.split(".")
-    temp_mission_path = f"{split_path[0]}_temp.{split_path[1]}"
+    spec['random_entities_position_range'] = {}
     for x in range(-15, 16):
         for z in range(-15, 16):
-            print(x)
-            print(z)
-            placement = xml_element.find(".//Malmo:Placement", xml_namespaces)
-            placement.set('x', str(x))
-            placement.set('z', str(z))
-
-            with open(get_absolute_path(temp_mission_path), 'w+') as f:
-                xml_element.write(f, encoding='unicode')
-
-            spec['mission'] = temp_mission_path
+            spec['random_position_range'] = {'x': [x], 'y': [6], 'z': [z]},
             spec["evaluation_manager"] = EvaluationManager(1, f"{eval_dir}/{eval_name}_pos_{x}_{z}.json")
 
             experiment = BaselinesNodeExperiment(**spec)
-            experiment.evaluate_node(spec['model_class'], model_name, 3)
-            os.remove(get_absolute_path(temp_mission_path))
+            experiment.evaluate_node(spec['model_class'], model_name)
 
 
 if __name__ == '__main__':
     #  evaluate_fighter()
-    # evaluate_combined()
-    evaluate_all_models_once(ChaseEntity, "results/cow_skeleton_experiment", "log/eval/csr", "cow_skeleton_experiment")
+    evaluate_combined()

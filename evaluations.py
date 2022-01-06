@@ -31,34 +31,34 @@ def evaluate_combined():
     print_node_results(experiment_evaluate(log_dir="results/cow_skeleton_experiment_4_SA", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo8", "final.mdl"),
         ChaseEntity: ("results/cow_skeleton_experiment_4_SA", "final.mdl")
-    }, evaluation_manager=EvaluationManager(runs=1000)), "Is not attacked by enemy")
+    }, evaluation_manager=EvaluationManager(runs=10)), "Is not attacked by enemy")
     print_node_results(experiment_evaluate(log_dir="results/cow_skeleton_experiment_4_SA_AR", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo10", "final.mdl"),
         ChaseEntity: ("results/cow_skeleton_experiment_4_SA_AR", "final.mdl")
-    }, evaluation_manager=EvaluationManager(runs=1000)), "Is not attacked by enemy")
+    }, evaluation_manager=EvaluationManager(runs=10)), "Is not attacked by enemy")
     print_node_results(experiment_evaluate(log_dir="results/cow_skeleton_experiment_4_FBT", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo5", "final.mdl"),
         ChaseEntity: ("results/cow_skeleton_experiment_4_FBT", "final.mdl")
-    }, evaluation_manager=EvaluationManager(runs=1000)), "Is not attacked by enemy")
+    }, evaluation_manager=EvaluationManager(runs=10)), "Is not attacked by enemy")
     print_node_results(experiment_evaluate(log_dir="results/cow_skeleton_experiment_4_FBT_AR", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo7", "final.mdl"),
         ChaseEntity: ("results/cow_skeleton_experiment_4_FBT_AR", "final.mdl")
-    }, evaluation_manager=EvaluationManager(runs=1000)), "Is not attacked by enemy")
+    }, evaluation_manager=EvaluationManager(runs=10)), "Is not attacked by enemy")
 
 
 def evaluate_fighter():
     print_node_results(experiment_evaluate(log_dir="results/basicfighter_ppo8", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo8", "final.mdl"),
-    }, evaluation_manager=EvaluationManager(runs=1000)), "Is safe from fire")
+    }, evaluation_manager=EvaluationManager(runs=10)), "Is safe from fire")
     print_node_results(experiment_evaluate(log_dir="results/basicfighter_ppo10", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo10", "final.mdl"),
-    }, evaluation_manager=EvaluationManager(runs=1000)), "Is safe from fire")
+    }, evaluation_manager=EvaluationManager(runs=10)), "Is safe from fire")
     print_node_results(experiment_evaluate(log_dir="results/basicfighter_ppo5", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo5", "final.mdl"),
-    }, evaluation_manager=EvaluationManager(runs=1000)), "Is safe from fire")
+    }, evaluation_manager=EvaluationManager(runs=10)), "Is safe from fire")
     print_node_results(experiment_evaluate(log_dir="results/basicfighter_ppo7", model_spec={
         DefeatSkeleton: ("results/basicfighter_ppo7", "final.mdl"),
-    }, evaluation_manager=EvaluationManager(runs=1000)), "Is safe from fire")
+    }, evaluation_manager=EvaluationManager(runs=10)), "Is safe from fire")
 
 
 def print_node_results(evaluation_manager, evaluated_node):
@@ -119,5 +119,5 @@ def select(node_list, name):
 
 
 if __name__ == '__main__':
-    #  evaluate_fighter()
-    evaluate_combined()
+    evaluate_fighter()
+# evaluate_combined()

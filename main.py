@@ -1,7 +1,9 @@
+from py_trees.composites import Sequence
 from stable_baselines3 import PPO
 
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
+from bt.actions import Attack, Target, KeepDistance
 from learning.baseline_node import ChaseEntity
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from utils.file import store_spec, load_spec, get_absolute_path
@@ -84,6 +86,12 @@ skeleton_fire_experiment_v2 = {
     "logging": 1
 }
 
+skeleton_fire_experiment_manual = {
+    "mission": "resources/arena_skeleton_v2.xml",
+    "observation_manager": ObservationManager(),
+    "logging": 1
+}
+
 cow_fire_experiment = {
     "goals": [conditions.IsSafeFromFire, conditions.IsNotHungry],
     "mission": "resources/arena_cow_v2.xml",
@@ -114,11 +122,17 @@ def experiment_evaluate(log_dir, model_spec, evaluation_manager):
     return evaluation_manager
 
 
-def experiment_test(log_dir, model_name):
-    spec = load_spec(log_dir)
+def experiment_test(spec):
     experiment = BaselinesNodeExperiment(**spec)
 
-    experiment.test_node(spec['model_class'], model_name)
+    agent = experiment.agent
+    agent.tree = Sequence("TestSequence", memory=False,
+                          children=[Target(agent),
+                                    KeepDistance(agent),
+                                    Attack(agent)]
+                          )
+
+    experiment.mission.run()
 
 
 def experiment_train(spec):
@@ -136,8 +150,8 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
-    experiment_train(cow_skeleton_experiment)
-
+    experiment_test(skeleton_fire_experiment_manual)
+    # experiment_train(cow_skeleton_experiment)
     # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")

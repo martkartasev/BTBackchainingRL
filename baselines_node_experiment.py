@@ -22,7 +22,7 @@ agent_host = AgentHost()
 
 class BaselinesNodeExperiment:
 
-    def __init__(self, goals, mission, model_log_dir, total_timesteps=3000000, max_steps_per_episode=15000, active_entities=True,
+    def __init__(self, mission, goals=None, model_log_dir=None, total_timesteps=3000000, max_steps_per_episode=15000, active_entities=True,
                  baseline_node_type=None, observation_manager=None, observation_filter=None, evaluation_manager=None, acc_ends_episode=True, logging=0,
                  random_position_range=None, random_entities_position_range=None,
                  mission_max_time=None, **kwargs):
@@ -35,19 +35,22 @@ class BaselinesNodeExperiment:
         self.logging = logging
 
         self.agent = BehaviorTreeAgent(agent_host, observation_manager)
-        self.goals = [goal(self.agent) for goal in goals]
-        self.tree = BackChainTree(self.agent, self.goals, evaluation_manager)
-        self.agent.tree = self.tree.root
 
-        save_tree_to_log(self.tree.root, str(Path(model_log_dir) / "tree.csv"))
+        if goals is not None:
+            self.goals = [goal(self.agent) for goal in goals]
+            self.tree = BackChainTree(self.agent, self.goals, evaluation_manager)
+            self.agent.tree = self.tree.root
 
-        self.baseline_node = self.get_baseline_node(baseline_node_type)
+            if self.model_log_dir is not None:
+                save_tree_to_log(self.tree.root, str(Path(model_log_dir) / "tree.csv"))
 
-        self.baseline_node = self.tree.baseline_nodes[0]
-        self.baseline_node.obs_filter = observation_filter
-        self.baseline_nodes = self.tree.baseline_nodes
-        if baseline_node_type is not None and not isinstance(self.baseline_node, baseline_node_type):
-            raise ValueError("The tree does not contain the baseline node type.")
+            self.baseline_node = self.get_baseline_node(baseline_node_type)
+
+            self.baseline_node = self.tree.baseline_nodes[0]
+            self.baseline_node.obs_filter = observation_filter
+            self.baseline_nodes = self.tree.baseline_nodes
+            if baseline_node_type is not None and not isinstance(self.baseline_node, baseline_node_type):
+                raise ValueError("The tree does not contain the baseline node type.")
 
         self.mission = MissionRunner(
             agent=self.agent,

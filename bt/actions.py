@@ -1,4 +1,5 @@
 import numpy as np
+import py_trees
 from py_trees.behaviour import Behaviour
 from py_trees.common import Status
 
@@ -268,6 +269,7 @@ class Attack(Action):
         super().__init__(name, agent)
 
     def update(self):
+        print(self.name)
         #  print("Attack 1")
         self.agent.attack(1)
         return Status.RUNNING
@@ -317,3 +319,50 @@ class ActionPlaceholder(Action):
 
     def update(self):
         return Status.SUCCESS
+
+
+class Target(Action):
+    def __init__(self, agent):
+        super(Target, self).__init__("Target")
+        self.agent = agent
+
+    def update(self):
+        if self.agent.observation_manager.observation.dict["enemy_targeted"]:
+            return py_trees.common.Status.SUCCESS
+        print(self.name)
+        rot = self.agent.observation_manager.observation.dict["enemy_rot"]
+        if rot < 0:
+            self.agent.continuous_turn(-0.6)
+            return py_trees.common.Status.RUNNING
+
+        if rot > 0:
+            self.agent.continuous_turn(0.6)
+            return py_trees.common.Status.RUNNING
+
+        return Status.RUNNING
+
+    def terminate(self, new_status):
+        self.agent.continuous_turn(0)
+
+
+class KeepDistance(Action):
+    def __init__(self, agent):
+        super(KeepDistance, self).__init__("Keep Distance")
+        self.agent = agent
+
+    def update(self):
+        dist = self.agent.observation_manager.observation.dict["enemy_relative_distance"] * self.agent.observation_manager.observation.definition.RELATIVE_DISTANCE_AXIS_MAX
+        if dist > 3.5:
+            self.agent.continuous_move(1)
+            print(self.name)
+            return py_trees.common.Status.RUNNING
+
+        if dist > 0 and dist < 1.0:
+            self.agent.continuous_move(-1)
+            print(self.name)
+            return py_trees.common.Status.RUNNING
+
+        return py_trees.common.Status.SUCCESS
+
+    def terminate(self, new_status):
+        self.agent.continuous_move(0)

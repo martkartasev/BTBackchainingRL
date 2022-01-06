@@ -113,12 +113,14 @@ class Observation:
         observation_dict["euler_direction"] = self.euler_direction
 
         enemy_info = helper.get_entity_info(info, [helper.definition.ENEMY_TYPE])
+        observation_dict["enemy"] = enemy_info
         rotated_position = helper.get_standardized_rotated_position(enemy_info, position, direction)
         observation_dict["enemy_relative_position"] = rotated_position
 
         yaw = helper.get_yaw(info)
         enemy_delta = helper.get_relative_position(enemy_info, position)
         enemy_rot = np.radians(helper.get_y_rotation_from(position, helper.get_entity_position(enemy_info)) - yaw)
+        observation_dict["enemy_rot"] = enemy_rot
         observation_dict["enemy_relative_distance"] = np.array(
             [np.linalg.norm(np.array(enemy_delta[0], enemy_delta[2])) / self.definition.RELATIVE_DISTANCE_AXIS_MAX])
         observation_dict["enemy_relative_direction"] = np.array([((np.cos(enemy_rot) + 1) / 2), ((np.sin(enemy_rot) + 1) / 2), ])

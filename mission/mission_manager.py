@@ -3,7 +3,7 @@ import sys
 import time
 from builtins import range
 
-from utils.random import get_random_in_range
+from utils.randomization import get_random_in_range
 
 try:
     import MalmoPython

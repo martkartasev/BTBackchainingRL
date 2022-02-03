@@ -24,6 +24,7 @@ class PPA:
             )
         else:
             sub_tree = self.action
+
         if self.post_condition is not None:
             tree = Selector(
                 name=f"Postcondition Handler {self.name}",

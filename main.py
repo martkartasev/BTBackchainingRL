@@ -150,8 +150,8 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
-    experiment_test(skeleton_fire_experiment_manual)
-    # experiment_train(cow_skeleton_experiment)
+    # experiment_test(skeleton_fire_experiment_manual)
+    experiment_train(cow_skeleton_experiment)
     # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")

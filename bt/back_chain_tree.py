@@ -1,7 +1,5 @@
-from bt import conditions
 from bt.accs import find_accs
-from bt.ppa import AvoidFirePPA, DefeatSkeletonPPA, EatPPA, PickupBeefPPA, DefeatCowPPA, IsNotAttackedByEnemyPPA, \
-    ChaseEntityPPA
+from bt.ppa import PPA
 from bt.sequence import Sequence
 from learning.baseline_node import PPABaselinesNode
 
@@ -51,20 +49,8 @@ class BackChainTree:
         return condition
 
     def condition_to_ppa_tree(self, agent, condition):
-        ppa = None
-        if isinstance(condition, conditions.IsSafeFromFire):
-            ppa = AvoidFirePPA(agent)
-        elif isinstance(condition, conditions.IsEnemyDefeated):
-            ppa = DefeatSkeletonPPA(agent)
-        elif isinstance(condition, conditions.IsNotHungry):
-            ppa = EatPPA(agent)
-        elif isinstance(condition, conditions.HasFood):
-            ppa = PickupBeefPPA(agent)
-        elif isinstance(condition, conditions.IsEntityPickable):
-            ppa = DefeatCowPPA(agent)
-        elif isinstance(condition, conditions.IsNotAttackedByEnemy):
-            ppa = IsNotAttackedByEnemyPPA(agent)
-        elif isinstance(condition, conditions.IsCloseToEntity):
-            ppa = ChaseEntityPPA(agent)
+        for ppa in [sub(agent) for sub in PPA.__subclasses__()]:
+            if isinstance(ppa.post_condition, type(condition)):
+                return ppa
 
-        return ppa
+        return None

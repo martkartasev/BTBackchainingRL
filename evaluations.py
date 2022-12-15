@@ -116,5 +116,7 @@ def evaluate_different_positions(log_dir, eval_dir, eval_name, model_name):
 
 
 if __name__ == '__main__':
-    evaluate_fighter()
+   # evaluate_fighter()
+    plot_rewards_skeleton()
+    plot_rewards_cow()
 # evaluate_combined()

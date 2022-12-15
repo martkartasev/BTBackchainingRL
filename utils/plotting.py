@@ -68,17 +68,18 @@ def plot_multi_series(data, figsize):
 
     sns.set_context("paper")
     sns.set_style("darkgrid")
-
+    sns.set(font_scale=1.41)
     # create a color palette
     palette = plt.get_cmap('Set1')
     fig = plt.figure(figsize=figsize)
     f, ax = plt.subplots(1, 1)
 
     for name, values in data.items():
-        sns.lineplot(x="Timestep", y="Mean Reward", data=values)
+        subplot = sns.lineplot(x="Timestep", y="Mean Reward", data=values)
 
-    plt.legend(labels=data.keys())
-    plt.title("Training mean reward over last 100 episodes", loc='left', fontsize=8, fontweight=0)
+
+    plt.legend(labels=data.keys(), fontsize=17)
+    plt.title("Training mean reward over last 100 episodes", loc='left', fontsize=16, fontweight=0)
     plt.tight_layout()
     plt.show()
 

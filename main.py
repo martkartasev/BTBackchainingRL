@@ -4,7 +4,8 @@ from stable_baselines3 import PPO
 from baselines_node_experiment import BaselinesNodeExperiment
 from bt import conditions
 from bt.actions import Attack, Target, KeepDistance
-from learning.baseline_node import ChaseEntity
+from evaluation.evaluation_manager import EvaluationManager
+from learning.baseline_node import ChaseEntity, DefeatSkeleton
 from mission.observation_manager import ObservationManager, RewardDefinition, ObservationDefinition
 from utils.file import store_spec, load_spec, get_absolute_path
 
@@ -54,7 +55,7 @@ cow_skeleton_experiment = {
 skeleton_fire_experiment_v2 = {
     "goals": [conditions.IsSafeFromFire, conditions.IsEnemyDefeated],
     "mission": "resources/arena_skeleton_v2.xml",
-    "model_log_dir": "results/basicfighter_ppo11",
+    "model_log_dir": "results/basicfighter_ppo7",
     "active_entities": True,
     "acc_ends_episode": False,
     "observation_manager": ObservationManager(
@@ -150,8 +151,10 @@ def experiment_check_env(spec):
 
 
 if __name__ == '__main__':
-    # experiment_test(skeleton_fire_experiment_manual)
-    experiment_train(cow_skeleton_experiment)
+    experiment_evaluate(log_dir="results/basicfighter_ppo7", model_spec={
+        DefeatSkeleton: ("results/basicfighter_ppo7", "final.mdl"),
+    }, evaluation_manager=EvaluationManager(runs=10))
+    # experiment_train(cow_skeleton_experiment)
     # evaluate_all_models_once("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment")
     # evaluate_different_positions("results/cow_skeleton_experiment", "log/eval", "cow_skeleton_experiment", "best_model_41.zip")
     # plot_positions("log/eval", "cow_skeleton_experiment")
